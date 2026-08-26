@@ -1,0 +1,16 @@
+<lib-page-header titleKey="executiveSummary.guardrails.title" subtitleKey="executiveSummary.guardrails.subtitle" [showBack]="false" />
+
+<div class="flex flex-col gap-5 p-6">
+    <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-4">
+        <lib-stat-card [label]="'executiveSummary.guardrails.exceptions' | translate" [value]="flags.length" icon="pi pi-flag" fgClass="text-primary-600" bgClass="bg-primary-50" />
+        <lib-stat-card [label]="'executiveSummary.guardrails.highPriority' | translate" [value]="highPriorityCount"
+            icon="pi pi-exclamation-triangle" [fgClass]="highPriorityCount > 0 ? 'text-red-600' : 'text-gray-800'" [bgClass]="highPriorityCount > 0 ? 'bg-red-50' : 'bg-gray-100'" />
+        <lib-stat-card [label]="'executiveSummary.guardrails.unreviewed' | translate" [value]="unreviewedCount" icon="pi pi-eye" fgClass="text-amber-600" bgClass="bg-amber-50" />
+    </div>
+
+    <lib-data-table [rowData]="flags" [colDefs]="colDefs" [paginator]="true" [searchPlaceholder]="'executiveSummary.search' | translate" (rowClick)="openFlag($event)">
+        <span class="font-semibold text-gray-700">{{ flags.length }} {{ "executiveSummary.records" | translate }}</span>
+    </lib-data-table>
+
+    <lib-guardrail-drawer [flag]="selectedFlag" [updatingId]="updatingId" (closed)="closeDrawer()" (setStatus)="setStatus($event.flag, $event.status)" />
+</div>

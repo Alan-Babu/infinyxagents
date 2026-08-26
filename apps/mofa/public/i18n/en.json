@@ -1,0 +1,52 @@
+{
+    "app": {
+        "name": "MOFA",
+        "version": "v1.0.0"
+    },
+    "menu": {
+        "executiveSummary": "Executive Summary",
+        "docCompare": "Document Compare",
+        "hrAgent": "HR Agent",
+        "digitalAttestation": "Digital Attestation",
+        "docIntelAgent": "Document Intelligence",
+        "translatorAgent": "Translation Agent",
+        "grammarAgent": "Grammar Check Agent",
+        "contractAnalyzer": "Contract Analyzer",
+        "mofaChatbot": "MOFA Virtual Assistant",
+        "emailComposeAgent": "Email Compose Agent"
+    },
+    "labels": {
+        "backToAgents": "Back to agents",
+        "myprofile": "My profile",
+        "signout": "Sign out",
+        "searchPlaceholder": "Search…",
+        "loadingPleaseWait": "Loading, please wait…",
+        "copyright": "Copyright",
+        "expandMenu": "Expand menu",
+        "collapseMenu": "Collapse menu",
+        "preferences": "Preferences",
+        "language": "Language",
+        "theme": "Theme",
+        "themeDefault": "Default"
+    },
+    "agentsLanding": {
+        "greeting": "Welcome, {{ name }}",
+        "subtitle": "Choose an agent to get started.",
+        "searchPlaceholder": "Search agents...",
+        "executiveSummaryDesc": "Condense long content into a crisp leadership brief.",
+        "docCompareDesc": "Compare two document versions and see what changed.",
+        "hrAgentDesc": "Leave balances, applying for leave, medical certificates, and company policies.",
+        "digitalAttestationDesc": "Review Hub — inspect agent confidence, documents, and approve or reject attestation cases.",
+        "docIntelAgentDesc": "Analyze certificates and documents — extract key facts, flag risks, verify against source, and ask questions.",
+        "translatorAgentDesc": "Detect a document's language, translate it page by page, and analyze it just like Document Intelligence.",
+        "grammarAgentDesc": "Paste text or upload a document — check grammar, spelling, punctuation, style, and clarity, then ask questions about it.",
+        "emailComposeAgentDesc": "Compose a new email from a brief, or draft a reply to a thread after answering a few clarifying questions — in the tone you choose.",
+        "contractAnalyzerDesc": "Analyze contracts — detect the parties, clarify open questions, assess risk across every category, and ask the agent about the result.",
+        "mofaChatbotDesc": "Chat or talk with the MOFA virtual assistant — ask about attestation, passports, and Golden Visa services, with a staff backoffice for the knowledge base, crawl schedule, and moderation.",
+        "category": {
+            "general": "General",
+            "documents": "Documents & Briefings",
+            "compliance": "Compliance & Review"
+        }
+    }
+}

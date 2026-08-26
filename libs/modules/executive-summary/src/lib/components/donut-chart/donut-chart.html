@@ -1,0 +1,18 @@
+<div class="flex flex-wrap items-center gap-5">
+    <svg viewBox="0 0 42 42" class="h-[120px] w-[120px] shrink-0 -rotate-90">
+        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--color-gray-100)" stroke-width="6" />
+        @for (s of segments; track s.label) {
+        <circle cx="21" cy="21" r="15.915" fill="transparent" [attr.stroke]="s.color" stroke-width="6"
+            [attr.stroke-dasharray]="s.dashArray" [attr.stroke-dashoffset]="s.dashOffset" />
+        }
+    </svg>
+    <div class="flex min-w-40 flex-col gap-1.5">
+        @for (s of segments; track s.label) {
+        <div class="flex items-center gap-2 text-xs">
+            <span class="h-2.5 w-2.5 shrink-0 rounded-full" [style.background]="s.color"></span>
+            <span class="flex-1 text-gray-700">{{ s.label }}</span>
+            <span class="font-bold text-gray-500">{{ Math.round(s.pct) }}%</span>
+        </div>
+        }
+    </div>
+</div>

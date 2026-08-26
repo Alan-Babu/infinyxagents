@@ -1,0 +1,92 @@
+<p-drawer [(visible)]="visible" position="right" styleClass="p-drawer-xl" appendTo="body" [baseZIndex]="1200" (onHide)="close()">
+    <ng-template pTemplate="header">
+        <div class="flex flex-col">
+            @if (eyebrow) {
+            <span class="text-sm font-semibold uppercase tracking-wide text-gray-400">{{ eyebrow }}</span>
+            }
+            <span class="text-lg font-semibold text-gray-800">{{ title }}</span>
+        </div>
+    </ng-template>
+
+    <div class="flex flex-col gap-3 pt-5">
+        @if (pages.length > 1) {
+        <div class="flex flex-wrap gap-2">
+            @for (p of pages; track p.page_num) {
+            <button type="button" class="cursor-pointer rounded-full border px-3 py-1 text-sm font-medium transition-colors"
+                [class.bg-primary-500]="p.page_num === activePage" [class.text-white]="p.page_num === activePage"
+                [class.border-primary-500]="p.page_num === activePage" [class.border-gray-200]="p.page_num !== activePage"
+                [class.text-gray-600]="p.page_num !== activePage" (click)="activePage = p.page_num">
+                {{ p.page_num }}
+            </button>
+            }
+        </div>
+        }
+
+        <div class="grid grid-cols-1 gap-4 lg:grid-cols-[3fr_2fr]">
+            <div class="relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
+                @if (currentPage(); as page) {
+                <div class="relative">
+                    <img [src]="'data:' + page.mime + ';base64,' + page.image_base64" class="w-full" alt="Document page" />
+                    @for (f of fieldsOnActivePage(); track f.key) {
+                    <div class="absolute cursor-pointer rounded border-2 transition-colors"
+                        role="button" tabindex="0"
+                        [class.border-primary-500]="highlightedField === f.key" [class.bg-primary-500/20]="highlightedField === f.key"
+                        [class.border-amber-400]="highlightedField !== f.key" [class.bg-amber-400/10]="highlightedField !== f.key"
+                        [style.left]="fieldBoxStyle(f.location!).left" [style.top]="fieldBoxStyle(f.location!).top"
+                        [style.width]="fieldBoxStyle(f.location!).width" [style.height]="fieldBoxStyle(f.location!).height"
+                        (click)="selectField(f.key, f.location)" (keydown.enter)="selectField(f.key, f.location)">
+                        <span class="absolute -top-5 start-0 whitespace-nowrap rounded bg-gray-800 px-1.5 py-0.5 text-xs font-semibold text-white">{{ f.label }}</span>
+                    </div>
+                    }
+                    @for (s of stampsOnActivePage(); track s.index) {
+                    <div class="absolute cursor-pointer rounded border-2 transition-colors"
+                        role="button" tabindex="0"
+                        [class.border-violet-500]="highlightedStampIndex === s.index" [class.bg-violet-500/20]="highlightedStampIndex === s.index"
+                        [class.border-violet-300]="highlightedStampIndex !== s.index" [class.bg-violet-300/10]="highlightedStampIndex !== s.index"
+                        [style.left]="fieldBoxStyle(s.stamp.location!).left" [style.top]="fieldBoxStyle(s.stamp.location!).top"
+                        [style.width]="fieldBoxStyle(s.stamp.location!).width" [style.height]="fieldBoxStyle(s.stamp.location!).height"
+                        (click)="selectStamp(s.index, s.stamp.location)" (keydown.enter)="selectStamp(s.index, s.stamp.location)">
+                        <span class="absolute -top-5 start-0 whitespace-nowrap rounded bg-violet-700 px-1.5 py-0.5 text-xs font-semibold text-white">{{ s.stamp.label }}</span>
+                    </div>
+                    }
+                </div>
+                } @else {
+                <p class="p-6  text-gray-500">{{ noImageMessage }}</p>
+                }
+            </div>
+
+            <div class="flex flex-col gap-2">
+                @for (f of fields; track f.key) {
+                <div class="cursor-pointer rounded-lg border p-2.5 transition-colors"
+                    role="button" tabindex="0"
+                    [class.border-primary-400]="highlightedField === f.key" [class.bg-primary-50]="highlightedField === f.key"
+                    [class.border-gray-200]="highlightedField !== f.key" [class.opacity-60]="!f.location"
+                    (click)="f.location && selectField(f.key, f.location)" (keydown.enter)="f.location && selectField(f.key, f.location)">
+                    <div class="text-sm font-semibold text-gray-500">{{ f.label }}</div>
+                    <div class=" text-gray-800">{{ f.value }}</div>
+                    @if (!f.location) {
+                    <div class="text-sm text-gray-400">{{ noLocationMessage }}</div>
+                    }
+                </div>
+                }
+                @for (s of stamps; track $index) {
+                <div class="cursor-pointer rounded-lg border p-2.5 transition-colors"
+                    role="button" tabindex="0"
+                    [class.border-violet-400]="highlightedStampIndex === $index" [class.bg-violet-50]="highlightedStampIndex === $index"
+                    [class.border-gray-200]="highlightedStampIndex !== $index" [class.opacity-60]="!s.location"
+                    (click)="s.location && selectStamp($index, s.location)" (keydown.enter)="s.location && selectStamp($index, s.location)">
+                    <div class="text-sm font-semibold text-gray-500">{{ s.label }}</div>
+                    <div class=" text-gray-800">{{ s.sublabel }}</div>
+                    @if (!s.location) {
+                    <div class="text-sm text-gray-400">{{ noLocationMessage }}</div>
+                    }
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <span class="text-sm text-gray-400">{{ footerNote }}</span>
+    </ng-template>
+</p-drawer>

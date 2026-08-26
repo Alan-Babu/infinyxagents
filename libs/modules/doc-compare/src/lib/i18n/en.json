@@ -1,0 +1,142 @@
+{
+    "docCompare": {
+        "eyebrow": "Agent Task",
+        "title": "Document Compare",
+        "subtitle": "Upload a base document and a document to compare. The agent extracts the text server-side, runs a page-level diff, and summarizes what changed and how risky it looks.",
+        "vs": "vs",
+        "optional": "optional",
+        "actions": {
+            "history": "History",
+            "compare": "Compare documents",
+            "newComparison": "New comparison",
+            "saveVersionA": "Save Version A",
+            "saveVersionB": "Save Version B",
+            "buildMergedDraft": "Build merged draft",
+            "cancel": "Cancel",
+            "close": "Close",
+            "delete": "Delete"
+        },
+        "dropzone": {
+            "baseDocument": "Base document",
+            "compareDocument": "Document to compare",
+            "versionA": "Version A",
+            "versionB": "Version B",
+            "lockedToMaster": "Locked to Master copy — new comparisons default here",
+            "dropTitle": "Drop PDF here, or click to browse",
+            "dropSubtitle": "PDF files only — uploaded in chunks",
+            "useSaved": "Use a saved version instead",
+            "cancel": "Cancel",
+            "chunks": "chunks",
+            "master": "Master",
+            "fromLibrary": "From library",
+            "pages": "page(s)",
+            "compareDifferentBaseline": "Compare against a different baseline instead",
+            "chooseDifferent": "Choose a different version"
+        },
+        "statStrip": {
+            "similarity": "Similarity",
+            "additions": "Additions",
+            "deletions": "Deletions",
+            "pagesChanged": "Pages changed",
+            "totalPages": "Total pages"
+        },
+        "agentCard": {
+            "agentRead": "Agent read",
+            "unknown": "unknown",
+            "risk": "risk",
+            "summaryUnavailable": "Agent summary unavailable"
+        },
+        "changeNav": {
+            "changesOnThisComparison": "changes on this comparison",
+            "prev": "Prev change",
+            "next": "Next change",
+            "overrides": "{{ count }} change(s) set to keep {{ baseLabel }}'s text"
+        },
+        "legend": {
+            "addition": "Addition",
+            "deletion": "Deletion",
+            "overwrite": "Overwrite",
+            "pageWithChanges": "Page with changes"
+        },
+        "pageNav": {
+            "page": "Page"
+        },
+        "pageStatus": {
+            "newPage": "New page — only in Version B",
+            "removedPage": "Removed page — only in Version A",
+            "noChanges": "No changes detected",
+            "overwritten": "overwritten",
+            "changes": "change(s)",
+            "identical": "This page is identical in both versions."
+        },
+        "versionPicker": {
+            "eyebrow": "Version Library",
+            "title": "Select a baseline version",
+            "empty": "No saved versions yet. Compare two documents and save one to build your library.",
+            "use": "Use this version"
+        },
+        "saveDrawer": {
+            "eyebrow": "Version Library",
+            "title": "Save this document version",
+            "label": "Version label",
+            "labelPlaceholder": "e.g. Attestation Policy — Rev 4",
+            "tag": "Status tag",
+            "notes": "Notes",
+            "notesPlaceholder": "What changed in this version, or why you're saving it…",
+            "setMaster": "Set as <b>Master copy</b> — future comparisons will default to this as the baseline",
+            "savingVersion": "Saving Version {{ slot }}",
+            "savingNote": "The extracted text will be stored in the version library so you can compare against it again later. The original PDF binary is not retained.",
+            "confirm": "Save version"
+        },
+        "mergeDrawer": {
+            "eyebrow": "Document Compare Agent",
+            "title": "Build a merged draft",
+            "label": "Draft label",
+            "labelPlaceholder": "e.g. Attestation Policy — Merged Draft",
+            "defaultNoteAllCompare": "By default every change keeps {{ compareLabel }}'s text. Toggle A on any change in the diff view first if you want to keep the old wording for that spot.",
+            "defaultNoteWithOverrides": "By default every change keeps {{ compareLabel }}'s text. You've set {{ overriddenCount }} change(s) to keep {{ baseLabel }}'s text instead — those will carry over into this draft.",
+            "setMaster": "Set this merged draft as the Master copy",
+            "confirm": "Save merged draft"
+        },
+        "historyDrawer": {
+            "title": "History",
+            "savedVersions": "Saved Versions",
+            "comparisonLog": "Comparison Log",
+            "noVersions": "No saved versions yet.",
+            "noLog": "No comparisons run yet.",
+            "useAsA": "Use as Version A",
+            "useAsB": "Use as Version B",
+            "setAsMaster": "Set as Master",
+            "removeFromLog": "Remove from log",
+            "pagesChanged": "pages changed",
+            "storageNote": "Stored in your version library"
+        },
+        "loading": {
+            "comparingTitle": "Comparing documents…",
+            "comparingSub": "Extracting text and running the diff engine"
+        },
+        "confirm": {
+            "header": "Please confirm",
+            "deleteVersion": "Remove \"{{ label }}\" from your version library?",
+            "deleteLogEntry": "Remove this comparison from the log?"
+        },
+        "toast": {
+            "dropPdfOnly": "Please drop a PDF file",
+            "uploadCancelled": "Upload cancelled",
+            "uploadFailed": "Upload failed. Please try again.",
+            "comparisonFailed": "Comparison failed. Please try again.",
+            "loadedAsVersion": "Loaded \"{{ label }}\" as Version {{ slot }}",
+            "onlyNewUploadsSaveable": "Only newly uploaded files can be saved. This side is already a saved version.",
+            "labelRequired": "Please give this a label",
+            "savedAsMaster": "Saved \"{{ label }}\" as the Master copy",
+            "savedToLibrary": "Saved \"{{ label }}\" to your version library",
+            "saveFailed": "Could not save this version.",
+            "mergedDraftSavedMaster": "Saved merged draft \"{{ label }}\" as the Master copy",
+            "mergedDraftSaved": "Saved merged draft \"{{ label }}\"",
+            "mergeFailed": "Could not save the merged draft.",
+            "setAsMaster": "\"{{ label }}\" set as the Master copy",
+            "setMasterFailed": "Could not set Master copy.",
+            "versionRemoved": "Version removed from library"
+        }
+    }
+}

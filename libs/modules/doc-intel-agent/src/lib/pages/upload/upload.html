@@ -1,0 +1,18 @@
+<div class="flex h-full min-h-0 flex-col">
+    <lib-page-header titleKey="docIntelAgent.upload.title" subtitleKey="docIntelAgent.upload.subtitle" [showBack]="false">
+        <lib-doc-intel-toolbar />
+    </lib-page-header>
+
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+        <div class="mx-auto flex max-w-2xl flex-col gap-4">
+            <lib-doc-intel-dropzone [doc]="doc" [uploadProgress]="uploadProgress ?? undefined" (fileSelected)="onFileSelected($event)"
+                (dropped)="onDropped($event)" (clearDoc)="clearDoc()" (cancelUpload)="cancelUpload()" />
+
+            @if (doc && !uploadProgress) {
+            <div class="flex justify-center">
+                <button type="button" pButton [loading]="analyzing" (click)="analyzeDocument()"><i class="pi pi-sparkles"></i><span>{{ 'docIntelAgent.upload.analyze' | translate }}</span></button>
+            </div>
+            }
+        </div>
+    </div>
+</div>

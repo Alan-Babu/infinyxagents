@@ -1,0 +1,120 @@
+<div class="flex h-full min-h-0 flex-col">
+    <lib-page-header titleKey="emailComposeAgent.compose.title" subtitleKey="emailComposeAgent.compose.subtitle" [showBack]="false">
+        <lib-email-compose-toolbar />
+    </lib-page-header>
+
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+        <div class="mx-auto flex max-w-2xl flex-col gap-4">
+            <div class="flex gap-2">
+                <button type="button" class="cursor-pointer rounded-md border px-3.5 py-1.5 font-semibold transition-colors"
+                    [class.bg-primary-500]="homeMode === 'compose'" [class.text-white]="homeMode === 'compose'" [class.border-primary-500]="homeMode === 'compose'"
+                    [class.border-gray-200]="homeMode !== 'compose'" [class.text-gray-600]="homeMode !== 'compose'"
+                    (click)="setHomeMode('compose')">
+                    {{ "emailComposeAgent.compose.modeCompose" | translate }}
+                </button>
+                <button type="button" class="cursor-pointer rounded-md border px-3.5 py-1.5 font-semibold transition-colors"
+                    [class.bg-primary-500]="homeMode === 'reply'" [class.text-white]="homeMode === 'reply'" [class.border-primary-500]="homeMode === 'reply'"
+                    [class.border-gray-200]="homeMode !== 'reply'" [class.text-gray-600]="homeMode !== 'reply'"
+                    (click)="setHomeMode('reply')">
+                    {{ "emailComposeAgent.compose.modeReply" | translate }}
+                </button>
+            </div>
+
+            <!-- ---------- Compose mode ---------- -->
+            @if (homeMode === 'compose') {
+            <div class="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4">
+                <div>
+                    <label class="p-control-label" for="compose-context">{{ 'emailComposeAgent.compose.context' | translate }}</label>
+                    <textarea id="compose-context" class="w-full rounded-lg border border-gray-300 p-3 text-sm" rows="8" [(ngModel)]="context"
+                        [placeholder]="'emailComposeAgent.compose.contextPlaceholder' | translate"></textarea>
+                </div>
+                <div>
+                    <label class="p-control-label" for="compose-recipient-hint">{{ 'emailComposeAgent.compose.recipientHint' | translate }}</label>
+                    <input id="compose-recipient-hint" pInputText type="text" class="w-full" [(ngModel)]="recipientHint"
+                        [placeholder]="'emailComposeAgent.compose.recipientHintPlaceholder' | translate" />
+                </div>
+                <lib-email-compose-tone-selector [label]="'emailComposeAgent.compose.tone' | translate" [value]="tone" (valueChange)="tone = $event" />
+            </div>
+            <div class="flex justify-center">
+                <button type="button" pButton [loading]="composing" (click)="submitCompose()"><i class="pi pi-send"></i><span>{{ 'emailComposeAgent.compose.submit' | translate }}</span></button>
+            </div>
+            }
+
+            <!-- ---------- Reply mode: thread input step ---------- -->
+            @if (homeMode === 'reply' && replyStep === 'input') {
+            <div class="flex gap-2">
+                <button type="button" class="cursor-pointer rounded-md border px-3.5 py-1.5 text-xs font-semibold transition-colors"
+                    [class.bg-primary-500]="replyInputMode === 'paste'" [class.text-white]="replyInputMode === 'paste'" [class.border-primary-500]="replyInputMode === 'paste'"
+                    [class.border-gray-200]="replyInputMode !== 'paste'" [class.text-gray-600]="replyInputMode !== 'paste'"
+                    (click)="setReplyInputMode('paste')">
+                    {{ "emailComposeAgent.reply.modePaste" | translate }}
+                </button>
+                <button type="button" class="cursor-pointer rounded-md border px-3.5 py-1.5 text-xs font-semibold transition-colors"
+                    [class.bg-primary-500]="replyInputMode === 'upload'" [class.text-white]="replyInputMode === 'upload'" [class.border-primary-500]="replyInputMode === 'upload'"
+                    [class.border-gray-200]="replyInputMode !== 'upload'" [class.text-gray-600]="replyInputMode !== 'upload'"
+                    (click)="setReplyInputMode('upload')">
+                    {{ "emailComposeAgent.reply.modeUpload" | translate }}
+                </button>
+            </div>
+
+            @if (replyInputMode === 'paste') {
+            <div class="flex flex-col gap-2 rounded-lg border border-gray-200 bg-white p-4">
+                <label class="p-control-label">
+                    {{ 'emailComposeAgent.reply.threadTextLabel' | translate }}
+                    <textarea class="mt-1.5 w-full rounded-lg border border-gray-300 p-3 text-sm font-normal normal-case tracking-normal" rows="12" [(ngModel)]="threadText"
+                        [placeholder]="'emailComposeAgent.reply.threadTextPlaceholder' | translate"></textarea>
+                </label>
+            </div>
+            }
+
+            @if (replyInputMode === 'upload') {
+            <lib-email-compose-dropzone [doc]="doc" [uploadProgress]="uploadProgress ?? undefined" (fileSelected)="onFileSelected($event)"
+                (dropped)="onDropped($event)" (clearDoc)="clearDoc()" (cancelUpload)="cancelUpload()" />
+            }
+
+            <div class="flex justify-center">
+                <button type="button" pButton [loading]="readingThread" (click)="readThread()"><i class="pi pi-book"></i><span>{{ 'emailComposeAgent.reply.readThread' | translate }}</span></button>
+            </div>
+            }
+
+            <!-- ---------- Reply mode: questions step ---------- -->
+            @if (homeMode === 'reply' && replyStep === 'questions') {
+            <div class="flex flex-col gap-2 rounded-lg border border-gray-200 bg-white p-4">
+                <span class="text-sm font-semibold text-gray-500">{{ 'emailComposeAgent.reply.threadSummary' | translate }}</span>
+                <p class="text-sm text-gray-700">{{ replyThreadSummary }}</p>
+            </div>
+
+            @if (emotionalToneNeedsAttention) {
+            <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3.5 text-sm text-amber-800">
+                <span class="flex items-center gap-2">
+                    <i class="pi pi-exclamation-triangle"></i>
+                    {{ (replyEmotionalTone === 'heated' ? 'emailComposeAgent.reply.emotionalToneBannerHeated' : 'emailComposeAgent.reply.emotionalToneBannerFrustrated') | translate }}
+                </span>
+                <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="useDiplomaticTone()"><span>{{ 'emailComposeAgent.reply.useDiplomaticTone' | translate }}</span></button>
+            </div>
+            }
+
+            <div class="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4">
+                <span class="text-sm font-semibold text-gray-700">{{ 'emailComposeAgent.reply.questionsTitle' | translate }}</span>
+                @if (replyQuestions.length === 0) {
+                <p class="text-sm text-gray-500">{{ 'emailComposeAgent.reply.questionsEmpty' | translate }}</p>
+                }
+                @for (q of replyQuestions; track $index) {
+                <div class="flex flex-col gap-1">
+                    <label class="p-control-label" [for]="'reply-answer-' + $index">{{ q }}</label>
+                    <input [id]="'reply-answer-' + $index" pInputText type="text" class="w-full" [(ngModel)]="replyAnswers[$index]"
+                        [placeholder]="'emailComposeAgent.reply.answerPlaceholder' | translate" />
+                </div>
+                }
+            </div>
+
+            <lib-email-compose-tone-selector [label]="'emailComposeAgent.reply.tone' | translate" [value]="replyTone" (valueChange)="replyTone = $event" />
+
+            <div class="flex justify-center gap-2">
+                <button type="button" pButton severity="secondary" [outlined]="true" (click)="backToThreadInput()"><span>{{ 'emailComposeAgent.reply.back' | translate }}</span></button>
+                <button type="button" pButton [loading]="drafting" (click)="draftReply()"><i class="pi pi-send"></i><span>{{ 'emailComposeAgent.reply.draftReply' | translate }}</span></button>
+            </div>
+            }
+        </div>
+    </div>
+</div>

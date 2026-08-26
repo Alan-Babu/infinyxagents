@@ -1,0 +1,51 @@
+<div class="flex flex-col gap-5 p-6">
+    <h1 class="text-xl font-bold text-gray-800">{{ 'mofaChatbot.admin.blacklist.title' | translate }}</h1>
+
+    <div class="rounded-lg border border-gray-200 bg-white p-5">
+        <div class="mb-3 text-sm font-bold text-gray-800">{{ 'mofaChatbot.admin.blacklist.addCardTitle' | translate }}</div>
+        <div class="mb-3 flex flex-wrap gap-2">
+            <input pInputText type="text" class="min-w-56 flex-1" [(ngModel)]="newTerm" [placeholder]="'mofaChatbot.admin.blacklist.termPlaceholder' | translate" />
+            <p-select [options]="typeOptions" [(ngModel)]="newTermType" optionLabel="label" optionValue="value" appendTo="body" styleClass="min-w-40" />
+            <input pInputText type="text" class="min-w-48" [(ngModel)]="newTermCategory" [placeholder]="'mofaChatbot.admin.blacklist.categoryPlaceholder' | translate" />
+        </div>
+        <button type="button" pButton class="cursor-pointer" [disabled]="!newTerm.trim()" (click)="addTerm()">
+            <span>{{ 'mofaChatbot.admin.blacklist.addButton' | translate }}</span>
+        </button>
+    </div>
+
+    <div class="rounded-lg border border-gray-200 bg-white p-5">
+        <div class="mb-3 text-sm font-bold text-gray-800">{{ 'mofaChatbot.admin.blacklist.testCardTitle' | translate }}</div>
+        <div class="mb-3 flex flex-wrap gap-2">
+            <input
+                pInputText
+                type="text"
+                class="min-w-64 flex-1"
+                [(ngModel)]="testText"
+                [placeholder]="'mofaChatbot.admin.blacklist.testPlaceholder' | translate"
+                (keydown.enter)="runBlacklistTest()"
+            />
+            <button type="button" pButton severity="secondary" [outlined]="true" class="cursor-pointer" (click)="runBlacklistTest()">
+                <span>{{ 'mofaChatbot.admin.blacklist.testButton' | translate }}</span>
+            </button>
+        </div>
+        @if (testResult) {
+            <div class="flex flex-wrap items-center gap-2 text-sm">
+                <p-tag
+                    [value]="(testResult.is_blocked ? 'mofaChatbot.admin.blacklist.blocked' : 'mofaChatbot.admin.blacklist.allowed') | translate"
+                    [severity]="testResult.is_blocked ? 'danger' : 'success'"
+                />
+                @if (testResult.matched_term) {
+                    <span class="text-gray-600">{{ 'mofaChatbot.admin.blacklist.matched' | translate: { term: testResult.matched_term, category: testResult.category } }}</span>
+                }
+            </div>
+        }
+    </div>
+
+    @if (loading) {
+        <div class="flex items-center justify-center py-16">
+            <i class="pi pi-spin pi-spinner text-2xl text-primary-500"></i>
+        </div>
+    } @else {
+        <lib-data-table [rowData]="terms" [colDefs]="colDefs" [showSearch]="false" [paginator]="true" [noRowsMessage]="'mofaChatbot.admin.blacklist.noTerms' | translate" />
+    }
+</div>

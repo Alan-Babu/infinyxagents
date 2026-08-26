@@ -1,0 +1,232 @@
+{
+    "contractAnalyzer": {
+        "nav": {
+            "analyze": "تحليل",
+            "myContracts": "عقودي"
+        },
+        "common": {
+            "unclassified": "غير مصنّف",
+            "unknownParty": "طرف غير معروف"
+        },
+        "risk": {
+            "low": "منخفضة",
+            "medium": "متوسطة",
+            "high": "عالية",
+            "critical": "حرجة",
+            "unknown": "غير معروفة"
+        },
+        "classification": {
+            "Confidential": "سري",
+            "Critical": "حساس للغاية",
+            "PublicCopy": "نسخة عامة",
+            "ControlledCopy": "نسخة مقيدة التداول",
+            "Internal": "داخلي"
+        },
+        "callTypes": {
+            "detect": "تحديد الأطراف",
+            "questions": "أسئلة توضيحية",
+            "analyze": "تحليل المخاطر",
+            "qa": "سؤال الوكيل"
+        },
+        "toolbar": {
+            "eyebrow": "وكيل تحليل العقود",
+            "rateAgent": "تقييم الوكيل",
+            "performance": "الأداء",
+            "reviewQueue": "قائمة المراجعة",
+            "stats": "الإحصاءات"
+        },
+        "reviewQueue": {
+            "title": "قائمة المراجعة",
+            "empty": "لا توجد عقود بحاجة إلى مراجعة الآن — استوفت جميع العقود معايير الثقة والمخاطر تلقائيًا.",
+            "footerNote": "تُدرج العقود هنا عند انخفاض نسبة الثقة أو ارتفاع درجة المخاطرة"
+        },
+        "performance": {
+            "title": "تقرير أداء الوكيل",
+            "footerNote": "بيانات القياس مخزّنة في قاعدة بيانات Postgres (agent_telemetry)"
+        },
+        "feedback": {
+            "title": "تقييم الوكيل",
+            "forDocument": "تحليل هذا العقد",
+            "overall": "الوكيل بشكل عام",
+            "commentPlaceholder": "ما الذي أعجبك، وما الذي يمكن تحسينه…"
+        },
+        "stats": {
+            "title": "إحصاءات الوكيل",
+            "totalContracts": "العقود التي تم تحليلها",
+            "totalQuestions": "الأسئلة المطروحة",
+            "totalFeedback": "عدد التقييمات",
+            "averageRating": "متوسط التقييم",
+            "averageRiskScore": "متوسط درجة المخاطر",
+            "averageConfidence": "متوسط الثقة",
+            "mofaItOutsourcing": "عقود وزارة الخارجية / الاستعانة بمصادر تقنية خارجية",
+            "byRiskLevel": "حسب مستوى المخاطر",
+            "byClassification": "حسب التصنيف",
+            "byReviewStatus": "حسب حالة المراجعة",
+            "ratingDistribution": "توزيع التقييمات",
+            "searchHistory": "سجل البحث",
+            "searchHistoryEmpty": "لم يتم تسجيل أي عمليات بحث بعد.",
+            "resultCount": "{{ count }} نتيجة/نتائج"
+        },
+        "dropzone": {
+            "dropTitle": "أفلت عقدًا هنا أو انقر للتصفح",
+            "dropSubtitle": "PDF أو DOCX أو TXT أو JPG أو PNG — حتى 20 ميجابايت، يُرفع على دفعات",
+            "cancel": "إلغاء",
+            "chunks": "أجزاء",
+            "pages": "صفحة/صفحات"
+        },
+        "upload": {
+            "title": "تحليل عقد",
+            "subtitle": "ارفع عقدًا لتحديد الأطراف، ومعرفة ما يحتاج إلى توضيح، وتقييم المخاطر عبر جميع الفئات.",
+            "continue": "متابعة"
+        },
+        "party": {
+            "title": "تأكيد الأطراف",
+            "subtitle": "اكتشف الوكيل ما يلي — راجع وعدّل قبل المتابعة.",
+            "detectedLanguage": "اللغة المكتشَفة",
+            "contractType": "نوع العقد",
+            "partyA": "الطرف الأول",
+            "partyB": "الطرف الثاني",
+            "name": "الاسم",
+            "type": "النوع",
+            "namePlaceholder": "اسم الطرف",
+            "types": {
+                "governmentMofa": "حكومي / وزارة الخارجية",
+                "commercial": "تجاري",
+                "itOutsourcing": "شركة استعانة بمصادر تقنية خارجية",
+                "individual": "فرد",
+                "other": "أخرى"
+            },
+            "mofaBanner": "يبدو هذا عقد استعانة بمصادر تقنية خارجية لوزارة الخارجية — سيُطبّق تحليل المخاطر الضوابط الحكومية/الخارجية ذات الصلة.",
+            "back": "رجوع",
+            "continue": "متابعة"
+        },
+        "questions": {
+            "title": "بعض الأسئلة التوضيحية",
+            "subtitle": "الإجابة عن هذه الأسئلة تُحسّن دقة تحليل المخاطر.",
+            "contractSummary": "ملخص العقد",
+            "questionLabel": "السؤال {{ index }}",
+            "answerPlaceholder": "إجابتك (اختياري)…",
+            "cashFlowLabel": "سياق التدفق النقدي / السيولة",
+            "cashFlowPlaceholder": "صف سياق التدفق النقدي أو السيولة المتعلق بهذا العقد…",
+            "cashFlowRequired": "سياق التدفق النقدي / السيولة مطلوب لتقييم التعرض للمخاطر",
+            "previousNotesLabel": "ملاحظات حول عقود سابقة/ذات صلة (اختياري)",
+            "previousNotesPlaceholder": "أي ملاحظات حول التعاملات السابقة مع هذه الأطراف…",
+            "back": "رجوع",
+            "submit": "تحليل العقد"
+        },
+        "myContracts": {
+            "title": "عقودي",
+            "subtitle": "ابحث وصفِّ وأدر كل عقد قام الوكيل بتحليله.",
+            "searchPlaceholder": "ابحث باسم الملف أو أحد الأطراف…",
+            "search": "بحث",
+            "resultCount": "{{ count }} عقد/عقود",
+            "delete": "حذف",
+            "table": {
+                "filename": "اسم الملف",
+                "partyA": "الطرف الأول",
+                "partyB": "الطرف الثاني",
+                "risk": "المخاطر",
+                "reviewStatus": "حالة المراجعة",
+                "classification": "التصنيف",
+                "created": "تاريخ الإنشاء"
+            }
+        },
+        "filters": {
+            "anyRisk": "أي مستوى مخاطر",
+            "anyClassification": "أي تصنيف",
+            "anyReviewStatus": "أي حالة مراجعة",
+            "from": "من",
+            "to": "إلى"
+        },
+        "pagination": {
+            "prev": "→ السابق",
+            "next": "التالي ←",
+            "pageOf": "صفحة {{ page }} من {{ total }}"
+        },
+        "confirm": {
+            "header": "يرجى التأكيد",
+            "deleteContract": "هل تريد إزالة \"{{ filename }}\" من مكتبة عقودك؟"
+        },
+        "tabs": {
+            "overview": "نظرة عامة",
+            "risk": "لوحة المخاطر",
+            "clauses": "البنود الرئيسية",
+            "recommendations": "التوصيات",
+            "ask": "اسأل الوكيل"
+        },
+        "reviewStatus": {
+            "needs_review": "بحاجة إلى مراجعة",
+            "approved": "معتمد",
+            "rejected": "مرفوض"
+        },
+        "detail": {
+            "title": "العقد",
+            "loading": "جارٍ تحميل العقد…",
+            "risk": "مخاطر",
+            "newContract": "عقد جديد",
+            "copyLink": "نسخ الرابط",
+            "linkCopied": "تم نسخ الرابط إلى الحافظة",
+            "linkCopyFailed": "تعذّر نسخ الرابط.",
+            "downloadReport": "تنزيل التقرير",
+            "reportDownloaded": "تم تنزيل التقرير",
+            "reportDownloadFailed": "فشل التنزيل. يرجى المحاولة مرة أخرى.",
+            "flaggedForReview": "تم تصنيف هذا العقد بحاجة إلى مراجعة بشرية",
+            "confidence": "ثقة",
+            "highRisk": "مخاطر عالية",
+            "reviewNow": "مراجعة الآن",
+            "recordDecision": "تسجيل قرار المراجعة",
+            "reviewerNamePlaceholder": "اسمك (اختياري)",
+            "reviewerNotesPlaceholder": "ملاحظات حول هذا القرار (اختياري)…",
+            "cancel": "إلغاء",
+            "reject": "رفض",
+            "approve": "اعتماد",
+            "partyA": "الطرف الأول",
+            "partyB": "الطرف الثاني",
+            "contractType": "نوع العقد",
+            "contractValue": "قيمة العقد",
+            "startDate": "تاريخ البدء",
+            "endDate": "تاريخ الانتهاء",
+            "classification": "التصنيف",
+            "mofaItOutsourcing": "وزارة الخارجية / استعانة تقنية خارجية",
+            "executiveSummary": "الملخص التنفيذي",
+            "noExecutiveSummary": "لم يتم إنشاء ملخص تنفيذي لهذا العقد.",
+            "applicableContext": "السياق المعمول به",
+            "detectedLanguage": "اللغة المكتشَفة",
+            "file": "الملف",
+            "note": "ملاحظة",
+            "overallRisk": "المخاطر الإجمالية",
+            "riskScore": "درجة المخاطر",
+            "noRiskCategories": "لم يتم رصد أي فئات مخاطر لهذا العقد.",
+            "clauseReference": "مرجع البند",
+            "cashFlowImpact": "أثر التدفق النقدي",
+            "noKeyClauses": "لم يتم رصد أي بنود رئيسية لهذا العقد.",
+            "pageReference": "مرجع الصفحة",
+            "noRecommendations": "لم يتم إنشاء أي توصيات لهذا العقد.",
+            "suggestedQuestions": "أسئلة مقترحة — انقر للاختيار",
+            "you": "أ",
+            "agentInitials": "IX",
+            "thinking": "جارٍ التفكير…",
+            "askEmpty": "انقر على أحد الاقتراحات أعلاه، أو اكتب سؤالك الخاص أدناه.",
+            "askPlaceholder": "اطرح سؤالاً حول هذا العقد…",
+            "send": "إرسال"
+        },
+        "toast": {
+            "dropAcceptedOnly": "يرجى إفلات ملف بصيغة PDF أو DOCX أو TXT أو JPG أو PNG حتى 20 ميجابايت",
+            "uploadCancelled": "تم إلغاء الرفع",
+            "uploadFailed": "فشل الرفع. يرجى المحاولة مرة أخرى.",
+            "detectFailed": "تعذّرت قراءة العقد. يرجى المحاولة مرة أخرى.",
+            "questionsFailed": "تعذّر تحليل هذا العقد. يرجى المحاولة مرة أخرى.",
+            "analysisFailed": "فشل التحليل. يرجى المحاولة مرة أخرى.",
+            "loadContractsFailed": "تعذّر تحميل العقود. يرجى المحاولة مرة أخرى.",
+            "loadContractFailed": "تعذّر فتح هذا العقد.",
+            "contractDeleted": "تمت إزالة العقد",
+            "deleteFailed": "تعذّرت إزالة هذا العقد.",
+            "askFailed": "تعذّر الحصول على إجابة. يرجى المحاولة مرة أخرى.",
+            "reviewApproved": "تم اعتماد العقد",
+            "reviewRejected": "تم رفض العقد",
+            "reviewFailed": "تعذّر تسجيل قرار المراجعة.",
+            "feedbackSubmitted": "شكرًا لتقييمك للوكيل!",
+            "feedbackFailed": "تعذّر إرسال التقييم. يرجى المحاولة مرة أخرى."
+        }
+    }
+}

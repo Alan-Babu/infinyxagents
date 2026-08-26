@@ -1,0 +1,65 @@
+{
+    "hrAgent": {
+        "greeting": "مرحباً، أنا مساعدك في الموارد البشرية. اسألني عن أرصدة الإجازات أو تقديم طلب إجازة أو سياسات الشركة.",
+        "newChat": "محادثة جديدة",
+        "conversation": "محادثة",
+        "talkToHuman": "التحدث مع موظف",
+        "talkToHumanMessage": "أرغب في التحدث مع موظف من فريق الموارد البشرية بخصوص سؤالي، من فضلك.",
+        "attachedDocumentFallback": "يرجى الاطلاع على المستند المرفق.",
+        "thinking": "جارٍ التفكير…",
+        "genericError": "عذراً، حدث خطأ ما أثناء الوصول إلى وكيل الموارد البشرية.",
+        "composerPlaceholder": "اسأل عن الإجازات، الشهادات الطبية، أو السياسات...",
+        "attachFile": "إرفاق ملف",
+        "send": "إرسال",
+        "tokenCount": "{{ count }} رمز",
+        "quickActions": {
+            "title": "إجراءات سريعة",
+            "leaveBalance": "رصيد الإجازة",
+            "appliedLeaves": "الإجازات المقدَّمة",
+            "cancelLeaves": "إلغاء الإجازات",
+            "applyForLeave": "تقديم طلب إجازة",
+            "leavePolicy": "سياسة الإجازات"
+        },
+        "history": {
+            "title": "السجل",
+            "empty": "لا توجد محادثات سابقة بعد.",
+            "noMessages": "(لا توجد رسائل)",
+            "today": "اليوم",
+            "previous7Days": "آخر 7 أيام",
+            "older": "أقدم",
+            "delete": "حذف المحادثة"
+        },
+        "actions": {
+            "readAloud": "قراءة بصوت عالٍ",
+            "copy": "نسخ",
+            "regenerate": "إعادة الإنشاء",
+            "goodResponse": "رد جيد",
+            "notHelpful": "غير مفيد"
+        },
+        "dislike": {
+            "whatWentWrong": "ما الذي كان خاطئاً؟ (اختياري)",
+            "placeholder": "أخبرنا ما الخطأ في هذا الرد…",
+            "skip": "تخطي",
+            "submit": "إرسال"
+        },
+        "verification": {
+            "title": "التحقق من الشهادة الطبية",
+            "field": "الحقل",
+            "uploadedCopy": "النسخة المرفوعة",
+            "officialCopy": "النسخة الرسمية",
+            "match": "التطابق",
+            "matches": "يطابق النسخة الرسمية",
+            "differs": "يختلف عن النسخة الرسمية",
+            "notApplicable": "غير قابل للتطبيق",
+            "noFields": "تعذر استخراج أي حقول للمقارنة.",
+            "viewUploaded": "عرض النسخة المرفوعة",
+            "viewOfficial": "عرض النسخة الرسمية (التي تم تنزيلها)",
+            "noOfficialCopy": "تعذر تنزيل نسخة رسمية",
+            "leaveApplied": "تم تقديم الإجازة: {{ days }} يوم/أيام، من {{ start }} إلى {{ end }}",
+            "approved": "معتمدة",
+            "notApproved": "غير معتمدة",
+            "approvedSummary": "لقد تحققت من شهادتك الطبية مقابل السجل الرسمي وقمت بتقديم إجازتك نيابة عنك — {{ days }} يوم/أيام، من {{ start }} إلى {{ end }}. المقارنة الكاملة أدناه.",
+            "notApprovedSummary": "لم أتمكن من الموافقة على طلب الإجازة الطبية هذا: {{ reason }}"
+        }
+    }
+}

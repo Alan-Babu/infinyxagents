@@ -1,0 +1,202 @@
+{
+    "docIntelAgent": {
+        "nav": {
+            "analyze": "تحليل",
+            "myDocuments": "مستنداتي"
+        },
+        "common": {
+            "unclassified": "غير مصنّف",
+            "unknownIssuer": "جهة إصدار غير معروفة"
+        },
+        "risk": {
+            "low": "منخفضة",
+            "medium": "متوسطة",
+            "high": "عالية"
+        },
+        "status": {
+            "Valid": "سارٍ",
+            "Expired": "منتهي الصلاحية",
+            "NoExpiry": "بدون انتهاء",
+            "Unknown": "غير معروف"
+        },
+        "category": {
+            "Individual": "فردي",
+            "Commercial": "تجاري"
+        },
+        "classification": {
+            "Confidential": "سري",
+            "Critical": "حساس للغاية",
+            "PublicCopy": "نسخة عامة",
+            "ControlledCopy": "نسخة مقيدة التداول",
+            "Internal": "داخلي"
+        },
+        "callTypes": {
+            "extraction": "استخراج بيانات المستند",
+            "qa": "سؤال عن المستند (سؤال وجواب)"
+        },
+        "toolbar": {
+            "eyebrow": "وكيل ذكاء المستندات",
+            "rateAgent": "تقييم الوكيل",
+            "performance": "الأداء",
+            "reviewQueue": "قائمة المراجعة"
+        },
+        "reviewQueue": {
+            "title": "قائمة المراجعة",
+            "empty": "لا توجد مستندات بحاجة إلى مراجعة الآن — استوفت جميع المستندات معايير الثقة والمخاطر تلقائيًا.",
+            "footerNote": "تُدرج المستندات هنا عند انخفاض نسبة الثقة أو ارتفاع درجة المخاطرة"
+        },
+        "performance": {
+            "title": "تقرير أداء الوكيل",
+            "footerNote": "بيانات القياس مخزّنة في قاعدة بيانات Postgres (agent_telemetry)"
+        },
+        "feedback": {
+            "title": "تقييم الوكيل",
+            "forDocument": "تحليل هذا المستند",
+            "overall": "الوكيل بشكل عام",
+            "commentPlaceholder": "ما الذي أعجبك، وما الذي يمكن تحسينه…"
+        },
+        "dropzone": {
+            "dropTitle": "أفلت مستندًا هنا أو انقر للتصفح",
+            "dropSubtitle": "PDF أو JPG أو PNG — يُرفع على دفعات",
+            "cancel": "إلغاء",
+            "chunks": "أجزاء",
+            "pages": "صفحة/صفحات"
+        },
+        "upload": {
+            "title": "تحليل مستند",
+            "subtitle": "ارفع أي شهادة أو مؤهل دراسي أو تقرير طبي أو مستند قانوني. يحدد الوكيل جهة الإصدار والمستفيد ونوع المستند وصلاحيته، ويرصد أي مخاطر، ويتيح لك طرح أسئلة عليه.",
+            "analyze": "تحليل المستند"
+        },
+        "myDocuments": {
+            "title": "مستنداتي",
+            "subtitle": "ابحث وصفِّ وأدر كل مستند قام الوكيل بتحليله.",
+            "searchPlaceholder": "ابحث بالاسم أو جهة الإصدار أو النوع…",
+            "search": "بحث",
+            "resultCount": "{{ count }} مستند(ات)",
+            "delete": "حذف",
+            "table": {
+                "filename": "اسم الملف",
+                "documentType": "نوع المستند",
+                "issuedBy": "جهة الإصدار",
+                "status": "الحالة",
+                "risk": "المخاطر",
+                "category": "الفئة",
+                "classification": "التصنيف",
+                "created": "تاريخ الإنشاء"
+            }
+        },
+        "filters": {
+            "anyStatus": "أي حالة",
+            "anyRisk": "أي مستوى مخاطر",
+            "anyCategory": "أي فئة",
+            "anyClassification": "أي تصنيف",
+            "from": "من",
+            "to": "إلى"
+        },
+        "pagination": {
+            "prev": "→ السابق",
+            "next": "التالي ←",
+            "pageOf": "صفحة {{ page }} من {{ total }}"
+        },
+        "confirm": {
+            "header": "يرجى التأكيد",
+            "deleteDocument": "هل تريد إزالة \"{{ filename }}\" من مكتبة مستنداتك؟"
+        },
+        "tabs": {
+            "overview": "نظرة عامة",
+            "risk": "المخاطر",
+            "compliance": "الاعتماد والتصديق",
+            "stamps": "الأختام والتوقيعات",
+            "ask": "اسأل عن المستند"
+        },
+        "fields": {
+            "issued_by_name": "جهة الإصدار",
+            "issued_to_name": "صادر إلى",
+            "document_type": "نوع المستند",
+            "issued_on": "تاريخ الإصدار",
+            "valid_through": "صالح حتى"
+        },
+        "reviewStatus": {
+            "needs_review": "بحاجة إلى مراجعة",
+            "approved": "معتمد",
+            "rejected": "مرفوض"
+        },
+        "detail": {
+            "title": "المستند",
+            "loading": "جارٍ تحميل المستند…",
+            "risk": "مخاطر",
+            "newDocument": "مستند جديد",
+            "verifySource": "التحقق من المصدر",
+            "flaggedForReview": "تم تصنيف هذا المستند بحاجة إلى مراجعة بشرية",
+            "confidence": "ثقة",
+            "highRisk": "مخاطر عالية",
+            "reviewNow": "مراجعة الآن",
+            "recordDecision": "تسجيل قرار المراجعة",
+            "reviewerNamePlaceholder": "اسمك (اختياري)",
+            "reviewerNotesPlaceholder": "ملاحظات حول هذا القرار (اختياري)…",
+            "cancel": "إلغاء",
+            "reject": "رفض",
+            "approve": "اعتماد",
+            "status": "حالة المستند",
+            "pages": "عدد الصفحات",
+            "category": "فئة المستند",
+            "classification": "تصنيف المستند",
+            "file": "الملف",
+            "insights": "الرؤى",
+            "noInsights": "لم يتم إنشاء رؤى لهذا المستند.",
+            "note": "ملاحظة",
+            "lowConfidence": "استخراج بنسبة ثقة منخفضة ({{ score }}%) — يرجى التحقق من هذه الحقول يدويًا.",
+            "noExpiry": "بدون انتهاء",
+            "overallRisk": "المخاطر الإجمالية",
+            "noRiskFactors": "لم يتم رصد أي عوامل خطر لهذا المستند.",
+            "complianceDisclaimer": "هذه اقتراحات من الوكيل لمساعدة المراجع — وليست قرارًا قانونيًا باعتماد هذا المستند أو التصديق عليه أو تفويضه.",
+            "canBeApproved": "هل يمكن اعتماد هذا المستند؟",
+            "canBeAuthorized": "هل يمكن تفويض هذا المستند؟",
+            "uaeEligible": "مؤهل للتصديق في دولة الإمارات؟",
+            "unknown": "غير معروف",
+            "noAssessment": "لا يوجد تقييم متاح.",
+            "suggestedNextStep": "الخطوة التالية المقترحة",
+            "noComplianceAssessment": "لا يتوفر تقييم للاعتماد أو التفويض أو التصديق لهذا المستند.",
+            "noStamps": "لم يتم رصد أي أختام أو توقيعات في هذا المستند.",
+            "viewOnPage": "عرض على الصفحة",
+            "mofa": "وزارة الخارجية",
+            "country": "الدولة",
+            "date": "التاريخ",
+            "signedBy": "موقّع من",
+            "referenceNo": "الرقم المرجعي",
+            "locationUnavailable": "تعذّر تحديد موقع هذا العنصر في الصفحة.",
+            "suggestedQuestions": "أسئلة مقترحة — انقر للاختيار",
+            "you": "أ",
+            "agentInitials": "IX",
+            "thinking": "جارٍ التفكير…",
+            "askEmpty": "انقر على أحد الاقتراحات أعلاه، أو اكتب سؤالك الخاص أدناه.",
+            "askPlaceholder": "اطرح سؤالاً حول هذا المستند…",
+            "send": "إرسال"
+        },
+        "verifySource": {
+            "title": "التحقق من المصدر",
+            "page": "صفحة",
+            "noImage": "صور صفحات المصدر غير متوفرة لهذا المستند (تم تحليله قبل إضافة هذه الميزة، أو لم يتم حفظ صورة الرفع).",
+            "noLocation": "لا يتوفر موقع مصدر",
+            "unlabeled": "بدون تسمية",
+            "footerNote": "المربعات تمثل موقع القراءة الذي أبلغ عنه النموذج نفسه، وليست تحققًا مستقلًا"
+        },
+        "toast": {
+            "dropAcceptedOnly": "يرجى إفلات ملف بصيغة PDF أو JPG أو PNG",
+            "uploadCancelled": "تم إلغاء الرفع",
+            "uploadFailed": "فشل الرفع. يرجى المحاولة مرة أخرى.",
+            "analysisFailed": "فشل التحليل. يرجى المحاولة مرة أخرى.",
+            "loadDocumentsFailed": "تعذّر تحميل المستندات. يرجى المحاولة مرة أخرى.",
+            "loadDocumentFailed": "تعذّر فتح هذا المستند.",
+            "documentDeleted": "تمت إزالة المستند",
+            "deleteFailed": "تعذّرت إزالة هذا المستند.",
+            "askFailed": "تعذّر الحصول على إجابة. يرجى المحاولة مرة أخرى.",
+            "loadPagesFailed": "تعذّر تحميل صور صفحات المصدر.",
+            "reviewApproved": "تم اعتماد المستند",
+            "reviewRejected": "تم رفض المستند",
+            "reviewFailed": "تعذّر تسجيل قرار المراجعة.",
+            "feedbackSubmitted": "شكرًا لتقييمك للوكيل!",
+            "feedbackFailed": "تعذّر إرسال التقييم. يرجى المحاولة مرة أخرى."
+        }
+    }
+}

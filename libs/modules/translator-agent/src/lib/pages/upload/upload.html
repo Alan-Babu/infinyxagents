@@ -1,0 +1,74 @@
+<div class="flex h-full min-h-0 flex-col">
+    <lib-page-header titleKey="translatorAgent.upload.title" subtitleKey="translatorAgent.upload.subtitle" [showBack]="screen === 'pageSelect'" (back)="cancelPageSelection()">
+        <lib-translator-toolbar />
+    </lib-page-header>
+
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+        @if (screen === 'upload') {
+        <div class="mx-auto flex max-w-2xl flex-col gap-4">
+            <lib-translator-dropzone [doc]="doc" [uploadProgress]="uploadProgress ?? undefined" (fileSelected)="onFileSelected($event)"
+                (dropped)="onDropped($event)" (clearDoc)="clearDoc()" (cancelUpload)="cancelUpload()" />
+
+            @if (doc && !uploadProgress) {
+            <div class="flex justify-center">
+                <button type="button" pButton [loading]="detecting" (click)="detectLanguageAndPages()"><i class="pi pi-language"></i><span>{{ 'translatorAgent.upload.translate' | translate }}</span></button>
+            </div>
+            }
+        </div>
+        }
+
+        @if (screen === 'pageSelect' && detection) {
+        <div class="mx-auto flex max-w-2xl flex-col gap-4">
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+                <div class="text-sm font-semibold text-gray-800">{{ detection.filename }}</div>
+                <div class="mt-1 flex flex-wrap gap-1.5 text-xs text-gray-500">
+                    <span>{{ detection.page_count }} {{ "translatorAgent.pageSelect.pages" | translate }}</span>
+                    @if (detection.detected_language) {
+                    <span>&middot; {{ "translatorAgent.pageSelect.detectedLanguage" | translate }}: {{ detection.detected_language }}</span>
+                    @if (detection.detected_language_confidence !== null) {
+                    <span>({{ detection.detected_language_confidence }}%)</span>
+                    }
+                    }
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+                <div class="mb-3 text-sm font-semibold text-gray-800">{{ "translatorAgent.pageSelect.title" | translate }}</div>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" class="cursor-pointer rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors"
+                        [class.bg-primary-500]="pageSelectionMode === 'all'" [class.text-white]="pageSelectionMode === 'all'"
+                        [class.border-primary-500]="pageSelectionMode === 'all'" [class.border-gray-200]="pageSelectionMode !== 'all'"
+                        [class.text-gray-600]="pageSelectionMode !== 'all'" (click)="setPageSelectionMode('all')">
+                        {{ "translatorAgent.pageSelect.allPages" | translate }}
+                    </button>
+                    <button type="button" class="cursor-pointer rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors"
+                        [class.bg-primary-500]="pageSelectionMode === 'custom'" [class.text-white]="pageSelectionMode === 'custom'"
+                        [class.border-primary-500]="pageSelectionMode === 'custom'" [class.border-gray-200]="pageSelectionMode !== 'custom'"
+                        [class.text-gray-600]="pageSelectionMode !== 'custom'" (click)="setPageSelectionMode('custom')">
+                        {{ "translatorAgent.pageSelect.customSelection" | translate }}
+                    </button>
+                </div>
+
+                @if (pageSelectionMode === 'custom') {
+                <div class="mt-3 flex flex-wrap gap-2">
+                    @for (p of pageNumbers; track p) {
+                    <button type="button" class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border text-xs font-semibold transition-colors"
+                        [class.bg-primary-500]="isPageSelected(p)" [class.text-white]="isPageSelected(p)" [class.border-primary-500]="isPageSelected(p)"
+                        [class.border-gray-200]="!isPageSelected(p)" [class.text-gray-600]="!isPageSelected(p)" (click)="togglePageSelected(p)">
+                        {{ p }}
+                    </button>
+                    }
+                </div>
+                }
+
+                <div class="mt-3 text-xs text-gray-500">{{ "translatorAgent.pageSelect.selectedCount" | translate: { count: selectedPageCount, total: detection.page_count } }}</div>
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <button type="button" pButton severity="secondary" [outlined]="true" (click)="cancelPageSelection()"><span>{{ 'translatorAgent.pageSelect.cancel' | translate }}</span></button>
+                <button type="button" pButton [loading]="translating" (click)="confirmPageSelection()"><i class="pi pi-language"></i><span>{{ 'translatorAgent.pageSelect.confirm' | translate }}</span></button>
+            </div>
+        </div>
+        }
+    </div>
+</div>

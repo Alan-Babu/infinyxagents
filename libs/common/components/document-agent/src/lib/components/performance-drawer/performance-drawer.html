@@ -1,0 +1,154 @@
+<p-drawer [(visible)]="visible" position="right" styleClass="p-drawer-lg" appendTo="body" [baseZIndex]="1200" (onHide)="visibleChange.emit(false)">
+    <ng-template pTemplate="header">
+        <div class="flex flex-col">
+            @if (eyebrow) {
+            <span class="text-xs font-semibold uppercase tracking-wide text-gray-400">{{ eyebrow }}</span>
+            }
+            <span class="text-lg font-semibold text-gray-800">{{ title }}</span>
+        </div>
+    </ng-template>
+
+    <p-tabs [value]="tab" (valueChange)="onTabChange($event)">
+        <p-tablist>
+            <p-tab value="report">Performance Report</p-tab>
+            <p-tab value="logs">Logs</p-tab>
+        </p-tablist>
+        <p-tabpanels>
+            <p-tabpanel value="report">
+                @if (report) {
+                <div class="flex flex-col gap-4">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="rounded-lg border border-gray-200 p-3">
+                            <div class="text-xs text-gray-500">Total agent calls</div>
+                            <div class="text-xl font-bold text-gray-800">{{ report.total_calls }}</div>
+                        </div>
+                        <div class="rounded-lg border border-gray-200 p-3">
+                            <div class="text-xs text-gray-500">Success rate</div>
+                            <div class="text-xl font-bold text-gray-800">{{ fmtPercent(report.success_rate) }}</div>
+                        </div>
+                        <div class="rounded-lg border border-gray-200 p-3">
+                            <div class="text-xs text-gray-500">Avg. confidence</div>
+                            <div class="text-xl font-bold" [ngClass]="confidenceClass(report.avg_confidence)">{{ fmtPercent(report.avg_confidence) }}</div>
+                        </div>
+                        <div class="rounded-lg border border-gray-200 p-3">
+                            <div class="text-xs text-gray-500">Avg. response time</div>
+                            <div class="text-xl font-bold text-gray-800">{{ fmtDuration(report.avg_duration_ms) }}</div>
+                        </div>
+                        <div class="rounded-lg border border-gray-200 p-3">
+                            <div class="text-xs text-gray-500">Total tokens used</div>
+                            <div class="text-xl font-bold text-gray-800">{{ report.total_tokens | number }}</div>
+                        </div>
+                        <div class="rounded-lg border border-gray-200 p-3">
+                            <div class="text-xs text-gray-500">Prompt / completion tokens</div>
+                            <div class="text-sm font-semibold text-gray-800">{{ report.total_prompt_tokens | number }} / {{ report.total_completion_tokens | number }}</div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <div class="text-xs font-semibold uppercase tracking-wide text-gray-500">By call type</div>
+                        @for (entry of callTypeBreakdownEntries(); track entry[0]) {
+                        <div class="rounded-lg border border-gray-200 p-3">
+                            <div class="mb-1.5 text-sm font-semibold text-gray-800">{{ callTypeLabel(entry[0]) }}</div>
+                            <div class="flex flex-wrap gap-3 text-xs text-gray-600">
+                                <span><b>{{ entry[1].count }}</b> calls</span>
+                                <span><b>{{ fmtPercent(entry[1].success_rate) }}</b> success</span>
+                                <span><b>{{ fmtPercent(entry[1].avg_confidence) }}</b> avg confidence</span>
+                                <span><b>{{ fmtDuration(entry[1].avg_duration_ms) }}</b> avg time</span>
+                                <span><b>{{ entry[1].total_tokens | number }}</b> tokens</span>
+                            </div>
+                        </div>
+                        }
+                    </div>
+
+                    @if (report.recent_errors.length) {
+                    <div class="flex flex-col gap-2">
+                        <div class="text-xs font-semibold uppercase tracking-wide text-gray-500">Recent errors</div>
+                        @for (err of report.recent_errors; track err.id) {
+                        <div class="flex items-center justify-between rounded-lg border border-red-200 bg-red-50 p-2.5 text-xs">
+                            <span class="text-red-700">{{ callTypeLabel(err.call_type) }}: {{ err.error_message }}</span>
+                            <span class="whitespace-nowrap text-gray-500">{{ err.created_at | date: 'medium' }}</span>
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+                } @else {
+                <p class="text-sm text-gray-500">No performance data yet.</p>
+                }
+            </p-tabpanel>
+
+            <p-tabpanel value="logs">
+                <div class="flex flex-col gap-3">
+                    <div class="flex flex-wrap gap-2">
+                        <select class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" [(ngModel)]="filters.callType" (ngModelChange)="onFiltersChange()">
+                            <option value="">Any call type</option>
+                            @for (opt of callTypeOptions; track opt.value) {
+                            <option [value]="opt.value">{{ opt.label }}</option>
+                            }
+                        </select>
+                        <select class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" [(ngModel)]="filters.success" (ngModelChange)="onFiltersChange()">
+                            <option value="">Any outcome</option>
+                            <option value="true">Success</option>
+                            <option value="false">Failed</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3 text-xs text-gray-600">
+                        <label class="flex items-center gap-1.5">From
+                            <input type="date" class="rounded-lg border border-gray-300 px-2 py-1" [(ngModel)]="filters.dateFrom" (ngModelChange)="onFiltersChange()" />
+                        </label>
+                        <label class="flex items-center gap-1.5">To
+                            <input type="date" class="rounded-lg border border-gray-300 px-2 py-1" [(ngModel)]="filters.dateTo" (ngModelChange)="onFiltersChange()" />
+                        </label>
+                        @if (logsPagination) {
+                        <span class="text-gray-500">{{ logsPagination.total_count }} call(s)</span>
+                        }
+                    </div>
+
+                    @if (logs.length === 0) {
+                    <p class="text-sm text-gray-500">No log entries yet.</p>
+                    }
+                    @for (log of logs; track log.id) {
+                    <div class="flex flex-col gap-1.5 rounded-lg border p-2.5 text-xs" [class.border-red-200]="!log.success" [class.bg-red-50]="!log.success" [class.border-gray-200]="log.success">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="rounded px-1.5 py-0.5 text-xs font-bold uppercase" [class.bg-green-100]="log.success" [class.text-green-700]="log.success" [class.bg-red-100]="!log.success" [class.text-red-700]="!log.success">
+                                {{ log.success ? 'Success' : 'Failed' }}
+                            </span>
+                            <span class="font-semibold text-gray-800">{{ callTypeLabel(log.call_type) }}</span>
+                            @if (log.document_filename) {
+                            <span class="text-gray-500">{{ log.document_filename }}</span>
+                            }
+                            <span class="ms-auto text-gray-500">{{ log.created_at | date: 'medium' }}</span>
+                        </div>
+                        <div class="flex flex-wrap gap-3 text-gray-600">
+                            @if (log.confidence_score !== null) {
+                            <span [ngClass]="confidenceClass(log.confidence_score)">{{ log.confidence_score }}% confidence</span>
+                            }
+                            <span>{{ fmtDuration(log.duration_ms) }}</span>
+                            @if (log.total_tokens) {
+                            <span>{{ log.total_tokens }} tokens ({{ log.prompt_tokens }}+{{ log.completion_tokens }})</span>
+                            }
+                            @if (log.error_message) {
+                            <span class="text-red-600">{{ log.error_message }}</span>
+                            }
+                        </div>
+                    </div>
+                    }
+
+                    @if (logsPagination && logsPagination.total_pages > 1) {
+                    <div class="flex items-center justify-between pt-1">
+                        <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="!logsPagination.has_prev" (click)="logsPage.emit(-1)"><span>← Prev</span></button>
+                        <span class="text-xs text-gray-500">Page {{ logsPagination.page }} of {{ logsPagination.total_pages }}</span>
+                        <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="!logsPagination.has_next" (click)="logsPage.emit(1)"><span>Next →</span></button>
+                    </div>
+                    }
+                </div>
+            </p-tabpanel>
+        </p-tabpanels>
+    </p-tabs>
+
+    <ng-template pTemplate="footer">
+        @if (footerNote) {
+        <span class="text-xs text-gray-400">{{ footerNote }}</span>
+        }
+    </ng-template>
+</p-drawer>

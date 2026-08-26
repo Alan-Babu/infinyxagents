@@ -1,0 +1,40 @@
+<div class="mx-auto max-w-5xl px-6 py-10 sm:px-8">
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-gray-800">{{ "agentsLanding.greeting" | translate: { name: userName } }}</h1>
+        <p class="mt-1.5 text-sm text-gray-500">{{ "agentsLanding.subtitle" | translate }}</p>
+    </div>
+
+    <span class="relative mb-8 flex">
+        <i class="pi pi-search absolute start-4 top-1/2 -translate-y-1/2 text-sm text-gray-400"></i>
+        <input pInputText type="text" class="w-full rounded-lg! py-3! ps-11!" [placeholder]="'agentsLanding.searchPlaceholder' | translate" [(ngModel)]="search" />
+    </span>
+
+    @for (category of categories; track category.key) {
+    <div class="mb-3 mt-7 text-xs font-bold uppercase tracking-wide text-gray-400 first:mt-0">{{ category.key | translate }}</div>
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        @for (tile of category.tiles; track tile.id) {
+        <a [routerLink]="tile.link" (click)="onTileClick($event, tile)"
+            class="flex cursor-pointer items-start gap-3 rounded-lg border border-gray-200 bg-white p-4 text-start transition hover:border-primary-300">
+            <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+                [class.bg-primary-50]="(tile.accent || 'primary') === 'primary'" [class.text-primary-600]="(tile.accent || 'primary') === 'primary'"
+                [class.bg-sky-50]="tile.accent === 'sky'" [class.text-sky-600]="tile.accent === 'sky'"
+                [class.bg-violet-50]="tile.accent === 'violet'" [class.text-violet-600]="tile.accent === 'violet'"
+                [class.bg-amber-50]="tile.accent === 'amber'" [class.text-amber-600]="tile.accent === 'amber'">
+                <i [class]="tile.icon"></i>
+            </span>
+            <span class="min-w-0 flex-1">
+                <span class="flex items-center gap-2 justify-between">
+                    <span class="font-semibold text-gray-900">{{ tile.nameKey | translate }}</span>
+                    @if (tile.badge) {
+                    <span class="inline-flex shrink-0 items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-green-700">
+                        <span class="h-1.5 w-1.5 rounded-full bg-current"></span> {{ tile.badge }}
+                    </span>
+                    }
+                </span>
+                <span class="mt-0.5 block text-sm leading-snug text-gray-500">{{ tile.descriptionKey | translate }}</span>
+            </span>
+        </a>
+        }
+    </div>
+    }
+</div>

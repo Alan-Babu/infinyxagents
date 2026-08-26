@@ -1,0 +1,74 @@
+<div class="flex h-full min-h-0 flex-col">
+    <lib-page-header titleKey="grammarAgent.upload.title" subtitleKey="grammarAgent.upload.subtitle" [showBack]="false">
+        <lib-grammar-toolbar />
+    </lib-page-header>
+
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+        <div class="mx-auto flex max-w-2xl flex-col gap-4">
+            <div class="flex gap-2">
+                <button type="button" class="cursor-pointer rounded-md border px-3.5 py-1.5 font-semibold transition-colors"
+                    [class.bg-primary-500]="inputMode === 'upload'" [class.text-white]="inputMode === 'upload'" [class.border-primary-500]="inputMode === 'upload'"
+                    [class.border-gray-200]="inputMode !== 'upload'" [class.text-gray-600]="inputMode !== 'upload'"
+                    (click)="setInputMode('upload')">
+                    {{ "grammarAgent.upload.modeUpload" | translate }}
+                </button>
+                <button type="button" class="cursor-pointer rounded-md border px-3.5 py-1.5 font-semibold transition-colors"
+                    [class.bg-primary-500]="inputMode === 'paste'" [class.text-white]="inputMode === 'paste'" [class.border-primary-500]="inputMode === 'paste'"
+                    [class.border-gray-200]="inputMode !== 'paste'" [class.text-gray-600]="inputMode !== 'paste'"
+                    (click)="setInputMode('paste')">
+                    {{ "grammarAgent.upload.modePaste" | translate }}
+                </button>
+            </div>
+
+            @if (inputMode === 'upload') {
+            <lib-grammar-dropzone [doc]="doc" [uploadProgress]="uploadProgress ?? undefined" (fileSelected)="onFileSelected($event)"
+                (dropped)="onDropped($event)" (clearDoc)="clearDoc()" (cancelUpload)="cancelUpload()" />
+
+            @if (doc && !uploadProgress && detection) {
+            <div class="flex flex-col gap-2 rounded-lg border border-gray-200 bg-white p-4 text-sm">
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-500">{{ "grammarAgent.upload.detectedLanguage" | translate }}</span>
+                    <span class="font-semibold text-gray-800">
+                        {{ detection.detected_language || ("grammarAgent.upload.unknownLanguage" | translate) }}
+                        @if (detection.detected_language_confidence !== null) { <span class="text-gray-400">({{ detection.detected_language_confidence }}%)</span> }
+                    </span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-500">{{ "grammarAgent.upload.wordCount" | translate }}</span>
+                    <span class="font-semibold text-gray-800">{{ detection.word_count }}</span>
+                </div>
+                @if (detection.exceeds_length_limit) {
+                <div class="flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-xs font-medium text-amber-700">
+                    <i class="pi pi-exclamation-triangle"></i>
+                    {{ "grammarAgent.upload.exceedsLength" | translate }}
+                </div>
+                }
+            </div>
+            }
+
+            @if (doc && !uploadProgress) {
+            <div class="flex justify-center">
+                @if (!detection) {
+                <button type="button" pButton [loading]="detecting" severity="secondary" [outlined]="true" (click)="detectUploadedDocument()"><i class="pi pi-book"></i><span>{{ 'grammarAgent.upload.readDocument' | translate }}</span></button>
+                } @else if (!detection.exceeds_length_limit) {
+                <button type="button" pButton [loading]="checking" (click)="checkUploadedDocument()"><i class="pi pi-check"></i><span>{{ 'grammarAgent.upload.checkGrammar' | translate }}</span></button>
+                }
+            </div>
+            }
+            }
+
+            @if (inputMode === 'paste') {
+            <div class="flex flex-col gap-2 rounded-lg border border-gray-200 bg-white p-4">
+                <textarea class="w-full rounded-lg border border-gray-300 p-3 text-sm" rows="12" [(ngModel)]="pastedText"
+                    [placeholder]="'grammarAgent.upload.pastePlaceholder' | translate"></textarea>
+                <div class="text-xs text-gray-500">
+                    {{ pastedText.trim() ? (pastedWordCount() + ' ' + ("grammarAgent.upload.words" | translate)) : ("grammarAgent.upload.noTextYet" | translate) }}
+                </div>
+            </div>
+            <div class="flex justify-center">
+                <button type="button" pButton [loading]="checking" (click)="checkPastedText()"><i class="pi pi-check"></i><span>{{ 'grammarAgent.upload.checkGrammar' | translate }}</span></button>
+            </div>
+            }
+        </div>
+    </div>
+</div>

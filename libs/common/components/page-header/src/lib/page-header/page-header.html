@@ -1,0 +1,33 @@
+<div class="sticky top-0 z-10 border-b border-gray-200 bg-white">
+    <div class="flex flex-wrap items-center justify-between gap-4 p-5">
+        <div class="flex flex-wrap items-center gap-4">
+            @if (showBack) {
+                <button
+                    type="button"
+                    pButton
+                    [outlined]="true"
+                    size="small"
+                    class="p-2"
+                    [attr.aria-label]="backLabel"
+                    (click)="goBack()"
+                >
+                    <i class="pi pi-arrow-left rtl:rotate-180"></i>
+                </button>
+            }
+            @if (titleTemplate) {
+                <ng-container [ngTemplateOutlet]="titleTemplate"></ng-container>
+            } @else {
+                <div>
+                    <h1 class="text-xl font-semibold text-gray-800">{{ titleKey | translate }}</h1>
+                    @if (subtitleKey) {
+                        <p class="mt-1 text-sm text-gray-500">{{ subtitleKey | translate }}</p>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+            <ng-content></ng-content>
+        </div>
+    </div>
+</div>

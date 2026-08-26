@@ -1,0 +1,42 @@
+<div class="mx-auto flex w-full max-w-3xl flex-1 flex-col" [dir]="isRtl ? 'rtl' : 'ltr'">
+    <div class="flex items-center justify-between border-b border-gray-200 bg-white px-5 py-3.5">
+        <a routerLink="/mofa-chatbot" class="cursor-pointer text-sm font-bold text-primary-600">
+            {{ 'mofaChatbot.sharedChat.newChat' | translate }}
+        </a>
+        <div class="text-sm font-bold text-gray-800">{{ 'mofaChatbot.sharedChat.title' | translate }}</div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto px-5 py-6">
+        @if (loading) {
+            <div class="flex items-center justify-center gap-2 py-10 text-sm text-gray-400">
+                <i class="pi pi-spin pi-spinner"></i>
+                {{ 'mofaChatbot.sharedChat.loading' | translate }}
+            </div>
+        } @else if (error) {
+            <p class="py-10 text-center text-sm text-red-600">
+                {{ (error === 'missing' ? 'mofaChatbot.sharedChat.missingToken' : 'mofaChatbot.sharedChat.error') | translate }}
+            </p>
+        } @else if (result) {
+            <div class="flex flex-col gap-4">
+                @for (m of result.messages; track $index) {
+                    <div class="flex flex-col gap-1" [class.items-end]="m.role === 'user'">
+                        <span class="px-1 text-xs font-bold text-gray-400">
+                            {{ (m.role === 'user' ? 'mofaChatbot.sharedChat.you' : 'mofaChatbot.sharedChat.assistant') | translate }}
+                        </span>
+                        <div
+                            class="max-w-[85%] whitespace-pre-wrap rounded-lg border px-4 py-3 text-sm leading-relaxed"
+                            [class.bg-white]="m.role !== 'user'"
+                            [class.text-gray-900]="m.role !== 'user'"
+                            [class.border-gray-200]="m.role !== 'user'"
+                            [class.bg-primary-600]="m.role === 'user'"
+                            [class.text-white]="m.role === 'user'"
+                            [class.border-transparent]="m.role === 'user'"
+                        >
+                            {{ m.content }}
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>

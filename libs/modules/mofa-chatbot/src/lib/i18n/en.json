@@ -1,0 +1,278 @@
+{
+    "mofaChatbot": {
+        "nav": {
+            "chat": "Chat",
+            "admin": "Admin"
+        },
+        "chat": {
+            "assistantName": "MOFA Virtual Assistant",
+            "aiBadge": "AI",
+            "aiBadgeTitle": "AI-powered assistant, not a human",
+            "onlineNow": "Online now",
+            "talkToHuman": "Talk to a human",
+            "privacyNoticeTooltip": "Privacy notice",
+            "saveShare": "Save & Share",
+            "newChat": "New chat",
+            "staffBackoffice": "Staff backoffice",
+            "moodTooltip": "Current conversation mood",
+            "placeholder": "Type your question here...",
+            "sendTooltip": "Send",
+            "micTooltip": "Start a live voice conversation",
+            "quickPromptsLabel": "Try one of these",
+            "quickPrompts": [
+                "How do I attest a document digitally?",
+                "How do I renew a diplomatic passport?",
+                "What are the Golden Visa return document requirements?",
+                "How long does attestation take?"
+            ],
+            "followUpsLabel": "You might also want to ask:",
+            "listenTooltip": "Listen",
+            "feedbackUpTooltip": "Helpful",
+            "feedbackDownTooltip": "Not helpful",
+            "delivery": {
+                "sent": "Sent",
+                "delivered": "Delivered",
+                "read": "Read",
+                "failed": "Failed to send"
+            },
+            "handoff": {
+                "banner": "This seems frustrating. Would you like to talk to a member of our support team directly?",
+                "noThanks": "No thanks",
+                "yesPlease": "Yes, please",
+                "acceptedMessage": "You can reach our human support team directly at {{ number }}, available 24/7."
+            },
+            "idle": {
+                "prompt": "Still there? Do you need any more help?",
+                "stillHere": "Yes, I'm still here",
+                "closingMessage": "Thanks for chatting with us! It looks like you've stepped away, so I'll close this conversation here. Feel free to start a new chat anytime."
+            },
+            "rating": {
+                "title": "How was your experience?",
+                "subtitle": "Your feedback helps us improve",
+                "commentPlaceholder": "Optional comment...",
+                "skip": "Skip",
+                "submit": "Submit",
+                "thanks": "Thanks for your feedback!"
+            },
+            "privacy": {
+                "title": "Privacy & Ethical Use",
+                "body1": "This is an AI system, not a human. Conversations may be reviewed to improve service quality and safety.",
+                "body2": "Please don't share sensitive information (like passwords or bank card details) in this chat.",
+                "body3": "You can reach our human support team at any time at {{ number }}.",
+                "gotIt": "Got it"
+            },
+            "voice": {
+                "titleIdle": "Speech to speech",
+                "titleListening": "Listening",
+                "titleTransmitting": "Sending your voice",
+                "titleThinking": "Preparing a reply",
+                "titleSpeaking": "Assistant speaking",
+                "hintIdle": "Tap to talk, or end the voice call",
+                "hintListening": "Just talk — I'll send automatically when you pause",
+                "hintTransmitting": "Uploading and transcribing your recording",
+                "hintThinking": "Understanding your question and drafting an answer",
+                "hintSpeaking": "Playing the reply — listening will resume after this",
+                "stepListen": "Listen",
+                "stepSend": "Send",
+                "stepThink": "Think",
+                "stepSpeak": "Speak",
+                "endCall": "End call",
+                "micError": "Could not access the microphone",
+                "cancelled": "Voice transmission cancelled",
+                "processError": "Could not process the voice message",
+                "speakUnavailable": "Voice output is unavailable right now"
+            },
+            "toast": {
+                "startFailed": "Could not start a chat session. Please refresh.",
+                "sendFailed": "Something went wrong. Please try again.",
+                "saveFailed": "Could not save the chat.",
+                "linkCopied": "Chat link copied to clipboard!",
+                "chatSaved": "Chat saved"
+            }
+        },
+        "sharedChat": {
+            "newChat": "Start a new chat",
+            "title": "Shared conversation",
+            "loading": "Loading…",
+            "error": "This shared chat could not be found.",
+            "missingToken": "Missing share token.",
+            "you": "You",
+            "assistant": "Assistant"
+        },
+        "admin": {
+            "backToChat": "Back to chat",
+            "nav": {
+                "overview": "Overview",
+                "crawl": "Crawl Schedule",
+                "kb": "Knowledge Base",
+                "blacklist": "Blacklist",
+                "riskSessions": "Risk & Sentiment",
+                "feedback": "Feedback & Gaps"
+            },
+            "common": {
+                "languageEn": "English",
+                "languageAr": "Arabic",
+                "dash": "—",
+                "noDataYet": "No data yet."
+            },
+            "overview": {
+                "title": "Overview",
+                "range24h": "Last 24 hours",
+                "range7d": "Last 7 days",
+                "range30d": "Last 30 days",
+                "sessions": "Sessions",
+                "userMessages": "User messages",
+                "riskFlagged": "Risk-flagged",
+                "unansweredQuestions": "Unanswered questions",
+                "averageRating": "Average rating",
+                "noRatingsYet": "No ratings yet",
+                "thumbsUpDown": "Thumbs up / down",
+                "sentimentTitle": "Sentiment",
+                "endReasonTitle": "How chats ended",
+                "languageTitle": "Language"
+            },
+            "crawl": {
+                "title": "Crawl Schedule",
+                "enabledLabel": "Nightly refresh enabled",
+                "hourLabel": "Hour (0-23, server time)",
+                "minuteLabel": "Minute",
+                "modeLabel": "Crawl mode",
+                "modeIncremental": "Incremental",
+                "modeFull": "Full re-crawl",
+                "maxPagesLabel": "Max pages per run",
+                "seedUrlsLabel": "Seed URLs (one per line)",
+                "saveButton": "Save schedule",
+                "saved": "Schedule saved",
+                "saveFailed": "Could not save the schedule.",
+                "manualCrawlTitle": "Manual crawl",
+                "runIncremental": "Run incremental now",
+                "runFull": "Run full re-crawl",
+                "startedIncremental": "Incremental crawl started",
+                "startedFull": "Full crawl started",
+                "startFailed": "Could not start the crawl.",
+                "refresh": "Refresh",
+                "recentRunsTitle": "Recent runs",
+                "table": {
+                    "trigger": "Trigger",
+                    "mode": "Mode",
+                    "status": "Status",
+                    "discovered": "Discovered",
+                    "changed": "Changed",
+                    "unchanged": "Unchanged",
+                    "failed": "Failed",
+                    "chunks": "Chunks",
+                    "started": "Started"
+                },
+                "noRuns": "No crawl runs yet."
+            },
+            "kb": {
+                "versionsTitle": "Knowledge Base Versions",
+                "newVersionLabel": "New version label",
+                "newVersionPlaceholder": "e.g. v1.3 - Golden Visa FAQ update",
+                "notesLabel": "Notes",
+                "notesOptional": "optional",
+                "createButton": "Create draft version",
+                "versionCreated": "Draft version created",
+                "createFailed": "Could not create the version.",
+                "noVersions": "No KB versions yet — create one above.",
+                "documents": "document(s)",
+                "chunks": "chunks",
+                "published": "Published",
+                "backToVersions": "All versions",
+                "uploadCardTitle": "Upload documents",
+                "dropzoneHint": "Click to upload a .txt, .docx, or .pdf file",
+                "noDocs": "No documents uploaded yet.",
+                "uploaded": "{{ name }} uploaded",
+                "uploadFailed": "Upload failed.",
+                "simulateCardTitle": "Simulate (test against this draft, without affecting live chat)",
+                "simulateQuestionPlaceholder": "Ask a question to test this draft's content...",
+                "runSimulation": "Run simulation",
+                "running": "Running...",
+                "simulationFailed": "Simulation failed.",
+                "noConfidentAnswer": "No confident answer could be produced from the available content.",
+                "confidenceLabel": "Confidence",
+                "fromDraft": "From this draft",
+                "fromLive": "From live KB",
+                "chunkCount": "chunk(s)",
+                "publishCardTitle": "Publish",
+                "publishBody": "Publishing makes this version's content visible to all live chat visitors immediately, and archives whichever version was previously published.",
+                "publishButton": "Publish this version",
+                "published2": "{{ label }} is now live",
+                "publishFailed": "Could not publish.",
+                "status": {
+                    "draft": "Draft",
+                    "simulating": "Simulating",
+                    "published": "Published",
+                    "archived": "Archived"
+                }
+            },
+            "blacklist": {
+                "title": "Blacklist",
+                "addCardTitle": "Add a term",
+                "termPlaceholder": "Term, phrase, or regex pattern",
+                "typeContains": "Contains",
+                "typeExact": "Exact match",
+                "typeRegex": "Regex",
+                "categoryPlaceholder": "Category (e.g. profanity)",
+                "addButton": "Add term",
+                "added": "Term added",
+                "addFailed": "Could not add that term.",
+                "testCardTitle": "Test a message",
+                "testPlaceholder": "Type a sample message...",
+                "testButton": "Test",
+                "blocked": "Blocked",
+                "allowed": "Allowed",
+                "matched": "Matched: \"{{ term }}\" ({{ category }})",
+                "table": {
+                    "term": "Term",
+                    "type": "Type",
+                    "category": "Category",
+                    "status": "Status",
+                    "addedBy": "Added by"
+                },
+                "active": "Active",
+                "inactive": "Inactive",
+                "noTerms": "No blacklist terms configured.",
+                "deactivateTooltip": "Deactivate",
+                "activateTooltip": "Activate",
+                "deleteTooltip": "Delete",
+                "deleteConfirm": "Delete the term \"{{ term }}\"?",
+                "deleteConfirmHeader": "Delete blacklist term"
+            },
+            "riskSessions": {
+                "title": "Risk-Flagged Sessions",
+                "table": {
+                    "language": "Language",
+                    "sentiment": "Sentiment",
+                    "reason": "Reason",
+                    "rating": "Rating",
+                    "started": "Started"
+                },
+                "view": "View",
+                "noSessions": "No risk-flagged sessions right now.",
+                "transcriptTitle": "Session Transcript",
+                "blockedLabel": "blocked"
+            },
+            "feedback": {
+                "unansweredTitle": "Unanswered Questions",
+                "table": {
+                    "question": "Question",
+                    "language": "Language",
+                    "score": "Best match score",
+                    "asked": "Asked"
+                },
+                "markReviewed": "Mark reviewed",
+                "noUnanswered": "No unreviewed gaps — nice.",
+                "recentFeedbackTitle": "Recent Feedback",
+                "feedbackTable": {
+                    "rating": "Rating",
+                    "comment": "Comment",
+                    "ended": "Ended",
+                    "when": "When"
+                },
+                "defaultRating": "(default)",
+                "noFeedback": "No feedback yet."
+            }
+        }
+    }
+}

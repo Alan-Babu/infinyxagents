@@ -1,0 +1,108 @@
+<div class="flex h-full flex-col overflow-hidden">
+    @if(collapsed) {
+    <div class="min-h-0 flex-1 overflow-y-auto">
+        <ul class="m-0 list-none space-y-1 p-3">
+            @for(menu of menuList; track menu.id) {
+            @if(!menu.hide){
+            <li>
+                <a class="flex cursor-pointer items-center justify-center rounded-lg px-2 py-2.5" [attr.data-menu]="menu.link"
+                    [pTooltip]="menu.menu | translate" tooltipPosition="right" [attr.aria-label]="menu.menu | translate"
+                    [ngClass]="{ 'bg-primary-500 text-white': menu.active && !menu.subMenus?.length }"
+                    (click)="onRailItemClick(menu)">
+                    <svg class="w-5" viewBox="0 0 256 256" fill="none" [ngClass]="{
+                    'text-primary-500': menu.expanded,
+                    'text-white': menu.active && !menu.subMenus?.length
+                    }">
+                        <path [attr.d]="resolveIconPath(menu.icon)" fill="currentColor" />
+                    </svg>
+                </a>
+            </li>
+            }
+            }
+        </ul>
+    </div>
+    } @else {
+    <div class="min-h-0 flex-1 overflow-y-auto">
+    <ul class="m-0 list-none p-3">
+        @for(menu of menuList; track menu.id) {
+        @if(!menu.hide){
+        <li>
+            <a class="flex items-center gap-3 cursor-pointer overflow-hidden rounded-lg px-2 py-2.5" [attr.data-menu]="menu.link"
+                [ngClass]="{ 'bg-primary-500 text-white': menu.active && !menu.subMenus?.length }"
+                (click)="onPanelClick({ menu: menu })">
+                <svg class="w-5 shrink-0" viewBox="0 0 256 256" fill="none" [ngClass]="{
+                'text-primary-500': menu.expanded,
+                'text-white': menu.active && !menu.subMenus?.length
+                }">
+                    <path [attr.d]="resolveIconPath(menu.icon)" fill="currentColor" />
+                </svg>
+                <span class="min-w-0 flex-1 truncate font-medium whitespace-nowrap">{{ menu.menu | translate }}</span>
+
+                @if(menu.recordcount && menu.recordcount > 0) {
+                <span
+                    class="shrink-0 py-2 px-2.5 font-medium rounded text-sm leading-none inline-flex items-center text-white bg-primary-500">
+                    {{ menu.recordcount }}
+                </span>
+                }
+
+                @if(menu.subMenus && menu.subMenus.length>0) {
+                <svg class="w-6 h-6 shrink-0 ms-auto transition-transform" viewBox="0 0 256 256">
+                    <path
+                        d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z">
+                    </path>
+                </svg>
+                }
+            </a>
+
+            @if(menu.subMenus && menu.subMenus.length > 0){
+
+            <ul class="ps-9 my-2.5 transition-all relative">
+                @for(subMenu of menu.subMenus; track subMenu.id) {
+                @if(!subMenu.hide){
+                <li class="relative after:absolute after:-start-3 rtl:after:-start-[1.17rem] after:flex after:h-2 after:w-2 after:-translate-x-1/2 after:rounded-full after:content-[''] after:top-6 after:-translate-y-1/2 first:before:absolute first:before:-start-4.5 first:before:-top-[.5rem] first:before:h-8 first:before:w-4 first:before:bg-white first:before:content-[''] last:before:absolute last:before:-bottom-[.5rem] last:before:-start-4.5 last:before:h-[calc(100%_-_1rem)] last:before:w-4 last:before:bg-white last:before:content-['']"
+                    [ngClass]="{ 'after:bg-primary-500': subMenu.active, 'after:bg-gray-200': !subMenu.active }">
+                    @if(!subMenu.subMenus?.length) {
+                    <a class="flex items-center gap-2 overflow-hidden rounded p-3 cursor-pointer" [attr.data-menu]="subMenu.link"
+                        [ngClass]="{ 'bg-primary-500 text-white': subMenu.active }"
+                        (click)="onPanelClick({ menu: subMenu, parent: menu })">
+                        <span class="min-w-0 flex-1 truncate whitespace-nowrap">{{ subMenu.menu | translate }}</span>
+                    </a>
+                    } @else {
+                    <a class="flex items-center gap-2 overflow-hidden rounded p-3 cursor-pointer" [attr.data-menu]="subMenu.link"
+                        [ngClass]="{ 'bg-primary-500 text-white': subMenu.active }"
+                        (click)="onPanelClick({ menu: subMenu, parent: menu })">
+                        <span class="min-w-0 flex-1 truncate whitespace-nowrap">{{ subMenu.menu | translate }}</span>
+                    </a>
+
+                    <ul class="ps-9 my-2.5 transition-all relative">
+                        @for(childMenu of subMenu.subMenus; track childMenu.id) {
+                        <li class="relative after:absolute after:-inset-s-3 rtl:after:inset-s-[-1.17rem] after:flex after:h-2 after:w-2 after:-translate-x-1/2 after:rounded-full after:content-[''] after:top-6 after:-translate-y-1/2 first:before:absolute first:before:-start-4.5 first:before:-top-[.5rem] first:before:h-8 first:before:w-4 first:before:bg-white first:before:content-[''] last:before:absolute last:before:-bottom-[.5rem] last:before:-start-4.5 last:before:h-[calc(100%_-_1rem)] last:before:w-4 last:before:bg-white last:before:content-['']"
+                            [ngClass]="{ 'after:bg-primary-500': childMenu.active, 'after:bg-gray-200': !childMenu.active }">
+                            <a class="flex items-center gap-2 overflow-hidden rounded p-3 cursor-pointer" [attr.data-menu]="childMenu.link"
+                                [ngClass]="{ 'bg-primary-500 text-white': childMenu.active }"
+                                (click)="onPanelClick({ menu: childMenu, parent: menu })">
+                                <span class="min-w-0 flex-1 truncate whitespace-nowrap">{{ childMenu.menu | translate }}</span>
+                                @if(childMenu.recordcount && childMenu.recordcount > 0) {
+                                <span
+                                    class="shrink-0 py-2 px-2.5 font-medium rounded text-sm leading-none inline-flex items-center text-white bg-primary-500">
+                                    {{ childMenu.recordcount }}
+                                </span>
+                                }
+                            </a>
+                        </li>
+                        }
+                    </ul>
+                    }
+                </li>
+                }
+                }
+            </ul>
+            }
+        </li>
+        }
+        }
+    </ul>
+
+    </div>
+    }
+</div>

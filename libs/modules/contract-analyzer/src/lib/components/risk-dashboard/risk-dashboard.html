@@ -1,0 +1,37 @@
+<div class="flex flex-col gap-4">
+    @if (categories.length === 0) {
+    <p class="text-gray-500">{{ 'contractAnalyzer.detail.noRiskCategories' | translate }}</p>
+    }
+
+    @for (group of groups; track group.level) {
+    <div class="flex flex-col gap-2">
+        <span class="rounded border px-2 py-0.5 text-sm font-semibold uppercase tracking-wide self-start" [ngClass]="riskClass(group.level)">
+            {{ 'contractAnalyzer.risk.' + group.level.toLowerCase() | translate }}
+        </span>
+        @for (item of group.items; track item.category) {
+        <button type="button"
+            class="cursor-pointer rounded-lg border border-gray-200 bg-white p-3 text-start transition-colors hover:border-primary-300"
+            (click)="toggle(item.category)">
+            <div class="flex items-center justify-between gap-2">
+                <span class="font-semibold text-gray-800">{{ item.category }}</span>
+                <span class="flex items-center gap-2">
+                    <span class="text-sm text-gray-500">{{ item.score }}</span>
+                    <i class="pi text-gray-400" [class.pi-chevron-down]="expandedCategory !== item.category" [class.pi-chevron-up]="expandedCategory === item.category"></i>
+                </span>
+            </div>
+            @if (expandedCategory === item.category) {
+            <div class="mt-2.5 flex flex-col gap-2 border-t border-gray-100 pt-2.5 text-sm text-gray-600">
+                <p>{{ item.explanation }}</p>
+                @if (item.clause_reference) {
+                <p><span class="font-semibold text-gray-500">{{ 'contractAnalyzer.detail.clauseReference' | translate }}:</span> {{ item.clause_reference }}</p>
+                }
+                @if (item.cash_flow_impact) {
+                <p><span class="font-semibold text-gray-500">{{ 'contractAnalyzer.detail.cashFlowImpact' | translate }}:</span> {{ item.cash_flow_impact }}</p>
+                }
+            </div>
+            }
+        </button>
+        }
+    </div>
+    }
+</div>

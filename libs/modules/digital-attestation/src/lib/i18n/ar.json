@@ -1,0 +1,125 @@
+{
+    "digitalAttestation": {
+        "nav": {
+            "dashboard": "لوحة التحكم",
+            "manualReview": "مراجعة يدوية",
+            "failures": "الأعطال",
+            "completed": "المهام المكتملة"
+        },
+        "dashboard": {
+            "title": "التصديق الرقمي",
+            "subtitle": "مركز المراجعة — تحقق من ثقة الوكيل والمستندات، ثم اعتمد أو ارفض حالات التصديق.",
+            "stats": {
+                "awaitingReview": "بانتظار المراجعة",
+                "awaitingReviewSub": "من أصل {{ total }} حالة",
+                "pipelineFailures": "أعطال خط المعالجة",
+                "pipelineFailuresSub": "بحاجة إلى تحقيق",
+                "approvalRate": "معدل الاعتماد",
+                "approvalRateSub": "من أصل {{ completed }} مكتملة",
+                "avgConfidence": "متوسط الثقة",
+                "avgConfidenceSub": "عبر خط المعالجة النشط"
+            },
+            "banner": {
+                "eyebrow": "مركز المراجعة",
+                "title": "بانتظار المراجعة",
+                "subtitle": "افتح حالة لفحص درجات ثقة الوكيل والمستندات المصدرية قبل اتخاذ القرار.",
+                "cta": "الانتقال إلى المراجعة اليدوية",
+                "pending": "قيد الانتظار"
+            },
+            "recentlyUpdated": "آخر التحديثات"
+        },
+        "pending": {
+            "title": "مراجعة يدوية",
+            "subtitle": "حالات بانتظار قرار المراجع، مرتبة حسب آخر تحديث."
+        },
+        "failures": {
+            "title": "الأعطال",
+            "subtitle": "حالات تعذر على خط المعالجة الآلي إتمامها — غالباً بسبب مصدر خارجي أو مشكلة اتصال."
+        },
+        "completed": {
+            "title": "المهام المكتملة",
+            "subtitle": "حالات تم تسجيل قرار بشري نهائي بشأنها، اعتماداً أو رفضاً."
+        },
+        "filters": {
+            "searchPlaceholder": "ابحث برقم سير العمل أو اسم الملف...",
+            "allDocTypes": "كل أنواع المستندات",
+            "allCountries": "كل الدول",
+            "countOf": "{{ shown }} من {{ total }} حالة"
+        },
+        "table": {
+            "workflowId": "رقم سير العمل",
+            "documentType": "نوع المستند",
+            "file": "الملف",
+            "country": "الدولة",
+            "confidence": "الثقة",
+            "mismatch": "التعارض / الأسباب",
+            "risk": "المخاطر",
+            "status": "الحالة",
+            "updated": "آخر تحديث",
+            "approve": "اعتماد",
+            "reject": "رفض",
+            "view": "عرض",
+            "empty": "لا توجد حالات مطابقة لهذه المرشحات."
+        },
+        "status": {
+            "PENDING": "بانتظار المراجعة",
+            "APPROVED": "معتمد",
+            "REJECTED": "مرفوض",
+            "FAILED": "فشل"
+        },
+        "errors": {
+            "loadFailed": "تعذر تحميل الحالات. يرجى المحاولة مرة أخرى."
+        },
+        "drawer": {
+            "eyebrow": "التصديق الرقمي",
+            "title": "حالة تصديق",
+            "overallConfidence": "الثقة الإجمالية",
+            "tabs": {
+                "overview": "نظرة عامة",
+                "agents": "الوكلاء",
+                "files": "الملفات"
+            },
+            "documentType": "نوع المستند",
+            "country": "الدولة",
+            "risk": "المخاطر",
+            "confidence": "الثقة",
+            "mode": "الوضع",
+            "status": "الحالة",
+            "mismatchDetected": "تم رصد تعارض",
+            "failureDetected": "تم رصد عطل",
+            "itemsFlagged": "{{ count }} عنصر تم وضع علامة عليه",
+            "stepsFailed": "{{ count }} خطوة في خط المعالجة فشلت",
+            "decisionDetails": "تفاصيل القرار",
+            "actionTaken": "الإجراء المتخذ",
+            "reviewedAt": "تاريخ المراجعة",
+            "reviewer": "المراجع",
+            "reviewerNotes": "ملاحظات المراجع",
+            "notesPlaceholder": "ملاحظات اختيارية لسجل التدقيق...",
+            "approve": "اعتماد",
+            "reject": "رفض",
+            "reviewedBy": "تم {{ decision }} هذه الحالة من قبل {{ reviewer }} بتاريخ {{ date }}.",
+            "approved": "اعتماد",
+            "rejected": "رفض",
+            "agents": {
+                "loading": "جارٍ تحميل عمليات تشغيل الوكلاء...",
+                "loadFailed": "تعذر تحميل عمليات تشغيل الوكلاء.",
+                "empty": "لا توجد بيانات تشغيل وكلاء لهذه الحالة.",
+                "confidence": "الثقة",
+                "duration": "المدة"
+            },
+            "files": {
+                "title": "مستندات سير العمل",
+                "input": "الملف المرفوع",
+                "trueCopy": "نسخة أصلية",
+                "attestedCopy": "نسخة مصدقة",
+                "download": "تنزيل",
+                "selectFile": "اختر ملفاً للمعاينة",
+                "availableBadge": "معاينة",
+                "unavailableBadge": "غير متوفر",
+                "loading": "جارٍ تحميل المعاينة...",
+                "loadFailed": "تعذر تحميل هذا الملف.",
+                "previewUnavailable": "هذا الملف غير متوفر لهذه الحالة."
+            }
+        }
+    }
+}

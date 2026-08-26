@@ -1,0 +1,246 @@
+{
+    "emailComposeAgent": {
+        "nav": {
+            "compose": "إنشاء",
+            "myEmails": "رسائلي"
+        },
+        "common": {
+            "noSubject": "(بلا موضوع)",
+            "mode": {
+                "compose": "إنشاء",
+                "reply": "رد"
+            }
+        },
+        "tones": {
+            "Professional": "مهني",
+            "Friendly": "ودّي",
+            "Formal": "رسمي",
+            "Persuasive": "إقناعي",
+            "Concise": "موجز",
+            "Apologetic": "اعتذاري",
+            "Assertive": "حازم",
+            "Diplomatic": "دبلوماسي"
+        },
+        "classification": {
+            "Confidential": "سري",
+            "Internal": "داخلي",
+            "Public": "عام"
+        },
+        "reviewStatus": {
+            "auto_approved": "معتمد تلقائيًا",
+            "needs_review": "بحاجة إلى مراجعة",
+            "approved": "معتمد",
+            "rejected": "مرفوض"
+        },
+        "emotionalTone": {
+            "heated": "متوتر",
+            "frustrated": "محبط",
+            "urgent": "عاجل",
+            "neutral": "محايد"
+        },
+        "callTypes": {
+            "compose": "إنشاء رسالة",
+            "replyQuestions": "رد — أسئلة توضيحية",
+            "replyDraft": "رد — مسودة",
+            "translate": "ترجمة",
+            "qa": "سؤال عن المستند (سؤال وجواب)"
+        },
+        "toolbar": {
+            "eyebrow": "وكيل إنشاء البريد الإلكتروني",
+            "rateAgent": "تقييم الوكيل",
+            "performance": "الأداء",
+            "reviewQueue": "قائمة المراجعة",
+            "stats": "الإحصاءات",
+            "writingProfile": "ملف الكتابة"
+        },
+        "compose": {
+            "title": "إنشاء رسالة بريد إلكتروني",
+            "subtitle": "صف ما تريد قوله، أو الصق محادثة تريد الرد عليها. يقوم الوكيل بصياغة رسالة كاملة بالنبرة التي تختارها.",
+            "modeCompose": "رسالة جديدة",
+            "modeReply": "الرد على محادثة",
+            "context": "ما الذي تريد قوله؟",
+            "contextPlaceholder": "صف الرسالة التي تريدها — لمن هي، وما موضوعها، وأي نقاط رئيسية يجب تضمينها…",
+            "recipientHint": "المستلم (اختياري)",
+            "recipientHintPlaceholder": "مثال: عميل، مديري، جهة حكومية…",
+            "tone": "النبرة",
+            "submit": "إنشاء الرسالة"
+        },
+        "reply": {
+            "modePaste": "لصق المحادثة",
+            "modeUpload": "رفع المحادثة",
+            "threadTextLabel": "الصق محادثة البريد الإلكتروني التي تريد الرد عليها",
+            "threadTextPlaceholder": "الصق نص المحادثة الكاملة هنا…",
+            "readThread": "قراءة المحادثة والمتابعة",
+            "threadSummary": "ملخص المحادثة",
+            "emotionalToneBannerHeated": "تبدو هذه المحادثة متوترة — يُنصح باستخدام نبرة دبلوماسية في ردك.",
+            "emotionalToneBannerFrustrated": "تبدو هذه المحادثة محبطة — يُنصح باستخدام نبرة دبلوماسية في ردك.",
+            "useDiplomaticTone": "استخدام النبرة الدبلوماسية",
+            "questionsTitle": "بضعة أسئلة سريعة قبل صياغة ردك",
+            "questionsEmpty": "لا توجد أسئلة توضيحية — أنت جاهز لصياغة الرد.",
+            "answerPlaceholder": "إجابتك…",
+            "tone": "نبرة الرد",
+            "back": "رجوع",
+            "draftReply": "صياغة الرد"
+        },
+        "dropzone": {
+            "dropTitle": "أفلت المحادثة هنا أو انقر للتصفح",
+            "dropSubtitle": "PDF أو DOCX أو TXT — يُرفع على دفعات",
+            "cancel": "إلغاء",
+            "chunks": "أجزاء",
+            "pages": "صفحة/صفحات"
+        },
+        "myEmails": {
+            "title": "رسائلي",
+            "subtitle": "ابحث وصفِّ وأدر كل رسالة قام الوكيل بإنشائها أو صياغتها.",
+            "searchPlaceholder": "ابحث بالموضوع أو النص…",
+            "search": "بحث",
+            "resultCount": "{{ count }} رسالة/رسائل",
+            "delete": "حذف",
+            "table": {
+                "subject": "الموضوع",
+                "mode": "النوع",
+                "tone": "النبرة",
+                "language": "اللغة",
+                "wordCount": "عدد الكلمات",
+                "classification": "التصنيف",
+                "reviewStatus": "حالة المراجعة",
+                "created": "تاريخ الإنشاء"
+            }
+        },
+        "filters": {
+            "anyClassification": "أي تصنيف",
+            "anyMode": "أي نوع",
+            "from": "من",
+            "to": "إلى"
+        },
+        "pagination": {
+            "prev": "→ السابق",
+            "next": "التالي ←",
+            "pageOf": "صفحة {{ page }} من {{ total }}"
+        },
+        "confirm": {
+            "header": "يرجى التأكيد",
+            "deleteEmail": "هل تريد إزالة \"{{ subject }}\" من مكتبة رسائلك؟"
+        },
+        "tabs": {
+            "overview": "نظرة عامة",
+            "ask": "اسأل الوكيل"
+        },
+        "detail": {
+            "title": "الرسالة",
+            "loading": "جارٍ تحميل الرسالة…",
+            "newEmail": "رسالة جديدة",
+            "flaggedForReview": "تم تصنيف هذه الرسالة بحاجة إلى مراجعة بشرية",
+            "reviewNow": "مراجعة الآن",
+            "recordDecision": "تسجيل قرار المراجعة",
+            "reviewerNamePlaceholder": "اسمك (اختياري)",
+            "reviewerNotesPlaceholder": "ملاحظات حول هذا القرار (اختياري)…",
+            "cancel": "إلغاء",
+            "reject": "رفض",
+            "approve": "اعتماد",
+            "translate": "ترجمة",
+            "showOriginal": "عرض النص الأصلي",
+            "copy": "نسخ",
+            "copied": "تم النسخ!",
+            "checklistTitle": "قائمة التحقق قبل الإرسال",
+            "checklistAllClear": "كل شيء واضح — لا يوجد نقص أو محتوى حساس.",
+            "missingInfo": "معلومات ناقصة",
+            "sensitivePatterns": "تم اكتشاف محتوى حساس",
+            "readTime": "{{ minutes }} دقيقة قراءة",
+            "tone": "النبرة",
+            "wordCount": "عدد الكلمات",
+            "confidence": "الثقة",
+            "classification": "التصنيف",
+            "clarificationsAnswered": "الأسئلة التوضيحية المجابة",
+            "mode": "النوع",
+            "contextInput": "الموجز الأصلي",
+            "replyThread": "المحادثة الأصلية",
+            "you": "أ",
+            "agentInitials": "IX",
+            "thinking": "جارٍ التفكير…",
+            "askEmpty": "انقر على أحد الاقتراحات أعلاه، أو اكتب سؤالك الخاص أدناه.",
+            "askPlaceholder": "اطرح سؤالاً حول هذه الرسالة…",
+            "send": "إرسال",
+            "suggestedQuestions": "أسئلة مقترحة — انقر للاختيار",
+            "note": "ملاحظة"
+        },
+        "reviewQueue": {
+            "title": "قائمة المراجعة",
+            "empty": "لا توجد رسائل بحاجة إلى مراجعة الآن — استوفت جميع الرسائل معيار الثقة تلقائيًا.",
+            "footerNote": "تُدرج الرسائل هنا عند انخفاض نسبة الثقة أو اكتشاف محتوى حساس"
+        },
+        "performance": {
+            "title": "تقرير أداء الوكيل",
+            "footerNote": "بيانات القياس مخزّنة في قاعدة بيانات Postgres (infinyx_email_compose)"
+        },
+        "stats": {
+            "eyebrow": "وكيل إنشاء البريد الإلكتروني",
+            "title": "إحصاءات الوكيل",
+            "totalEmails": "إجمالي الرسائل",
+            "totalComposed": "المُنشأة",
+            "totalReplied": "الردود",
+            "totalTranslated": "المترجمة",
+            "totalQuestions": "الأسئلة المطروحة",
+            "totalFeedback": "التقييمات المقدَّمة",
+            "averageRating": "متوسط التقييم",
+            "averageConfidence": "متوسط الثقة",
+            "wordsComposed": "الكلمات المُنشأة",
+            "byTone": "الرسائل حسب النبرة",
+            "byClassification": "الرسائل حسب التصنيف",
+            "searchHistory": "عمليات البحث الأخيرة",
+            "noSearchHistory": "لم يتم تسجيل أي عمليات بحث بعد.",
+            "emptyQuery": "(استعلام فارغ)"
+        },
+        "feedback": {
+            "title": "تقييم الوكيل",
+            "forEmail": "هذه الرسالة",
+            "overall": "الوكيل بشكل عام",
+            "commentPlaceholder": "ما الذي أعجبك، وما الذي يمكن تحسينه…"
+        },
+        "writingProfile": {
+            "eyebrow": "وكيل إنشاء البريد الإلكتروني",
+            "title": "ملف الكتابة",
+            "senderName": "اسمك",
+            "senderNamePlaceholder": "مثال: سارة المنصوري",
+            "senderTitle": "منصبك",
+            "senderTitlePlaceholder": "مثال: مسؤول مراسم",
+            "senderCompany": "جهتك",
+            "senderCompanyPlaceholder": "مثال: وزارة الخارجية",
+            "signatureBlock": "التوقيع",
+            "signatureBlockPlaceholder": "كيف تريد أن تُختم الرسائل…",
+            "defaultTone": "النبرة الافتراضية",
+            "notes": "ملاحظات",
+            "notesPlaceholder": "أي شيء آخر يجب أن يعرفه الوكيل عند الكتابة نيابة عنك…",
+            "cancel": "إلغاء",
+            "save": "حفظ"
+        },
+        "toast": {
+            "toneSwitchFailed": "تعذّر تغيير النبرة. يرجى المحاولة مرة أخرى.",
+            "copied": "تم النسخ إلى الحافظة",
+            "copyFailed": "تعذّر النسخ إلى الحافظة",
+            "dropAcceptedOnly": "يرجى إفلات ملف بصيغة PDF أو DOCX أو TXT",
+            "fileTooLarge": "هذا الملف أكبر من 15 ميغابايت. يرجى رفع ملف أصغر.",
+            "uploadCancelled": "تم إلغاء الرفع",
+            "uploadFailed": "فشل الرفع. يرجى المحاولة مرة أخرى.",
+            "composeFailed": "تعذّر إنشاء الرسالة. يرجى المحاولة مرة أخرى.",
+            "contextRequired": "صف ما تريد قوله أولاً",
+            "threadRequired": "الصق المحادثة أو ارفعها أولاً",
+            "readThreadFailed": "تعذّرت قراءة المحادثة. يرجى المحاولة مرة أخرى.",
+            "draftReplyFailed": "تعذّرت صياغة الرد. يرجى المحاولة مرة أخرى.",
+            "loadEmailsFailed": "تعذّر تحميل الرسائل. يرجى المحاولة مرة أخرى.",
+            "loadEmailFailed": "تعذّر فتح هذه الرسالة.",
+            "emailDeleted": "تمت إزالة الرسالة",
+            "deleteFailed": "تعذّرت إزالة هذه الرسالة.",
+            "askFailed": "تعذّر الحصول على إجابة. يرجى المحاولة مرة أخرى.",
+            "translateFailed": "تعذّرت ترجمة الرسالة. يرجى المحاولة مرة أخرى.",
+            "reviewApproved": "تم اعتماد الرسالة",
+            "reviewRejected": "تم رفض الرسالة",
+            "reviewFailed": "تعذّر تسجيل قرار المراجعة.",
+            "feedbackSubmitted": "شكرًا لتقييمك للوكيل!",
+            "feedbackFailed": "تعذّر إرسال التقييم. يرجى المحاولة مرة أخرى.",
+            "loadProfileFailed": "تعذّر تحميل ملف الكتابة الخاص بك.",
+            "profileSaved": "تم حفظ ملف الكتابة",
+            "profileSaveFailed": "تعذّر حفظ ملف الكتابة الخاص بك."
+        }
+    }
+}

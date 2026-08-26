@@ -1,0 +1,142 @@
+{
+    "docCompare": {
+        "eyebrow": "مهمة الوكيل",
+        "title": "مقارنة المستندات",
+        "subtitle": "قم بتحميل مستند أساسي ومستند للمقارنة. يستخرج الوكيل النص من جهة الخادم، ويشغّل مقارنة على مستوى الصفحة، ويلخص التغييرات ومدى خطورتها.",
+        "vs": "مقابل",
+        "optional": "اختياري",
+        "actions": {
+            "history": "السجل",
+            "compare": "مقارنة المستندات",
+            "newComparison": "مقارنة جديدة",
+            "saveVersionA": "حفظ الإصدار A",
+            "saveVersionB": "حفظ الإصدار B",
+            "buildMergedDraft": "إنشاء مسودة مدمجة",
+            "cancel": "إلغاء",
+            "close": "إغلاق",
+            "delete": "حذف"
+        },
+        "dropzone": {
+            "baseDocument": "المستند الأساسي",
+            "compareDocument": "مستند المقارنة",
+            "versionA": "الإصدار A",
+            "versionB": "الإصدار B",
+            "lockedToMaster": "مرتبط بالنسخة الرئيسية — المقارنات الجديدة تبدأ من هنا افتراضياً",
+            "dropTitle": "أسقط ملف PDF هنا، أو انقر للتصفح",
+            "dropSubtitle": "ملفات PDF فقط — يتم الرفع على شكل أجزاء",
+            "useSaved": "استخدام إصدار محفوظ بدلاً من ذلك",
+            "cancel": "إلغاء",
+            "chunks": "أجزاء",
+            "master": "رئيسي",
+            "fromLibrary": "من المكتبة",
+            "pages": "صفحة/صفحات",
+            "compareDifferentBaseline": "قارن مع نسخة أساسية مختلفة بدلاً من ذلك",
+            "chooseDifferent": "اختر إصداراً مختلفاً"
+        },
+        "statStrip": {
+            "similarity": "التشابه",
+            "additions": "الإضافات",
+            "deletions": "الحذف",
+            "pagesChanged": "الصفحات المتغيرة",
+            "totalPages": "إجمالي الصفحات"
+        },
+        "agentCard": {
+            "agentRead": "قراءة الوكيل",
+            "unknown": "غير معروف",
+            "risk": "خطورة",
+            "summaryUnavailable": "ملخص الوكيل غير متوفر"
+        },
+        "changeNav": {
+            "changesOnThisComparison": "تغييرات في هذه المقارنة",
+            "prev": "التغيير السابق",
+            "next": "التغيير التالي",
+            "overrides": "تم ضبط {{ count }} تغيير(ات) للاحتفاظ بنص {{ baseLabel }}"
+        },
+        "legend": {
+            "addition": "إضافة",
+            "deletion": "حذف",
+            "overwrite": "استبدال",
+            "pageWithChanges": "صفحة بها تغييرات"
+        },
+        "pageNav": {
+            "page": "صفحة"
+        },
+        "pageStatus": {
+            "newPage": "صفحة جديدة — موجودة فقط في الإصدار B",
+            "removedPage": "صفحة محذوفة — موجودة فقط في الإصدار A",
+            "noChanges": "لم يتم اكتشاف تغييرات",
+            "overwritten": "تم استبدالها",
+            "changes": "تغيير(ات)",
+            "identical": "هذه الصفحة مطابقة في كلا الإصدارين."
+        },
+        "versionPicker": {
+            "eyebrow": "مكتبة الإصدارات",
+            "title": "اختر نسخة أساسية",
+            "empty": "لا توجد إصدارات محفوظة بعد. قارن مستندين واحفظ أحدهما لبناء مكتبتك.",
+            "use": "استخدام هذا الإصدار"
+        },
+        "saveDrawer": {
+            "eyebrow": "مكتبة الإصدارات",
+            "title": "حفظ إصدار المستند هذا",
+            "label": "تسمية الإصدار",
+            "labelPlaceholder": "مثال: سياسة التصديق — مراجعة 4",
+            "tag": "حالة الوسم",
+            "notes": "ملاحظات",
+            "notesPlaceholder": "ما الذي تغيّر في هذا الإصدار، أو سبب حفظه…",
+            "setMaster": "تعيين كـ<b>نسخة رئيسية</b> — ستُستخدم المقارنات المستقبلية هذه كنسخة أساسية افتراضياً",
+            "savingVersion": "جارٍ حفظ الإصدار {{ slot }}",
+            "savingNote": "سيتم تخزين النص المستخرج في مكتبة الإصدارات لمقارنته لاحقاً. لا يتم الاحتفاظ بملف PDF الأصلي.",
+            "confirm": "حفظ الإصدار"
+        },
+        "mergeDrawer": {
+            "eyebrow": "وكيل مقارنة المستندات",
+            "title": "إنشاء مسودة مدمجة",
+            "label": "تسمية المسودة",
+            "labelPlaceholder": "مثال: سياسة التصديق — مسودة مدمجة",
+            "defaultNoteAllCompare": "بشكل افتراضي، تحتفظ كل التغييرات بنص {{ compareLabel }}. فعّل A على أي تغيير في عرض المقارنة أولاً إذا أردت الاحتفاظ بالصياغة القديمة في ذلك الموضع.",
+            "defaultNoteWithOverrides": "بشكل افتراضي، تحتفظ كل التغييرات بنص {{ compareLabel }}. لقد قمت بضبط {{ overriddenCount }} تغيير(ات) للاحتفاظ بنص {{ baseLabel }} بدلاً من ذلك — ستُنقل تلك إلى هذه المسودة.",
+            "setMaster": "تعيين هذه المسودة المدمجة كنسخة رئيسية",
+            "confirm": "حفظ المسودة المدمجة"
+        },
+        "historyDrawer": {
+            "title": "السجل",
+            "savedVersions": "الإصدارات المحفوظة",
+            "comparisonLog": "سجل المقارنات",
+            "noVersions": "لا توجد إصدارات محفوظة بعد.",
+            "noLog": "لم يتم إجراء أي مقارنات بعد.",
+            "useAsA": "استخدام كإصدار A",
+            "useAsB": "استخدام كإصدار B",
+            "setAsMaster": "تعيين كرئيسي",
+            "removeFromLog": "إزالة من السجل",
+            "pagesChanged": "صفحات متغيرة",
+            "storageNote": "مخزّن في مكتبة إصداراتك"
+        },
+        "loading": {
+            "comparingTitle": "جارٍ مقارنة المستندات…",
+            "comparingSub": "استخراج النص وتشغيل محرك المقارنة"
+        },
+        "confirm": {
+            "header": "يرجى التأكيد",
+            "deleteVersion": "إزالة \"{{ label }}\" من مكتبة إصداراتك؟",
+            "deleteLogEntry": "إزالة هذه المقارنة من السجل؟"
+        },
+        "toast": {
+            "dropPdfOnly": "يرجى إسقاط ملف PDF",
+            "uploadCancelled": "تم إلغاء الرفع",
+            "uploadFailed": "فشل الرفع. يرجى المحاولة مرة أخرى.",
+            "comparisonFailed": "فشلت المقارنة. يرجى المحاولة مرة أخرى.",
+            "loadedAsVersion": "تم تحميل \"{{ label }}\" كإصدار {{ slot }}",
+            "onlyNewUploadsSaveable": "يمكن حفظ الملفات المرفوعة حديثاً فقط. هذا الجانب هو بالفعل إصدار محفوظ.",
+            "labelRequired": "يرجى إعطاء هذا تسمية",
+            "savedAsMaster": "تم حفظ \"{{ label }}\" كنسخة رئيسية",
+            "savedToLibrary": "تم حفظ \"{{ label }}\" في مكتبة إصداراتك",
+            "saveFailed": "تعذر حفظ هذا الإصدار.",
+            "mergedDraftSavedMaster": "تم حفظ المسودة المدمجة \"{{ label }}\" كنسخة رئيسية",
+            "mergedDraftSaved": "تم حفظ المسودة المدمجة \"{{ label }}\"",
+            "mergeFailed": "تعذر حفظ المسودة المدمجة.",
+            "setAsMaster": "تم تعيين \"{{ label }}\" كنسخة رئيسية",
+            "setMasterFailed": "تعذر تعيين النسخة الرئيسية.",
+            "versionRemoved": "تمت إزالة الإصدار من المكتبة"
+        }
+    }
+}

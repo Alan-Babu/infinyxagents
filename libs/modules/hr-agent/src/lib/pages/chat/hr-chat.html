@@ -1,0 +1,281 @@
+<div class="flex flex-1 overflow-hidden bg-gray-50">
+    <!-- Main pane -->
+    <div class="flex min-w-0 flex-1 flex-col">
+        <div class="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
+            <h1 class="truncate text-xl font-bold text-gray-800">{{ currentTitle }}</h1>
+            <div class="flex items-center gap-1">
+                <button type="button" class="grid h-9 w-9 cursor-pointer place-items-center rounded-full text-primary-600/70 transition hover:bg-gray-100 disabled:opacity-50"
+                    pTooltip="{{ 'hrAgent.talkToHuman' | translate }}" tooltipPosition="top" [disabled]="sending" (click)="askForHuman()">
+                    <i class="pi pi-user"></i>
+                </button>
+                <button type="button" class="grid h-9 w-9 cursor-pointer place-items-center rounded-full text-primary-600 transition hover:bg-gray-100 disabled:opacity-50"
+                    pTooltip="{{ 'hrAgent.newChat' | translate }}" tooltipPosition="top" [disabled]="sending" (click)="newChat()">
+                    <i class="pi pi-plus"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex-1 space-y-6 overflow-y-auto px-6 py-6">
+            <div class="mx-auto max-w-4xl">
+                @for (message of messages; track message; let last = $last) {
+                <div class="flex items-start gap-3" [class.flex-row-reverse]="message.role === 'user'">
+                    @if (message.role !== 'user') {
+                    <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full border-2 border-primary-500 bg-white text-primary-500">
+                        <i class="pi pi-android"></i>
+                    </span>
+                    }
+                    @if (message.role === 'user') {
+                    <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary-500 text-sm font-bold text-white">
+                        {{ userInitials || '🙂' }}
+                    </span>
+                    }
+                    <div class="flex max-w-[70%] flex-col gap-1.5" [class.items-end]="message.role === 'user'">
+                        <div class="whitespace-pre-wrap rounded-lg px-4 py-3 text-sm leading-relaxed"
+                            [class.bg-white]="message.role !== 'user'" [class.text-gray-900]="message.role !== 'user'"
+                            [class.border]="message.role !== 'user'" [class.border-gray-200]="message.role !== 'user'"
+                            [class.bg-primary-600]="message.role === 'user'" [class.text-white]="message.role === 'user'">
+                            @if (message.attachmentName) {
+                            <div class="mb-1.5 inline-flex items-center gap-1.5 rounded-lg bg-white/15 px-2.5 py-1.5 text-xs font-medium">
+                                <i class="pi pi-paperclip text-xs"></i>
+                                {{ message.attachmentName }}
+                            </div>
+                            }
+                            @if (message.verification; as verification) {
+                            {{ verificationSummaryText(verification) }}
+                            } @else if (message.content) {
+                            {{ message.content }}
+                            }
+                        </div>
+                        <span class="flex items-center gap-1 px-1 text-xs text-gray-400">
+                            {{ message.created_at ? (message.created_at | date: 'HH:mm') : '' }}
+                            <i class="pi pi-check text-xs"></i>
+                            @if (message.duration_ms || message.token_usage?.total_tokens) {
+                            <span class="text-gray-300">·</span>
+                            @if (message.duration_ms) {
+                            <span>{{ formatDuration(message.duration_ms) }}</span>
+                            }
+                            @if (message.token_usage?.total_tokens) {
+                            <span>{{ formatTokens(message.token_usage) }}</span>
+                            }
+                            }
+                        </span>
+
+                        @if (message.verification; as verification) {
+                        <div class="w-full max-w-full rounded-lg bg-white p-4 text-sm text-gray-900">
+                            <div class="mb-3 font-semibold">{{ "hrAgent.verification.title" | translate }}</div>
+                            @if (verification.field_comparison.length) {
+                            <table class="mb-3 w-full border-collapse">
+                                <thead>
+                                    <tr>
+                                        <th class="border-b border-gray-200 px-2 py-1.5 text-start text-xs uppercase tracking-wide text-gray-400">{{ "hrAgent.verification.field" | translate }}</th>
+                                        <th class="border-b border-gray-200 px-2 py-1.5 text-start text-xs uppercase tracking-wide text-gray-400">{{ "hrAgent.verification.uploadedCopy" | translate }}</th>
+                                        <th class="border-b border-gray-200 px-2 py-1.5 text-start text-xs uppercase tracking-wide text-gray-400">{{ "hrAgent.verification.officialCopy" | translate }}</th>
+                                        <th class="border-b border-gray-200 px-2 py-1.5 text-start text-xs uppercase tracking-wide text-gray-400">{{ "hrAgent.verification.match" | translate }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (entry of verification.field_comparison; track entry.field) {
+                                    <tr>
+                                        <td class="whitespace-nowrap border-b border-gray-100 px-2 py-1.5 align-top font-semibold">{{ entry.label }}</td>
+                                        <td class="border-b border-gray-100 px-2 py-1.5 align-top wrap-break-word">{{ entry.uploaded || '—' }}</td>
+                                        <td class="border-b border-gray-100 px-2 py-1.5 align-top wrap-break-word">{{ entry.official || '—' }}</td>
+                                        <td class="border-b border-gray-100 px-2 py-1.5 text-center align-top">
+                                            @if (entry.match === true) {
+                                            <i class="pi pi-check font-bold text-green-700" pTooltip="{{ 'hrAgent.verification.matches' | translate }}" tooltipPosition="top"></i>
+                                            }
+                                            @if (entry.match === false) {
+                                            <i class="pi pi-times font-bold text-red-700" pTooltip="{{ 'hrAgent.verification.differs' | translate }}" tooltipPosition="top"></i>
+                                            }
+                                            @if (entry.match === null) {
+                                            <span class="font-bold text-gray-400" pTooltip="{{ 'hrAgent.verification.notApplicable' | translate }}" tooltipPosition="top">–</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            } @else {
+                            <p class="mb-3 italic text-gray-400">{{ "hrAgent.verification.noFields" | translate }}</p>
+                            }
+
+                            <div class="mb-3 flex flex-wrap items-center gap-2">
+                                <button type="button" class="cursor-pointer rounded-full border border-gray-200 bg-gray-50 px-3.5 py-1.5 text-xs font-semibold text-gray-900 transition hover:bg-gray-100"
+                                    (click)="openDocument(verification.documents.uploaded)">
+                                    {{ "hrAgent.verification.viewUploaded" | translate }}
+                                </button>
+                                @if (verification.documents.official) {
+                                <button type="button" class="cursor-pointer rounded-full border border-gray-200 bg-gray-50 px-3.5 py-1.5 text-xs font-semibold text-gray-900 transition hover:bg-gray-100"
+                                    (click)="openDocument(verification.documents.official)">
+                                    {{ "hrAgent.verification.viewOfficial" | translate }}
+                                </button>
+                                } @else {
+                                <span class="text-xs text-gray-400">{{ "hrAgent.verification.noOfficialCopy" | translate }}</span>
+                                }
+                            </div>
+
+                            @if (verification.leave_request; as leave) {
+                            <div class="mb-3 rounded-lg bg-gray-50 px-3 py-2.5 text-gray-700">
+                                {{ "hrAgent.verification.leaveApplied" | translate: { days: leave.days, start: leave.start_date, end: leave.end_date } }}
+                            </div>
+                            }
+
+                            <div class="flex items-start gap-2 rounded-lg px-3 py-2.5" [class.bg-green-50]="verification.approved" [class.bg-red-50]="!verification.approved">
+                                <span class="mt-0.5 shrink-0 rounded-full px-2.5 py-0.5 text-xs font-bold tracking-wide"
+                                    [class.bg-green-100]="verification.approved" [class.text-green-700]="verification.approved"
+                                    [class.bg-red-100]="!verification.approved" [class.text-red-700]="!verification.approved">
+                                    {{ (verification.approved ? "hrAgent.verification.approved" : "hrAgent.verification.notApproved") | translate }}
+                                </span>
+                                <p class="leading-snug" [class.text-green-800]="verification.approved" [class.text-red-800]="!verification.approved">
+                                    {{ verification.reason }}
+                                </p>
+                            </div>
+                        </div>
+                        }
+
+                        @if (message.role !== 'user' && !sending) {
+                        <div class="flex items-center gap-3 px-1 text-gray-400">
+                            <button type="button" class="cursor-pointer transition hover:text-primary-600" pTooltip="{{ 'hrAgent.actions.readAloud' | translate }}" tooltipPosition="top" (click)="speakMessage(message)">
+                                <i class="pi pi-volume-up"></i>
+                            </button>
+                            <button type="button" class="cursor-pointer transition hover:text-primary-600" pTooltip="{{ 'hrAgent.actions.copy' | translate }}" tooltipPosition="top" (click)="copyMessage(message)">
+                                <i class="pi pi-copy"></i>
+                            </button>
+                            @if (last) {
+                            <button type="button" class="cursor-pointer transition hover:text-primary-600" pTooltip="{{ 'hrAgent.actions.regenerate' | translate }}" tooltipPosition="top" (click)="regenerateLast()">
+                                <i class="pi pi-refresh"></i>
+                            </button>
+                            }
+                            <button type="button" class="cursor-pointer transition hover:text-primary-600" [class.text-primary-500]="message.feedback === 'like'"
+                                pTooltip="{{ 'hrAgent.actions.goodResponse' | translate }}" tooltipPosition="top" (click)="giveFeedback(message, 'like')">
+                                <i class="pi pi-thumbs-up"></i>
+                            </button>
+                            <button type="button" class="cursor-pointer transition hover:text-primary-600" [class.text-red-500]="message.feedback === 'dislike'"
+                                pTooltip="{{ 'hrAgent.actions.notHelpful' | translate }}" tooltipPosition="top" (click)="giveFeedback(message, 'dislike')">
+                                <i class="pi pi-thumbs-down"></i>
+                            </button>
+                        </div>
+                        }
+
+                        @if (message.feedbackPromptOpen) {
+                        <div class="w-full max-w-sm rounded-lg bg-gray-50 p-3 text-sm">
+                            <label class="mb-1.5 block text-xs font-semibold text-gray-500">{{ "hrAgent.dislike.whatWentWrong" | translate }}</label>
+                            <textarea #issueBox rows="2" class="w-full resize-none rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                                [placeholder]="'hrAgent.dislike.placeholder' | translate"></textarea>
+                            <div class="mt-2 flex justify-end gap-2">
+                                <button type="button" class="cursor-pointer rounded-full px-3 py-1 text-xs font-semibold text-gray-500 transition hover:bg-gray-100" (click)="skipDislikeReason(message)">
+                                    {{ "hrAgent.dislike.skip" | translate }}
+                                </button>
+                                <button type="button" class="cursor-pointer rounded-full bg-primary-500 px-3.5 py-1 text-xs font-semibold text-white transition hover:bg-primary-400"
+                                    (click)="submitDislikeReason(message, issueBox.value)">
+                                    {{ "hrAgent.dislike.submit" | translate }}
+                                </button>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </div>
+                }
+
+                @if (sending) {
+                <div class="flex items-start gap-3">
+                    <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full border-2 border-primary-500 bg-white text-primary-500">
+                        <i class="pi pi-android"></i>
+                    </span>
+                    @if (streamText) {
+                    <div class="max-w-[70%] whitespace-pre-wrap rounded-lg bg-white px-4 py-3 text-sm leading-relaxed text-gray-900">
+                        {{ streamText }}
+                    </div>
+                    } @else {
+                    <div class="flex items-center gap-1.5 rounded-lg bg-white px-4 py-3.5">
+                        <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400"></span>
+                        <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400 [animation-delay:150ms]"></span>
+                        <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400 [animation-delay:300ms]"></span>
+                        @if (statusText) {
+                        <em class="ms-2 text-sm not-italic text-gray-500">{{ statusText }}</em>
+                        }
+                    </div>
+                    }
+                </div>
+                }
+
+                <div #scrollAnchor></div>
+            </div>
+        </div>
+
+        <!-- Composer -->
+        <div class="mx-auto w-full max-w-4xl px-6 pb-6">
+            @if (pendingAttachmentName) {
+            <div class="mb-2 inline-flex items-center gap-2 rounded-full bg-primary-500/15 px-3 py-1 text-sm font-semibold text-primary-700">
+                <i class="pi pi-paperclip text-xs"></i>
+                {{ pendingAttachmentName }}
+                <button type="button" class="cursor-pointer text-primary-600/80 hover:text-primary-600" (click)="clearAttachment()">✕</button>
+            </div>
+            }
+            <form class="space-y-3 rounded-lg border-2 border-gray-200 bg-white p-3 focus-within:border-primary-500" (ngSubmit)="send()">
+                <input name="draft" class="w-full border-0 bg-transparent px-1 py-2 text-gray-900 placeholder:text-gray-400 focus:outline-none"
+                    [(ngModel)]="draft" [placeholder]="'hrAgent.composerPlaceholder' | translate" [disabled]="sending" autocomplete="off" />
+                <div class="flex items-center gap-2">
+                    <div class="flex flex-1 items-center gap-1">
+                        <label class="grid h-9 w-9 shrink-0 cursor-pointer place-items-center rounded-full text-gray-400 transition-colors hover:text-primary-600"
+                            pTooltip="{{ 'hrAgent.attachFile' | translate }}" tooltipPosition="top">
+                            <i class="pi pi-paperclip"></i>
+                            <input type="file" (change)="onFileSelected($event)" hidden />
+                        </label>
+                    </div>
+                    <button type="submit" class="grid h-9 w-9 shrink-0 cursor-pointer place-items-center rounded-full text-white transition disabled:cursor-not-allowed"
+                        [class.bg-primary-500]="!sending && (draft.trim() || pendingAttachmentId)" [class.hover:bg-primary-400]="!sending && (draft.trim() || pendingAttachmentId)"
+                        [class.bg-gray-300]="sending || (!draft.trim() && !pendingAttachmentId)"
+                        [disabled]="sending || (!draft.trim() && !pendingAttachmentId)" pTooltip="{{ 'hrAgent.send' | translate }}" tooltipPosition="top">
+                        <i class="pi pi-send text-sm"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- History + Quick actions -->
+    <aside class="flex w-72 shrink-0 flex-col overflow-y-auto border-s border-gray-200 bg-white text-gray-900">
+        <div class="px-5 py-5">
+            <h2 class="text-lg font-bold">{{ "hrAgent.history.title" | translate }}</h2>
+        </div>
+        <div class="px-3 pb-4">
+            @if (conversations.length === 0) {
+            <p class="px-2 text-sm text-gray-500">{{ "hrAgent.history.empty" | translate }}</p>
+            }
+            @for (group of groupedConversations; track group.labelKey) {
+            <div class="mb-2">
+                <div class="px-2 pb-2 pt-3 text-xs font-bold uppercase tracking-wide text-gray-400">{{ group.labelKey | translate }}</div>
+                @for (conversation of group.items; track conversation.id) {
+                <div class="group relative mb-1">
+                    <button type="button" class="w-full cursor-pointer truncate rounded-lg py-2 ps-3 pe-8 text-start text-sm text-gray-700 transition hover:bg-gray-100 disabled:opacity-50"
+                        [class.bg-primary-50]="conversation.id === conversationId" [class.text-primary-700]="conversation.id === conversationId"
+                        [class.font-semibold]="conversation.id === conversationId" [disabled]="loadingHistory" (click)="openConversation(conversation)">
+                        {{ conversation.preview || ("hrAgent.history.noMessages" | translate) }}
+                    </button>
+                    <button type="button"
+                        class="absolute inset-e-1.5 top-1/2 -translate-y-1/2 cursor-pointer rounded p-1 text-gray-400 opacity-0 transition pointer-events-none hover:bg-gray-200 hover:text-red-600 group-hover:pointer-events-auto group-hover:opacity-100 disabled:opacity-50"
+                        pTooltip="{{ 'hrAgent.history.delete' | translate }}" tooltipPosition="top" [disabled]="loadingHistory" (click)="deleteConversation($event, conversation)">
+                        <i class="pi pi-trash text-xs"></i>
+                    </button>
+                </div>
+                }
+            </div>
+            }
+        </div>
+
+        <div class="border-t border-gray-200 px-5 py-5">
+            <h2 class="text-lg font-bold">{{ "hrAgent.quickActions.title" | translate }}</h2>
+        </div>
+        <div class="px-3 pb-4">
+            @for (action of quickActions; track action.labelKey) {
+            <button type="button" class="mb-1 flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-start text-sm font-semibold text-gray-700 transition hover:bg-gray-100 disabled:opacity-50"
+                [disabled]="sending" (click)="sendQuickAction(action)">
+                <span class="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-primary-50 text-primary-600">
+                    <i [class]="action.icon"></i>
+                </span>
+                {{ action.labelKey | translate }}
+            </button>
+            }
+        </div>
+    </aside>
+</div>

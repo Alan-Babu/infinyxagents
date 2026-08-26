@@ -1,0 +1,256 @@
+<lib-page-header titleKey="docCompare.title" subtitleKey="docCompare.subtitle" [showBack]="false">
+    <button type="button" pButton severity="secondary" [outlined]="true" (click)="openHistoryDrawer()"><i class="pi pi-history"></i><span>{{ 'docCompare.actions.history' | translate }}</span></button>
+</lib-page-header>
+
+<div class="mx-auto flex max-w-5xl flex-col gap-6 p-6">
+
+    <!-- ===================== UPLOAD SCREEN ===================== -->
+    @if (screen === 'upload') {
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <lib-doc-compare-dropzone slot="A" [label]="'docCompare.dropzone.baseDocument' | translate"
+            [roleBadge]="'docCompare.dropzone.versionA' | translate" [doc]="docA" [uploadProgress]="uploadProgress['A']"
+            [showMasterBanner]="!!master" (fileSelected)="onFileSelected('A', $event)"
+            (dropped)="onDropped('A', $event)" (openPicker)="openPicker('A')" (clearSlot)="clearSlot('A')"
+            (cancelUpload)="cancelUpload('A')" />
+
+        <lib-doc-compare-dropzone slot="B" [label]="'docCompare.dropzone.compareDocument' | translate"
+            [roleBadge]="'docCompare.dropzone.versionB' | translate" [doc]="docB" [uploadProgress]="uploadProgress['B']"
+            (fileSelected)="onFileSelected('B', $event)" (dropped)="onDropped('B', $event)"
+            (openPicker)="openPicker('B')" (clearSlot)="clearSlot('B')" (cancelUpload)="cancelUpload('B')" />
+    </div>
+
+    <div class="flex justify-center">
+        <button type="button" pButton [disabled]="!canCompare" (click)="runComparison()"><i class="pi pi-arrows-h"></i><span>{{ 'docCompare.actions.compare' | translate }}</span></button>
+    </div>
+    }
+
+    <!-- ===================== RESULTS SCREEN ===================== -->
+    @if (screen === 'results' && result) {
+    <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white p-4">
+        <div class="flex items-center gap-2 text-sm font-medium text-gray-700">
+            <span class="rounded bg-gray-100 px-2 py-1">{{ baseLabel }}</span>
+            <span class="text-gray-400">{{ "docCompare.vs" | translate }}</span>
+            <span class="rounded bg-primary-100 px-2 py-1 text-primary-700">{{ compareLabel }}</span>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="newComparison()"><span>{{ 'docCompare.actions.newComparison' | translate }}</span></button>
+            <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="openSaveDrawer('A')"><span>{{ 'docCompare.actions.saveVersionA' | translate }}</span></button>
+            <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="openSaveDrawer('B')"><span>{{ 'docCompare.actions.saveVersionB' | translate }}</span></button>
+            <button type="button" pButton size="small" [disabled]="result.total_changes === 0" (click)="openMergeDrawer()"><span>{{ 'docCompare.actions.buildMergedDraft' | translate }}</span></button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-5">
+        <div class="rounded-lg border border-gray-200 bg-white p-3 text-center">
+            <div class="text-xs text-gray-500">{{ "docCompare.statStrip.similarity" | translate }}</div>
+            <div class="text-lg font-semibold text-gray-800">{{ result.similarity }}%</div>
+        </div>
+        <div class="rounded-lg border border-green-200 bg-green-50 p-3 text-center">
+            <div class="text-xs text-green-700">{{ "docCompare.statStrip.additions" | translate }}</div>
+            <div class="text-lg font-semibold text-green-700">+{{ result.total_added }}</div>
+        </div>
+        <div class="rounded-lg border border-red-200 bg-red-50 p-3 text-center">
+            <div class="text-xs text-red-700">{{ "docCompare.statStrip.deletions" | translate }}</div>
+            <div class="text-lg font-semibold text-red-700">&minus;{{ result.total_removed }}</div>
+        </div>
+        <div class="rounded-lg border border-gray-200 bg-white p-3 text-center">
+            <div class="text-xs text-gray-500">{{ "docCompare.statStrip.pagesChanged" | translate }}</div>
+            <div class="text-lg font-semibold text-gray-800">{{ result.pages_changed }}</div>
+        </div>
+        <div class="rounded-lg border border-gray-200 bg-white p-3 text-center">
+            <div class="text-xs text-gray-500">{{ "docCompare.statStrip.totalPages" | translate }}</div>
+            <div class="text-lg font-semibold text-gray-800">{{ result.total_pages }}</div>
+        </div>
+    </div>
+
+    @if (agent) {
+    <div class="rounded-lg border border-gray-200 bg-white p-4">
+        <div class="mb-2 flex items-center justify-between">
+            <span
+                class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-primary-600">
+                <i class="pi pi-sparkles"></i>{{ "docCompare.agentCard.agentRead" | translate }}
+            </span>
+            <span class="rounded-full px-2.5 py-1 text-xs font-semibold"
+                [class.bg-green-100]="agent.risk_level === 'low'" [class.text-green-700]="agent.risk_level === 'low'"
+                [class.bg-yellow-100]="agent.risk_level === 'medium'"
+                [class.text-yellow-700]="agent.risk_level === 'medium'" [class.bg-red-100]="agent.risk_level === 'high'"
+                [class.text-red-700]="agent.risk_level === 'high'"
+                [class.bg-gray-100]="!['low','medium','high'].includes(agent.risk_level)"
+                [class.text-gray-600]="!['low','medium','high'].includes(agent.risk_level)">
+                {{ agent.risk_level || ("docCompare.agentCard.unknown" | translate) }} {{ "docCompare.agentCard.risk" |
+                translate }}
+            </span>
+        </div>
+        @if (agent.summary) {
+        <p class="text-sm text-gray-700">{{ agent.summary }}</p>
+        } @else {
+        <p class="text-sm text-gray-400">{{ "docCompare.agentCard.summaryUnavailable" | translate }} &mdash; {{
+            agent.risk_reason }}</p>
+        }
+        @if (agent.key_changes.length) {
+        <ul class="mt-2 list-disc space-y-1 ps-5 text-sm text-gray-600">
+            @for (k of agent.key_changes; track k) {
+            <li>{{ k }}</li>
+            }
+        </ul>
+        }
+    </div>
+    }
+
+    @if (result.total_changes > 0) {
+    <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white p-3">
+        <span class="text-sm text-gray-600">
+            <b>{{ currentChangeIdx + 1 > 0 ? currentChangeIdx + 1 : '—' }}</b> / {{ result.total_changes }} {{
+            "docCompare.changeNav.changesOnThisComparison" | translate }}
+        </span>
+        <div class="flex gap-2">
+            <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="currentChangeIdx <= 0" (click)="goToChange(-1)"><i class="pi pi-arrow-left"></i><span>{{ 'docCompare.changeNav.prev' | translate }}</span></button>
+            <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="currentChangeIdx >= result.total_changes - 1" (click)="goToChange(1)"><span>{{ 'docCompare.changeNav.next' | translate }}</span><i class="pi pi-arrow-right"></i></button>
+        </div>
+        @if (overriddenCount > 0) {
+        <span class="text-xs text-gray-500">{{ "docCompare.changeNav.overrides" | translate: { count: overriddenCount,
+            baseLabel } }}</span>
+        }
+    </div>
+    }
+
+    <div class="flex flex-wrap gap-4 text-xs text-gray-500">
+        <span class="inline-flex items-center gap-1.5"><span
+                class="h-3 w-3 rounded-sm border border-green-300 bg-green-100"></span>{{ "docCompare.legend.addition" |
+            translate }}</span>
+        <span class="inline-flex items-center gap-1.5"><span
+                class="h-3 w-3 rounded-sm border border-red-300 bg-red-100"></span>{{ "docCompare.legend.deletion" |
+            translate }}</span>
+        <span class="inline-flex items-center gap-1.5"><span
+                class="h-3 w-3 rounded-sm border border-primary-300 bg-primary-100"></span>{{
+            "docCompare.legend.overwrite" | translate }}</span>
+        <span class="inline-flex items-center gap-1.5"><span class="h-3 w-3 rounded-sm bg-primary-500"></span>{{
+            "docCompare.legend.pageWithChanges" | translate }}</span>
+    </div>
+
+    @if (result.total_pages > 1) {
+    <div class="flex flex-wrap gap-2">
+        @for (p of result.pages; track p.page_num) {
+        <button type="button" class="cursor-pointer rounded-full border px-3 py-1 text-xs font-medium transition-colors"
+            [class.bg-primary-500]="p.page_num === activePage" [class.text-white]="p.page_num === activePage"
+            [class.border-primary-500]="p.page_num === activePage" [class.border-gray-200]="p.page_num !== activePage"
+            [class.text-gray-600]="p.page_num !== activePage"
+            [class.ring-2]="p.has_changes && p.page_num !== activePage"
+            [class.ring-primary-200]="p.has_changes && p.page_num !== activePage"
+            [attr.title]="p.has_changes ? (p.counts.additions + ' additions, ' + p.counts.deletions + ' deletions, ' + p.counts.overwrites + ' overwrites') : 'No changes'"
+            (click)="jumpToPage(p.page_num)">
+            {{ "docCompare.pageNav.page" | translate }} {{ p.page_num }}
+        </button>
+        }
+    </div>
+    }
+
+    <div class="flex flex-col gap-4">
+        @for (p of result.pages; track p.page_num) {
+        <div class="rounded-lg border border-gray-200 bg-white p-4" [id]="'page-' + p.page_num">
+            <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+                <span class="text-sm font-semibold text-gray-700">{{ "docCompare.pageNav.page" | translate }} {{
+                    p.page_num }}</span>
+                @if (!p.exists_in_a) {
+                <span class="text-xs font-medium text-green-600">{{ "docCompare.pageStatus.newPage" | translate
+                    }}</span>
+                } @else if (!p.exists_in_b) {
+                <span class="text-xs font-medium text-red-600">{{ "docCompare.pageStatus.removedPage" | translate
+                    }}</span>
+                } @else if (!p.has_changes) {
+                <span class="text-xs text-gray-400">{{ "docCompare.pageStatus.noChanges" | translate }}</span>
+                } @else {
+                <span class="flex flex-wrap gap-1.5">
+                    @if (p.counts.additions) {
+                    <span class="rounded bg-green-100 px-1.5 py-0.5 text-xs font-medium text-green-700">+{{
+                        p.counts.additions }}</span>
+                    }
+                    @if (p.counts.deletions) {
+                    <span class="rounded bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-700">&minus;{{
+                        p.counts.deletions }}</span>
+                    }
+                    @if (p.counts.overwrites) {
+                    <span class="rounded bg-primary-100 px-1.5 py-0.5 text-xs font-medium text-primary-700">{{
+                        p.counts.overwrites }} {{ "docCompare.pageStatus.overwritten" | translate }}</span>
+                    }
+                    <span class="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">{{ p.counts.total
+                        }} {{ "docCompare.pageStatus.changes" | translate }}</span>
+                </span>
+                }
+            </div>
+
+            @if (p.exists_in_a && p.exists_in_b && !p.has_changes) {
+            <p class="text-sm text-gray-400">{{ "docCompare.pageStatus.identical" | translate }}</p>
+            } @else {
+            <div class="whitespace-pre-wrap font-mono text-xs leading-relaxed text-gray-700">
+                @for (seg of p.segments; track $index) {
+                @if (seg.type === 'equal') {{{ collapseRepeatedLines(seg.value) }}}
+                @if (seg.type === 'hunk' && seg.hunk) {
+                <span class="mx-0.5 inline-flex items-baseline gap-1 rounded px-1 py-0.5" [id]="'hunk-' + seg.hunk.id"
+                    [class.bg-green-50]="seg.hunk.kind === 'add'" [class.bg-red-50]="seg.hunk.kind === 'delete'"
+                    [class.bg-primary-50]="seg.hunk.kind === 'replace'">
+                    @switch (seg.hunk.kind) {
+                    @case ('add') {
+                    <span [class.line-through]="getHunkChoice(seg.hunk.id) === 'base'"
+                        [class.opacity-40]="getHunkChoice(seg.hunk.id) === 'base'" class="text-green-700">{{
+                        collapseRepeatedLines(seg.hunk.new_text) }}</span>
+                    }
+                    @case ('delete') {
+                    <span [class.line-through]="getHunkChoice(seg.hunk.id) !== 'base'" class="text-red-700">{{
+                        collapseRepeatedLines(seg.hunk.old_text) }}</span>
+                    }
+                    @case ('replace') {
+                    <span class="text-red-700 line-through"
+                        [class.opacity-40]="getHunkChoice(seg.hunk.id) === 'compare'">{{
+                        collapseRepeatedLines(seg.hunk.old_text) }}</span>
+                    <span class="text-green-700" [class.opacity-40]="getHunkChoice(seg.hunk.id) === 'base'">{{
+                        collapseRepeatedLines(seg.hunk.new_text) }}</span>
+                    }
+                    }
+                    <span
+                        class="ms-1 inline-flex overflow-hidden rounded border border-gray-300 text-xs font-sans font-bold">
+                        <button type="button" class="cursor-pointer px-1.5 py-0.5"
+                            [class.bg-primary-500]="getHunkChoice(seg.hunk.id) === 'base'"
+                            [class.text-white]="getHunkChoice(seg.hunk.id) === 'base'"
+                            (click)="setHunkChoice(seg.hunk.id, 'base')">A</button>
+                        <button type="button" class="cursor-pointer px-1.5 py-0.5"
+                            [class.bg-primary-500]="getHunkChoice(seg.hunk.id) === 'compare'"
+                            [class.text-white]="getHunkChoice(seg.hunk.id) === 'compare'"
+                            (click)="setHunkChoice(seg.hunk.id, 'compare')">B</button>
+                    </span>
+                </span>
+                }
+                }
+            </div>
+            }
+        </div>
+        }
+    </div>
+    }
+
+</div>
+
+@if (loading) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <div class="flex flex-col items-center gap-3 rounded-lg bg-white p-8 text-center">
+        <i class="pi pi-spin pi-spinner text-3xl text-primary-500"></i>
+        <div class="text-sm font-semibold text-gray-800">{{ loadingTitle }}</div>
+        <div class="text-xs text-gray-500">{{ loadingSub }}</div>
+    </div>
+</div>
+}
+
+<lib-version-picker-drawer [visible]="drawer === 'picker'" (visibleChange)="closeDrawer()" [versions]="savedVersions"
+    (select)="selectSavedVersion($event)" />
+
+<lib-save-version-drawer [visible]="drawer === 'save'" (visibleChange)="closeDrawer()" [slot]="saveSlot"
+    [initialLabel]="saveDrawerInitialLabel" (save)="confirmSaveVersion($event)" />
+
+<lib-merge-drawer [visible]="drawer === 'merge'" (visibleChange)="closeDrawer()"
+    [initialLabel]="mergeDrawerInitialLabel" [overriddenCount]="overriddenCount" [baseLabel]="baseLabel"
+    [compareLabel]="compareLabel" (save)="confirmMerge($event)" />
+
+<lib-history-drawer [visible]="drawer === 'history'" (visibleChange)="closeDrawer()" [tab]="historyTab"
+    [versions]="savedVersions" [log]="comparisonLog" (tabChange)="switchHistoryTab($event)"
+    (useAsVersion)="useVersionFromHistory($event)" (setMaster)="setMasterVersion($event)"
+    (deleteVersion)="deleteVersion($event)" (deleteLogEntry)="deleteLogEntry($event)" />

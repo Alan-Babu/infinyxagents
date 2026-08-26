@@ -1,0 +1,51 @@
+<div class="w-full">
+    <div class="rounded-lg border border-gray-200 bg-white">
+        <div class="relative isolate min-h-48">
+            <div
+                class="relative z-20 mt-2 flex items-center gap-6 px-2.5 start-2.5 top-1 md:absolute md:px-0"
+                [class.min-h-11]="!showSearch"
+            >
+                @if (showSearch) {
+                    <div class="relative flex w-64 max-w-full shrink-0 items-center text-gray-300">
+                        <input
+                            pInputText
+                            type="text"
+                            class="w-full rounded p-2 pe-10"
+                            [(ngModel)]="searchText"
+                            (ngModelChange)="onSearchChange()"
+                            [placeholder]="searchPlaceholder"
+                        />
+                    </div>
+                }
+                <ng-content></ng-content>
+            </div>
+            @if (resolvedColDefs.length) {
+                <ag-grid-angular
+                    #agGrid
+                    class="ag-theme-quartz w-full"
+                    [enableRtl]="enableRtl"
+                    [domLayout]="'autoHeight'"
+                    [rowSelection]="rowSelection"
+                    [rowClass]="rowsClickable ? 'cursor-pointer' : undefined"
+                    [rowData]="displayRowData"
+                    [pagination]="paginator"
+                    [paginationPageSize]="rows"
+                    [paginationPageSizeSelector]="rowsPerPageOptions"
+                    [columnDefs]="resolvedColDefs"
+                    [defaultColDef]="defaultColDefMerged"
+                    [gridOptions]="mergedGridOptions"
+                    [theme]="gridTheme"
+                    [enableCellTextSelection]="true"
+                    [columnHoverHighlight]="true"
+                    [noRowsOverlayComponent]="noRowsOverlayComponent"
+                    [noRowsOverlayComponentParams]="{ message: noRowsMessage }"
+                    [context]="this"
+                    (gridReady)="onGridReady($event)"
+                    (rowClicked)="onRowClicked($event)"
+                    (selectionChanged)="onSelectionChanged($event)"
+                    (paginationChanged)="onPaginationChanged()"
+                ></ag-grid-angular>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,99 @@
+<p-drawer [(visible)]="visible" position="right" appendTo="body" [baseZIndex]="1200" styleClass="p-drawer-md" (onHide)="visibleChange.emit(false)">
+    <ng-template #header>
+        <div class="flex flex-col">
+            <span class="text-sm font-semibold uppercase tracking-wide text-gray-400">{{ 'contractAnalyzer.toolbar.eyebrow' | translate }}</span>
+            <span class="text-lg font-semibold text-gray-800">{{ 'contractAnalyzer.stats.title' | translate }}</span>
+        </div>
+    </ng-template>
+
+    <div class="flex flex-col gap-5 pt-5">
+        @if (loading) {
+        <p class="text-gray-500">…</p>
+        }
+
+        @if (stats) {
+        <div class="grid grid-cols-2 gap-3">
+            <lib-stat-card [label]="'contractAnalyzer.stats.totalContracts' | translate" [value]="stats.total_contracts" icon="pi pi-file" />
+            <lib-stat-card [label]="'contractAnalyzer.stats.totalQuestions' | translate" [value]="stats.total_questions" icon="pi pi-question-circle" fgClass="text-violet-600" bgClass="bg-violet-50" />
+            <lib-stat-card [label]="'contractAnalyzer.stats.totalFeedback' | translate" [value]="stats.total_feedback" icon="pi pi-star" fgClass="text-amber-600" bgClass="bg-amber-50" />
+            <lib-stat-card [label]="'contractAnalyzer.stats.averageRating' | translate" [value]="stats.average_rating ?? '—'" icon="pi pi-thumbs-up" fgClass="text-green-600" bgClass="bg-green-50" />
+            <lib-stat-card [label]="'contractAnalyzer.stats.averageRiskScore' | translate" [value]="stats.average_risk_score ?? '—'" icon="pi pi-exclamation-triangle" fgClass="text-red-600" bgClass="bg-red-50" />
+            <lib-stat-card [label]="'contractAnalyzer.stats.averageConfidence' | translate" [value]="stats.average_confidence ?? '—'" icon="pi pi-gauge" fgClass="text-sky-600" bgClass="bg-sky-50" />
+        </div>
+
+        <lib-stat-card [label]="'contractAnalyzer.stats.mofaItOutsourcing' | translate" [value]="stats.mofa_it_outsourcing_count" icon="pi pi-building" />
+
+        <div class="flex flex-col gap-2">
+            <span class="text-sm font-semibold text-gray-500">{{ 'contractAnalyzer.stats.byRiskLevel' | translate }}</span>
+            @for (e of breakdown(stats.contracts_by_risk_level); track e.key) {
+            <div class="flex items-center gap-2">
+                <span class="w-28 shrink-0 truncate text-sm capitalize text-gray-600">{{ e.key }}</span>
+                <div class="h-2 flex-1 rounded-full bg-gray-100">
+                    <div class="h-2 rounded-full bg-primary-400" [style.width.%]="(e.count / maxCount(stats.contracts_by_risk_level)) * 100"></div>
+                </div>
+                <span class="w-8 shrink-0 text-end text-sm font-semibold text-gray-700">{{ e.count }}</span>
+            </div>
+            }
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <span class="text-sm font-semibold text-gray-500">{{ 'contractAnalyzer.stats.byClassification' | translate }}</span>
+            @for (e of breakdown(stats.contracts_by_classification); track e.key) {
+            <div class="flex items-center gap-2">
+                <span class="w-28 shrink-0 truncate text-sm text-gray-600">{{ e.key }}</span>
+                <div class="h-2 flex-1 rounded-full bg-gray-100">
+                    <div class="h-2 rounded-full bg-violet-400" [style.width.%]="(e.count / maxCount(stats.contracts_by_classification)) * 100"></div>
+                </div>
+                <span class="w-8 shrink-0 text-end text-sm font-semibold text-gray-700">{{ e.count }}</span>
+            </div>
+            }
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <span class="text-sm font-semibold text-gray-500">{{ 'contractAnalyzer.stats.byReviewStatus' | translate }}</span>
+            @for (e of breakdown(stats.contracts_by_review_status); track e.key) {
+            <div class="flex items-center gap-2">
+                <span class="w-28 shrink-0 truncate text-sm text-gray-600">{{ e.key }}</span>
+                <div class="h-2 flex-1 rounded-full bg-gray-100">
+                    <div class="h-2 rounded-full bg-amber-400" [style.width.%]="(e.count / maxCount(stats.contracts_by_review_status)) * 100"></div>
+                </div>
+                <span class="w-8 shrink-0 text-end text-sm font-semibold text-gray-700">{{ e.count }}</span>
+            </div>
+            }
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <span class="text-sm font-semibold text-gray-500">{{ 'contractAnalyzer.stats.ratingDistribution' | translate }}</span>
+            @for (e of breakdown(stats.rating_distribution); track e.key) {
+            <div class="flex items-center gap-2">
+                <span class="w-28 shrink-0 truncate text-sm text-gray-600">{{ e.key }} ★</span>
+                <div class="h-2 flex-1 rounded-full bg-gray-100">
+                    <div class="h-2 rounded-full bg-green-400" [style.width.%]="(e.count / maxCount(stats.rating_distribution)) * 100"></div>
+                </div>
+                <span class="w-8 shrink-0 text-end text-sm font-semibold text-gray-700">{{ e.count }}</span>
+            </div>
+            }
+        </div>
+        }
+
+        <div class="flex flex-col gap-2 border-t border-gray-200 pt-4">
+            <span class="text-sm font-semibold text-gray-500">{{ 'contractAnalyzer.stats.searchHistory' | translate }}</span>
+            @if (searchHistory.length === 0) {
+            <p class="text-sm text-gray-400">{{ 'contractAnalyzer.stats.searchHistoryEmpty' | translate }}</p>
+            }
+            @for (h of searchHistory; track h.id) {
+            <div class="flex items-center justify-between gap-2 rounded-lg border border-gray-200 p-2.5 text-sm">
+                <span class="truncate text-gray-700">{{ h.query_text || '—' }}</span>
+                <span class="shrink-0 text-gray-400">{{ 'contractAnalyzer.stats.resultCount' | translate: { count: h.result_count } }}</span>
+            </div>
+            }
+            @if (searchHistoryPagination && searchHistoryPagination.total_pages > 1) {
+            <div class="flex items-center justify-between pt-1">
+                <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="!searchHistoryPagination.has_prev" (click)="searchHistoryPage.emit(-1)"><span>{{ 'contractAnalyzer.pagination.prev' | translate }}</span></button>
+                <span class="text-sm text-gray-500">{{ 'contractAnalyzer.pagination.pageOf' | translate: { page: searchHistoryPagination.page, total: searchHistoryPagination.total_pages } }}</span>
+                <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="!searchHistoryPagination.has_next" (click)="searchHistoryPage.emit(1)"><span>{{ 'contractAnalyzer.pagination.next' | translate }}</span></button>
+            </div>
+            }
+        </div>
+    </div>
+</p-drawer>

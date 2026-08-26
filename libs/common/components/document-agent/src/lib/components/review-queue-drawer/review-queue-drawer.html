@@ -1,0 +1,82 @@
+<p-drawer [(visible)]="visible" position="right" appendTo="body" [baseZIndex]="1200" (onHide)="visibleChange.emit(false)">
+    <ng-template pTemplate="header">
+        <div class="flex flex-col">
+            @if (eyebrow) {
+            <span class="text-sm font-semibold uppercase tracking-wide text-gray-400">{{ eyebrow }}</span>
+            }
+            <span class="text-lg font-semibold text-gray-800">{{ title }}</span>
+        </div>
+    </ng-template>
+
+    <div class="flex flex-col gap-3 pt-5">
+        @if (pagination) {
+        <p class="text-sm text-gray-500">{{ pagination.total_count }} document(s) pending review</p>
+        }
+
+        @if (!loading && items.length === 0) {
+        <p class="text-gray-500">{{ emptyMessage }}</p>
+        }
+
+        @for (item of items; track item.id) {
+        <div class="flex flex-col gap-2 rounded-lg border border-gray-200 p-3">
+            <div class="flex items-center justify-between gap-2">
+                <span class="font-semibold text-gray-800">{{ item.title }}</span>
+                <div class="flex flex-wrap justify-end gap-1.5">
+                    @for (badge of item.badges; track badge.label) {
+                    <span
+                        class="rounded px-1.5 py-0.5 text-xs font-bold uppercase"
+                        [class.bg-green-100]="badge.severity === 'success'" [class.text-green-700]="badge.severity === 'success'"
+                        [class.bg-blue-100]="badge.severity === 'info'" [class.text-blue-700]="badge.severity === 'info'"
+                        [class.bg-amber-100]="badge.severity === 'warn'" [class.text-amber-700]="badge.severity === 'warn'"
+                        [class.bg-red-100]="badge.severity === 'danger'" [class.text-red-700]="badge.severity === 'danger'"
+                        [class.bg-gray-100]="badge.severity === 'secondary' || badge.severity === 'contrast'"
+                        [class.text-gray-700]="badge.severity === 'secondary' || badge.severity === 'contrast'">
+                        {{ badge.label }}
+                    </span>
+                    }
+                </div>
+            </div>
+
+            @if (item.metaLine.length) {
+            <div class="flex flex-wrap gap-3 text-sm text-gray-500">
+                @for (meta of item.metaLine; track meta) {
+                <span>{{ meta }}</span>
+                }
+            </div>
+            }
+
+            @if (reviewingId !== item.id) {
+            <div class="flex flex-wrap gap-2">
+                <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="open.emit(item.id)"><span>Open</span></button>
+                <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="startReview(item.id)"><span>Review</span></button>
+            </div>
+            } @else {
+            <div class="flex flex-col gap-2 rounded-lg bg-gray-50 p-2.5">
+                <input pInputText type="text" class="w-full" [(ngModel)]="reviewerName" placeholder="Your name (optional)" />
+                <textarea class="w-full rounded-lg border border-gray-300 p-2" rows="2" [(ngModel)]="reviewerNotes"
+                    placeholder="Notes on this decision (optional)…"></textarea>
+                <div class="flex flex-wrap justify-end gap-2">
+                    <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="cancelReview()"><span>Cancel</span></button>
+                    <button type="button" pButton size="small" severity="danger" [outlined]="true" (click)="submitDecision('reject')"><span>Reject</span></button>
+                    <button type="button" pButton size="small" (click)="submitDecision('approve')"><span>Approve</span></button>
+                </div>
+            </div>
+            }
+        </div>
+        }
+
+        @if (pagination && pagination.total_pages > 1) {
+        <div class="flex items-center justify-between pt-1">
+            <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="!pagination.has_prev" (click)="page.emit(-1)"><span>← Prev</span></button>
+            <span class="text-sm text-gray-500">Page {{ pagination.page }} of {{ pagination.total_pages }}</span>
+            <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="!pagination.has_next" (click)="page.emit(1)"><span>Next →</span></button>
+        </div>
+        }
+    </div>
+
+    <ng-template pTemplate="footer">
+        @if (footerNote) {
+        <span class="text-sm text-gray-400">{{ footerNote }}</span>
+        }
+    </ng-template>
+</p-drawer>

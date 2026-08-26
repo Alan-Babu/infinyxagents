@@ -1,0 +1,63 @@
+<p-drawer [visible]="visible" position="right" appendTo="body" [baseZIndex]="1200"
+    (visibleChange)="!$event && closed.emit()">
+    <ng-template #header>
+        <div class="text-lg font-bold text-gray-800">{{ "executiveSummary.insights.createResearchProfile" | translate }}
+        </div>
+    </ng-template>
+
+    <div class="pt-5 space-y-3">
+
+        <div>
+            <label class="mb-1.5 block text-sm font-semibold text-gray-600" for="profileName">{{
+                "executiveSummary.insights.researchName" | translate }}</label>
+            <input pInputText id="profileName" class="w-full" [(ngModel)]="model.name"
+                [placeholder]="'executiveSummary.insights.researchNamePlaceholder' | translate" />
+        </div>
+        <div>
+            <label class="mb-1.5 block text-sm font-semibold text-gray-600" for="profileDescription">
+                {{ "executiveSummary.insights.description" | translate }}
+                <span class="font-normal text-gray-400">({{ "docCompare.optional" | translate }})</span>
+            </label>
+            <textarea id="profileDescription" class="w-full rounded-lg border border-gray-300 p-2 text-sm" rows="2"
+                [(ngModel)]="model.description"></textarea>
+        </div>
+        <div>
+            <label class="mb-1.5 block text-sm font-semibold text-gray-600" for="profileResearchType">{{
+                "executiveSummary.insights.researchType" | translate }}</label>
+            <p-select class="w-full" [options]="researchTypeOptions" [(ngModel)]="model.researchType"
+                optionLabel="label" optionValue="label" styleClass="w-full" appendTo="body" />
+        </div>
+        <div>
+            <label class="mb-1.5 block text-sm font-semibold text-gray-600" for="profileVisibility">{{
+                "executiveSummary.insights.visibility" | translate }}</label>
+            <div class="mb-2">
+                <div class="flex rounded-lg border border-gray-200 p-1">
+                    <button type="button"
+                        class="flex-1 cursor-pointer rounded-md px-2.5 py-2 font-semibold transition-colors"
+                        [class.bg-primary-500]="model.visibility === 'Private'"
+                        [class.text-white]="model.visibility === 'Private'"
+                        [class.text-gray-500]="model.visibility !== 'Private'" (click)="model.visibility = 'Private'"><i
+                            class="pi pi-lock me-2"></i>{{ "executiveSummary.insights.private" | translate }}</button>
+                    <button type="button"
+                        class="flex-1 cursor-pointer rounded-md px-2.5 py-2 font-semibold transition-colors"
+                        [class.bg-primary-500]="model.visibility === 'Shared'"
+                        [class.text-white]="model.visibility === 'Shared'"
+                        [class.text-gray-500]="model.visibility !== 'Shared'" (click)="model.visibility = 'Shared'"><i
+                            class="pi pi-users me-2"></i>{{ "executiveSummary.insights.shared" | translate }}</button>
+                </div>
+            </div>
+            <p class="text-xs text-gray-500">
+                {{ (model.visibility === 'Shared' ? 'executiveSummary.insights.visibilityHintShared' :
+                'executiveSummary.insights.visibilityHintPrivate') | translate }}
+            </p>
+        </div>
+
+    </div>
+
+    <ng-template #footer>
+        <div class="flex gap-2 justify-between items-center">
+            <button type="button" pButton severity="secondary" [outlined]="true" (click)="closed.emit()"><span>{{ 'executiveSummary.actions.cancel' | translate }}</span></button>
+            <button type="button" pButton [disabled]="!model.name.trim()" (click)="confirm.emit()"><span>{{ 'executiveSummary.insights.saveProfile' | translate }}</span></button>
+        </div>
+    </ng-template>
+</p-drawer>

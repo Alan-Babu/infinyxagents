@@ -1,0 +1,498 @@
+<div class="flex h-full min-h-0">
+    <div class="flex min-w-0 flex-1 flex-col">
+        <!-- Header / toolbar -->
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 bg-white px-6 py-3">
+            <h1 class="text-lg font-semibold text-gray-800">{{ "executiveSummary.insights.title" | translate }}</h1>
+            <div class="flex flex-wrap items-center gap-1.5">
+                <button type="button" class="cursor-pointer rounded-lg p-2 text-gray-500 hover:bg-gray-100" (click)="startOver()"
+                    [attr.aria-label]="'executiveSummary.insights.newBrief' | translate" [title]="'executiveSummary.insights.newBrief' | translate">
+                    <i class="pi pi-plus"></i>
+                </button>
+                <button type="button" class="cursor-pointer rounded-lg p-2 text-gray-500 hover:bg-gray-100" (click)="adminSettingsOpen = true"
+                    [title]="'executiveSummary.adminSettings.title' | translate">
+                    <i class="pi pi-cog"></i>
+                </button>
+                @if (stage === 'result') {
+                <button type="button" class="cursor-pointer rounded-lg p-2 text-gray-500 hover:bg-gray-100" (click)="exportPanelOpen = true"
+                    [title]="'executiveSummary.exportPanel.title' | translate">
+                    <i class="pi pi-download"></i>
+                </button>
+                }
+            </div>
+        </div>
+
+        <!-- Scrolling body -->
+        <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+            <div class="mx-auto max-w-3xl">
+
+                <!-- ============ STAGE: idle / loading (composer greeting) ============ -->
+                @if (stage === 'idle' || stage === 'loading') {
+                <div class="mb-6 flex flex-col items-center gap-2 text-center">
+                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-primary-500 text-white">
+                        <i class="pi pi-chart-line text-xl"></i>
+                    </span>
+                    <h2 class="text-lg font-semibold text-gray-800">{{ "executiveSummary.insights.greeting" | translate: { name: userName } }}</h2>
+                    <p class="max-w-md text-sm text-gray-500">{{ "executiveSummary.insights.greetingSub" | translate }}</p>
+                </div>
+
+                <div class="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <button type="button" class="flex cursor-pointer items-start gap-3 rounded-lg border p-4 text-start transition-colors"
+                        [class.border-primary-400]="composerMode === 'document'" [class.bg-primary-50]="composerMode === 'document'"
+                        [class.border-gray-200]="composerMode !== 'document'" [class.bg-white]="composerMode !== 'document'"
+                        (click)="useQuickAction('summarise')">
+                        <i class="pi pi-file-edit mt-0.5 text-primary-600"></i>
+                        <span>
+                            <span class="block text-sm font-semibold text-gray-800">{{ "executiveSummary.insights.summariseReport" | translate }}</span>
+                            <span class="block text-xs text-gray-500">{{ "executiveSummary.insights.summariseReportDesc" | translate }}</span>
+                        </span>
+                    </button>
+                    <button type="button" class="flex cursor-pointer items-start gap-3 rounded-lg border p-4 text-start transition-colors"
+                        [class.border-primary-400]="composerMode === 'topic'" [class.bg-primary-50]="composerMode === 'topic'"
+                        [class.border-gray-200]="composerMode !== 'topic'" [class.bg-white]="composerMode !== 'topic'"
+                        (click)="useQuickAction('board-ready')">
+                        <i class="pi pi-verified mt-0.5 text-primary-600"></i>
+                        <span>
+                            <span class="block text-sm font-semibold text-gray-800">{{ "executiveSummary.insights.boardReady" | translate }}</span>
+                            <span class="block text-xs text-gray-500">{{ "executiveSummary.insights.boardReadyDesc" | translate }}</span>
+                        </span>
+                    </button>
+                </div>
+
+                @if (moderationBlocked) {
+                <div class="mb-4 flex items-start gap-2.5 rounded-lg border border-red-200 bg-red-50 p-3.5">
+                    <i class="pi pi-ban mt-0.5 text-red-600"></i>
+                    <div>
+                        <p class="text-sm font-semibold text-red-800">{{ "executiveSummary.insights.contentBlocked" | translate }}</p>
+                        <p class="text-xs text-red-600">{{ errorMessage }}</p>
+                    </div>
+                </div>
+                } @else if (errorMessage) {
+                <p class="mb-4 text-sm text-red-600">{{ errorMessage }}</p>
+                }
+                }
+
+                <!-- ============ STAGE: clarifying ============ -->
+                @if (stage === 'clarifying') {
+                <div class="rounded-lg border border-gray-200 bg-white p-5">
+                    <h3 class="mb-1 text-base font-semibold text-gray-800">{{ "executiveSummary.insights.quickQuestions" | translate }}</h3>
+                    @if (categoryGuess) {
+                    <p class="mb-4 text-sm text-gray-500" [innerHTML]="'executiveSummary.insights.readingAsTopic' | translate: { category: categoryGuess }"></p>
+                    }
+
+                    @if (suggestedFramework) {
+                    <div class="mb-4 flex items-start gap-2.5 rounded-lg bg-primary-50 p-3.5">
+                        <i class="pi pi-lightbulb mt-0.5 text-primary-600"></i>
+                        <div class="min-w-0 flex-1">
+                            @if (!frameworkApplied) {
+                            <p class="text-sm text-gray-700" [innerHTML]="'executiveSummary.insights.frameworkSuggestion' | translate: { framework: suggestedFramework }"></p>
+                            <p class="mt-1 text-xs text-gray-500">{{ frameworkReason }}</p>
+                            <div class="mt-2 flex items-center gap-2">
+                                <button type="button" pButton size="small" (click)="useSuggestedFramework()"><span>{{ ('executiveSummary.insights.useFramework' | translate) + ' ' + suggestedFramework }}</span></button>
+                                <span class="text-xs text-gray-500" [innerHTML]="'executiveSummary.insights.keepCurrent' | translate: { framework }"></span>
+                            </div>
+                            } @else {
+                            <p class="text-sm text-gray-700" [innerHTML]="'executiveSummary.insights.frameworkApplied' | translate: { framework }"></p>
+                            }
+                        </div>
+                    </div>
+                    }
+
+                    @for (q of questions; track q.id) {
+                    <div class="mb-4">
+                        <label class="mb-2 block text-sm font-medium text-gray-700" for="">{{ q.question }}</label>
+                        <div class="flex flex-wrap gap-2">
+                            @for (s of q.suggested_answers; track s) {
+                            <button type="button" class="cursor-pointer rounded-full border px-3 py-1.5 text-xs font-medium transition-colors"
+                                [class.bg-primary-500]="!otherMode[q.id] && answers[q.id] === s" [class.text-white]="!otherMode[q.id] && answers[q.id] === s" [class.border-primary-500]="!otherMode[q.id] && answers[q.id] === s"
+                                [class.border-gray-200]="!(!otherMode[q.id] && answers[q.id] === s)" [class.text-gray-600]="!(!otherMode[q.id] && answers[q.id] === s)"
+                                (click)="chooseSuggestion(q.id, s)">{{ s }}</button>
+                            }
+                            <button type="button" class="cursor-pointer rounded-full border px-3 py-1.5 text-xs font-medium transition-colors"
+                                [class.bg-primary-500]="otherMode[q.id]" [class.text-white]="otherMode[q.id]" [class.border-primary-500]="otherMode[q.id]"
+                                [class.border-gray-200]="!otherMode[q.id]" [class.text-gray-600]="!otherMode[q.id]"
+                                (click)="chooseOthers(q.id)">{{ "executiveSummary.insights.others" | translate }}</button>
+                        </div>
+                        @if (otherMode[q.id]) {
+                        <input pInputText class="mt-2 w-full" [(ngModel)]="answers[q.id]" [placeholder]="'executiveSummary.insights.typeOwnAnswer' | translate" />
+                        }
+                    </div>
+                    }
+
+                    <button type="button" pButton (click)="continueToParams()"><span>{{ 'executiveSummary.actions.continue' | translate }}</span></button>
+                </div>
+                }
+
+                <!-- ============ STAGE: params ============ -->
+                @if (stage === 'params') {
+                <div class="rounded-lg border border-gray-200 bg-white p-5">
+                    <h3 class="mb-4 text-base font-semibold text-gray-800">{{ "executiveSummary.insights.shapeReport" | translate }}</h3>
+
+                    <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div>
+                            <label class="mb-1.5 block text-xs font-semibold text-gray-600" for="length">{{ "executiveSummary.insights.length" | translate }}</label>
+                            <p-select class="w-full" [options]="lengthOptions" [(ngModel)]="length" optionLabel="label" optionValue="label" styleClass="w-full" appendTo="body" />
+                        </div>
+                        @if (length === 'Custom') {
+                        <div>
+                            <label class="mb-1.5 block text-xs font-semibold text-gray-600" for="customWordCount">{{ "executiveSummary.insights.wordCount" | translate }}</label>
+                            <input pInputText type="number" class="w-full" [(ngModel)]="customWordCount" placeholder="e.g. 900" />
+                        </div>
+                        }
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="mb-1.5 block text-xs font-semibold text-gray-600" for="audience">{{ "executiveSummary.insights.audience" | translate }}</label>
+                        <input pInputText class="w-full" [(ngModel)]="audience" [placeholder]="'executiveSummary.insights.audiencePlaceholder' | translate" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="mb-1.5 block text-xs font-semibold text-gray-600" for="provider">{{ "executiveSummary.insights.model" | translate }}</label>
+                        <p-select class="w-full" [options]="providerOptions" [(ngModel)]="provider" optionLabel="label" optionValue="label" styleClass="w-full" appendTo="body" />
+                    </div>
+
+                    @if (showPersonnelCheckbox) {
+                    <label class="mb-3 flex cursor-pointer items-start gap-2.5" for="personnelProfile">
+                        <p-checkbox [(ngModel)]="personnelProfile" [binary]="true" />
+                        <span class="text-sm text-gray-700">
+                            {{ "executiveSummary.insights.personnelCheckbox" | translate }}
+                            <span class="mt-1 block text-xs text-gray-500">{{ "executiveSummary.insights.personnelCheckboxHint" | translate }}</span>
+                        </span>
+                    </label>
+                    }
+
+                    @if (showCountryDashboardCheckbox) {
+                    <label class="mb-4 flex cursor-pointer items-start gap-2.5" for="countryDashboard">
+                        <p-checkbox [(ngModel)]="countryDashboard" [binary]="true" />
+                        <span class="text-sm text-gray-700">
+                            {{ "executiveSummary.insights.countryDashboardCheckbox" | translate }}
+                            <span class="mt-1 block text-xs text-gray-500">{{ "executiveSummary.insights.countryDashboardCheckboxHint" | translate }}</span>
+                        </span>
+                    </label>
+                    }
+
+                    <button type="button" pButton (click)="generateBrief()"><span>{{ 'executiveSummary.insights.generateBrief' | translate }}</span></button>
+
+                    @if (moderationBlocked) {
+                    <div class="mt-4 flex items-start gap-2.5 rounded-lg border border-red-200 bg-red-50 p-3.5">
+                        <i class="pi pi-ban mt-0.5 text-red-600"></i>
+                        <div>
+                            <p class="text-sm font-semibold text-red-800">{{ "executiveSummary.insights.contentBlocked" | translate }}</p>
+                            <p class="text-xs text-red-600">{{ errorMessage }}</p>
+                        </div>
+                    </div>
+                    } @else if (errorMessage) {
+                    <p class="mt-3 text-sm text-red-600">{{ errorMessage }}</p>
+                    }
+                </div>
+                }
+
+                <!-- ============ STAGE: loading ============ -->
+                @if (stage === 'loading' && sessionId) {
+                <div class="flex flex-col items-center gap-3 rounded-lg border border-gray-200 bg-white p-10 text-center">
+                    <i class="pi pi-spin pi-spinner text-3xl text-primary-500"></i>
+                    <p class="text-sm text-gray-600">{{ "executiveSummary.insights.preparingBrief" | translate }}</p>
+                </div>
+                }
+
+                <!-- ============ STAGE: result ============ -->
+                @if (stage === 'result') {
+
+                @if (viewingHistoryIndex !== null) {
+                <div class="mb-4 flex items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs">
+                    <button type="button" class="cursor-pointer font-semibold text-primary-600 disabled:cursor-not-allowed disabled:text-gray-300" [disabled]="!hasPreviousResearch" (click)="goToPreviousResearch()">
+                        &lsaquo; {{ "executiveSummary.insights.previousResearch" | translate }}
+                    </button>
+                    <span class="text-gray-500">{{ "executiveSummary.insights.researchXOfY" | translate: { current: viewingHistoryIndex! + 1, total: historyEntries.length } }}</span>
+                    <button type="button" class="cursor-pointer font-semibold text-primary-600 disabled:cursor-not-allowed disabled:text-gray-300" [disabled]="!hasNextResearch" (click)="goToNextResearch()">
+                        {{ "executiveSummary.insights.nextResearch" | translate }} &rsaquo;
+                    </button>
+                </div>
+                }
+                @if (historyLoadError) {
+                <p class="mb-3 text-sm text-red-600">{{ historyLoadError }}</p>
+                }
+
+                <div class="rounded-lg border border-gray-200 bg-white p-6">
+                    <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="rounded-full bg-primary-50 px-2.5 py-1 text-xs font-medium text-primary-700">{{ framework }}</span>
+                            <span class="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">{{ wordCount }} {{ "executiveSummary.history.words" | translate }}</span>
+                        </div>
+                        @if (sections.length > 1) {
+                        <div class="flex rounded-lg border border-gray-200 p-0.5">
+                            <button type="button" class="cursor-pointer rounded-md px-2.5 py-1 text-xs font-semibold transition-colors"
+                                [class.bg-primary-500]="readMode === 'full'" [class.text-white]="readMode === 'full'" [class.text-gray-500]="readMode !== 'full'"
+                                (click)="setReadMode('full')">{{ "executiveSummary.insights.fullView" | translate }}</button>
+                            <button type="button" class="cursor-pointer rounded-md px-2.5 py-1 text-xs font-semibold transition-colors"
+                                [class.bg-primary-500]="readMode === 'sections'" [class.text-white]="readMode === 'sections'" [class.text-gray-500]="readMode !== 'sections'"
+                                (click)="setReadMode('sections')">{{ "executiveSummary.insights.readBySection" | translate }}</button>
+                        </div>
+                        }
+                    </div>
+
+                    @if (readMode === 'full') {
+                    <h1 class="mb-4 text-xl font-bold text-gray-800">{{ briefTitle }}</h1>
+                    @for (s of sections; track s.title) {
+                    <div class="prose prose-sm mb-5 max-w-none last:mb-0" [class.rounded-lg]="s.isFrameworkSection" [class.bg-primary-50]="s.isFrameworkSection" [class.p-4]="s.isFrameworkSection">
+                        @if (s.isFrameworkSection) {
+                        <div class="mb-1 flex items-center gap-2">
+                            <h2 class="!my-0 text-base font-bold text-gray-800">{{ s.title }}</h2>
+                            <span class="rounded-full bg-primary-500 px-2 py-0.5 text-xs font-bold text-white" [title]="framework + ' dimension'">{{ framework }}</span>
+                        </div>
+                        } @else {
+                        <h2 class="text-base font-bold text-gray-800">{{ s.title }}</h2>
+                        }
+                        <div [innerHTML]="s.html"></div>
+                    </div>
+                    }
+                    }
+
+                    @if (readMode === 'sections' && sections.length) {
+                    <div class="mb-3 flex flex-wrap items-center gap-2" [class.rounded-lg]="sections[currentSectionIndex].isFrameworkSection" [class.bg-primary-50]="sections[currentSectionIndex].isFrameworkSection" [class.p-3]="sections[currentSectionIndex].isFrameworkSection">
+                        <span class="text-xs font-semibold text-gray-400">{{ "executiveSummary.insights.sectionXOfY" | translate: { current: currentSectionIndex + 1, total: sections.length } }}</span>
+                        <span class="text-base font-bold text-gray-800">{{ sections[currentSectionIndex].title }}</span>
+                        @if (sections[currentSectionIndex].isFrameworkSection) {
+                        <span class="rounded-full bg-primary-500 px-2 py-0.5 text-xs font-bold text-white" [title]="framework + ' dimension'">{{ framework }}</span>
+                        }
+                    </div>
+                    <div class="prose prose-sm max-w-none" [innerHTML]="sections[currentSectionIndex].html"></div>
+
+                    <div class="mt-5 flex items-center justify-between">
+                        <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="currentSectionIndex === 0" (click)="prevSection()"><span>{{ 'executiveSummary.insights.previous' | translate }}</span></button>
+                        <div class="flex gap-1.5">
+                            @for (s of sections; track s.title; let i = $index) {
+                            <button type="button" class="h-2 w-2 cursor-pointer rounded-full transition-colors" [class.bg-primary-500]="i === currentSectionIndex" [class.bg-gray-200]="i !== currentSectionIndex"
+                                [attr.aria-label]="'Go to section ' + (i + 1)" [title]="s.title" (click)="goToSection(i)"></button>
+                            }
+                        </div>
+                        <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="currentSectionIndex === sections.length - 1" (click)="nextSection()"><span>{{ 'executiveSummary.insights.next' | translate }}</span></button>
+                    </div>
+                    }
+                </div>
+
+                <lib-country-dashboard [data]="dashboardData" />
+
+                @if (telemetry) {
+                <p class="mt-4 flex flex-wrap items-center gap-1 text-xs text-gray-400">
+                    @if (telemetry.response_time_ms !== null) {
+                    <span>{{ "executiveSummary.insights.generatedIn" | translate: { time: formatResponseTime(telemetry.response_time_ms) } }}</span>
+                    }
+                    @if (telemetry.total_tokens !== null) {
+                    <span>· {{ telemetry.total_tokens }} {{ "executiveSummary.insights.tokens" | translate }}</span>
+                    }
+                    @if (telemetry.confidence_score !== null) {
+                    <span>· {{ "executiveSummary.insights.confidenceEst" | translate }} {{ telemetry.confidence_score }}%</span>
+                    }
+                    @if (telemetry.quality_score !== null) {
+                    <span>· {{ "executiveSummary.insights.completenessEst" | translate }} {{ telemetry.quality_score }}%</span>
+                    }
+                    <i class="pi pi-info-circle" [title]="'executiveSummary.insights.telemetryHint' | translate"></i>
+                </p>
+                }
+
+                <div class="mt-4 rounded-lg border border-gray-200 bg-white p-4">
+                    <div class="mb-2 flex items-center justify-between">
+                        <span class="text-sm text-gray-700">{{ "executiveSummary.insights.rateResponse" | translate }}</span>
+                        <p-rating [(ngModel)]="feedbackRating" />
+                    </div>
+                    @if (feedbackRating && !feedbackSubmitted) {
+                    <textarea class="w-full rounded-lg border border-gray-300 p-2 text-sm" rows="2" [(ngModel)]="feedbackComment"
+                        [placeholder]="'executiveSummary.insights.feedbackPlaceholder' | translate"></textarea>
+                    <button type="button" pButton styleClass="mt-2!" size="small" severity="secondary" [outlined]="true" (click)="submitFeedback()"><span>{{ 'executiveSummary.insights.submitFeedback' | translate }}</span></button>
+                    }
+                    @if (feedbackSubmitted) {
+                    <p class="text-sm font-semibold text-green-600">{{ "executiveSummary.insights.feedbackThanks" | translate }}</p>
+                    }
+                    @if (feedbackError) {
+                    <p class="mt-1 text-xs text-red-600">{{ feedbackError }}</p>
+                    }
+                </div>
+
+                <div class="mt-4 flex items-center gap-3 text-gray-400">
+                    <button type="button" class="cursor-pointer transition hover:text-primary-600 disabled:pointer-events-none disabled:opacity-50"
+                        [class.text-primary-500]="saveStage === 'saved'"
+                        pTooltip="{{ (saveStage === 'saved' ? 'executiveSummary.insights.saved' : 'executiveSummary.actions.save') | translate }}" tooltipPosition="top"
+                        [disabled]="saveStage === 'saved'" (click)="openSaveForm()">
+                        <i class="pi" [class.pi-bookmark]="saveStage !== 'saved'" [class.pi-bookmark-fill]="saveStage === 'saved'"></i>
+                    </button>
+                    <button type="button" class="cursor-pointer transition hover:text-primary-600 disabled:pointer-events-none disabled:opacity-50"
+                        pTooltip="{{ (exporting ? 'executiveSummary.insights.exporting' : 'executiveSummary.exportPanel.title') | translate }}" tooltipPosition="top"
+                        [disabled]="exporting" (click)="exportPopover.toggle($event)">
+                        <i class="pi" [class.pi-download]="!exporting" [class.pi-spin]="exporting" [class.pi-spinner]="exporting"></i>
+                    </button>
+                    <button type="button" class="cursor-pointer transition hover:text-primary-600"
+                        pTooltip="{{ 'executiveSummary.insights.share' | translate }}" tooltipPosition="top" (click)="chooseShare()">
+                        <i class="pi pi-share-alt"></i>
+                    </button>
+                    <button type="button" class="cursor-pointer transition hover:text-primary-600"
+                        pTooltip="{{ 'executiveSummary.insights.task' | translate }}" tooltipPosition="top" (click)="chooseTask()">
+                        <i class="pi pi-check-square"></i>
+                    </button>
+                    <button type="button" class="cursor-pointer transition hover:text-primary-600 disabled:pointer-events-none disabled:opacity-50"
+                        [class.text-primary-500]="scheduleStage === 'saved'"
+                        pTooltip="{{ (scheduleStage === 'saved' ? 'executiveSummary.insights.scheduled' : 'executiveSummary.insights.scheduleAction') | translate }}" tooltipPosition="top"
+                        [disabled]="scheduleStage === 'saved'" (click)="openScheduleForm()">
+                        <i class="pi pi-calendar-clock"></i>
+                    </button>
+                    <button type="button" class="cursor-pointer transition hover:text-primary-600 disabled:pointer-events-none disabled:opacity-50"
+                        [class.text-primary-500]="translationState === 'done'"
+                        pTooltip="{{ (translationState === 'done' ? 'executiveSummary.insights.translated' : (translationState === 'loading' ? 'executiveSummary.insights.translating' : 'executiveSummary.insights.arabic')) | translate }}" tooltipPosition="top"
+                        [disabled]="translationState === 'done' || translationState === 'loading'" (click)="translateToArabic()">
+                        <i class="pi" [class.pi-language]="translationState !== 'loading'" [class.pi-spin]="translationState === 'loading'" [class.pi-spinner]="translationState === 'loading'"></i>
+                    </button>
+                </div>
+
+                <lib-save-profile-drawer
+                    [visible]="saveStage === 'form'"
+                    [model]="saveProfileForm"
+                    [researchTypeOptions]="researchTypeOptions"
+                    (closed)="cancelSaveForm()"
+                    (confirm)="confirmSave()"
+                />
+                @if (saveStage === 'saved') {
+                <p class="mt-3 text-sm font-semibold text-green-600">{{ "executiveSummary.insights.savedAs" | translate: { visibility: saveProfileForm.visibility.toLowerCase() } }}</p>
+                }
+                @if (saveStage === 'skipped') {
+                <p class="mt-3 text-sm text-gray-500">{{ "executiveSummary.insights.notSaved" | translate }}</p>
+                }
+
+                <lib-share-task-drawer
+                    [visible]="actionStage === 'share' || actionStage === 'task'"
+                    [stage]="actionStage === 'task' ? 'task' : 'share'"
+                    [model]="shareTaskForm"
+                    [whatsappLink]="whatsappLink"
+                    [priorityOptions]="taskPriorityOptions"
+                    [importanceOptions]="taskImportanceOptions"
+                    (closed)="backToActionPrompt()"
+                    (stageChange)="onShareTaskStageChange($event)"
+                    (sendEmail)="sendEmail()"
+                    (getWhatsappLink)="getWhatsappLink()"
+                    (createTask)="createTask()"
+                />
+
+                <lib-schedule-drawer
+                    [visible]="scheduleStage === 'form'"
+                    [model]="scheduleForm"
+                    [frequencyOptions]="scheduleFrequencyOptions"
+                    [notifyOptions]="scheduleNotifyOptions"
+                    [dayOfWeekOptions]="dayOfWeekOptions"
+                    [dayOfMonthOptions]="dayOfMonthOptions"
+                    [monthOptions]="monthOptions"
+                    (closed)="cancelScheduleForm()"
+                    (confirm)="confirmSchedule()"
+                />
+
+                @if (scheduleStage === 'saved' && scheduledEntry) {
+                <p class="mt-3 text-sm font-semibold text-green-600">
+                    {{ "executiveSummary.insights.scheduledSummary" | translate: { frequency: scheduleForm.frequency.toLowerCase(), time: scheduleForm.time, email: scheduledEntry.recipient_email } }}
+                </p>
+                }
+                @if (scheduleStage === 'skipped') {
+                <p class="mt-3 text-sm text-gray-500">{{ "executiveSummary.insights.notScheduled" | translate }}</p>
+                }
+
+                @if (translationState !== 'idle') {
+                <div class="mt-4 rounded-lg border border-gray-200 bg-white p-5">
+                    @if (translationState === 'loading') {
+                    <div class="flex items-center gap-2 text-sm text-gray-600"><i class="pi pi-spin pi-spinner"></i>{{ "executiveSummary.insights.translating" | translate }}</div>
+                    }
+                    @if (translationState === 'error') {
+                    <p class="mb-2 text-sm text-red-600">{{ translationError }}</p>
+                    <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="translateToArabic()"><span>{{ 'executiveSummary.insights.tryAgain' | translate }}</span></button>
+                    }
+                    @if (translationState === 'done') {
+                    <div class="mb-3 flex items-center justify-between">
+                        <span class="text-xs font-semibold uppercase tracking-wide text-gray-400"><span class="font-arabic">العربية</span> · {{ "executiveSummary.insights.arabicTranslation" | translate }}</span>
+                        <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="translateToArabic()"><i class="pi pi-refresh"></i><span>{{ 'executiveSummary.insights.retranslate' | translate }}</span></button>
+                    </div>
+                    <h2 class="mb-3 text-lg font-bold text-gray-800 font-arabic" dir="rtl">{{ translatedTitle }}</h2>
+                    <div class="prose prose-sm max-w-none font-arabic" dir="rtl" [innerHTML]="translatedHtml"></div>
+
+                    @if (!translatedExportPrompted) {
+                    <div class="mt-4 flex items-center justify-between rounded-lg bg-gray-50 p-3">
+                        <span class="text-sm text-gray-700">{{ "executiveSummary.insights.exportTranslated" | translate }}</span>
+                        <div class="flex gap-2">
+                            <button type="button" pButton size="small" (click)="respondToTranslatedExportPrompt(true)"><span>{{ 'executiveSummary.insights.yesExport' | translate }}</span></button>
+                            <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="respondToTranslatedExportPrompt(false)"><span>{{ 'executiveSummary.insights.notNow' | translate }}</span></button>
+                        </div>
+                    </div>
+                    }
+                    @if (translatedExportPrompted && translatedExportAccepted) {
+                    <div class="mt-4 flex items-center gap-2">
+                        <p-select [options]="exportFormatOptions" [(ngModel)]="translatedExportFormat" optionLabel="label" optionValue="value" appendTo="body" />
+                        <button type="button" pButton [loading]="translatedExportBusy" (click)="exportTranslatedCopy()"><span>{{ (translatedExportBusy ? 'executiveSummary.exportPanel.preparing' : 'executiveSummary.exportPanel.download') | translate }}</span></button>
+                    </div>
+                    }
+                    }
+                </div>
+                }
+                }
+            </div>
+        </div>
+
+        <!-- Sticky composer -->
+        @if (stage === 'idle' || stage === 'loading' || stage === 'result') {
+        <div class="bg-white px-6 py-4">
+            <div class="mx-auto max-w-3xl">
+                <textarea class="w-full rounded-lg border border-gray-300 p-3 text-sm"
+                    [ngModel]="stage === 'result' ? refineInstruction : topic"
+                    (ngModelChange)="stage === 'result' ? (refineInstruction = $event) : (topic = $event)"
+                    [placeholder]="stage === 'result'
+                        ? ('executiveSummary.insights.refinePlaceholder' | translate)
+                        : (composerMode === 'document' ? ('executiveSummary.insights.pastePlaceholder' | translate) : ('executiveSummary.insights.topicPlaceholder' | translate))"
+                    [rows]="stage === 'result' ? 2 : (composerMode === 'document' ? 6 : 3)"
+                    (keydown.enter)="onComposerEnter($event)"></textarea>
+
+                @if (stage === 'idle' || stage === 'loading') {
+                <div class="mt-2.5 flex flex-wrap items-center gap-2">
+                    <p-select class="w-56" [options]="frameworkOptions" [(ngModel)]="framework" optionLabel="label" optionValue="label" [placeholder]="'executiveSummary.insights.framework' | translate" appendTo="body" />
+                    <p-select class="w-48" [options]="templateOptions" [(ngModel)]="template" optionLabel="label" optionValue="label" [placeholder]="'executiveSummary.insights.template' | translate" appendTo="body" />
+                    <span class="flex-1"></span>
+                    <button type="button" pButton [disabled]="!topic.trim() || stage === 'loading'" (click)="startResearch()"><span>{{ (stage === 'loading' ? 'executiveSummary.insights.working' : (composerMode === 'document' ? 'executiveSummary.insights.summarise' : 'executiveSummary.insights.research')) | translate }}</span></button>
+                </div>
+                }
+                @if (stage === 'result') {
+                <div class="mt-2.5 flex items-center justify-between gap-2">
+                    <span class="text-xs text-gray-400">{{ "executiveSummary.insights.refineHint" | translate }}</span>
+                    <button type="button" pButton [disabled]="!refineInstruction.trim() || refining" (click)="refineBrief()"><span>{{ (refining ? 'executiveSummary.insights.refining' : 'executiveSummary.insights.refine') | translate }}</span></button>
+                </div>
+                }
+            </div>
+            <p class="mx-auto mt-2 max-w-3xl text-center text-xs text-gray-400">{{ "executiveSummary.insights.disclaimer" | translate }}</p>
+
+            @if (stage !== 'result' && moderationBlocked) {
+            <p class="mx-auto mt-1 max-w-3xl text-center text-xs text-red-600">{{ errorMessage }}</p>
+            } @else if (stage !== 'result' && errorMessage) {
+            <p class="mx-auto mt-1 max-w-3xl text-center text-xs text-red-600">{{ errorMessage }}</p>
+            }
+            @if (stage === 'result' && refineError) {
+            <p class="mx-auto mt-1 max-w-3xl text-center text-xs text-red-600">{{ refineError }}</p>
+            }
+        </div>
+        }
+    </div>
+
+    <lib-history-panel [collapsed]="historyCollapsed" (collapsedChange)="historyCollapsed = $event"
+        (open)="loadFromHistory($event)" (exportItem)="exportRecentReport($event)" />
+</div>
+
+<p-popover #exportPopover>
+    <p class="mb-2 px-1 text-xs font-bold uppercase tracking-wide text-gray-400">{{ "executiveSummary.exportPanel.title" | translate }}</p>
+    <div class="grid w-56 grid-cols-2 gap-2">
+        @for (o of exportOutputOptions; track o.value) {
+        <button type="button"
+            class="flex cursor-pointer flex-col items-center gap-2 rounded-md border bg-gray-50 px-3 py-4 text-center transition hover:border-primary-300 hover:bg-primary-50"
+            [class.border-primary-300]="exportFormat === o.value" [class.border-gray-100]="exportFormat !== o.value"
+            (click)="exportFormat = o.value; exportPopover.hide(); runExport(o.value)">
+            <i class="pi text-xl text-gray-500" [ngClass]="o.icon"></i>
+            <span class="text-sm font-semibold text-gray-800">{{ o.label }}</span>
+        </button>
+        }
+    </div>
+</p-popover>
+
+<lib-export-panel [(visible)]="exportPanelOpen" [title]="briefTitle" [(format)]="exportFormat" [formatOptions]="exportFormatOptions"
+    [downloading]="exporting" [recentReports]="recentReports" [downloadingRecentId]="downloadingRecentId"
+    (download)="runExport()" (downloadRecent)="exportRecentReport($event)" />
+
+<lib-admin-settings-drawer [(visible)]="adminSettingsOpen" />

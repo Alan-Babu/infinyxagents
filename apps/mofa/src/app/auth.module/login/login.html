@@ -1,0 +1,63 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="space-y-5">
+    <div class="space-y-1">
+        <h1 class="text-2xl font-semibold">{{ 'page.login' | translate }}</h1>
+        <p class="text-gray-500 text-sm">{{ 'page.loginSubtitle' | translate }}</p>
+    </div>
+
+    @if (errorMessage()) {
+    <p-message severity="error" variant="simple" class="block">
+        {{ errorMessage() }}
+    </p-message>
+    }
+
+    <div>
+        <label for="email" class="p-control-label p-control-label-required">{{ 'form.email' | translate }}</label>
+        <input id="email" type="email" pInputText fluid autocomplete="email" formControlName="email"
+            [placeholder]="'form.emailPlaceholder' | translate"
+            [class.p-invalid]="form.controls.email.invalid && form.controls.email.touched" />
+        @if (form.controls.email.invalid && form.controls.email.touched) {
+        <p-message severity="error" variant="simple" size="small" class="mt-1 block">
+            @if (form.controls.email.errors?.['email']) {
+            {{ 'form.invalidEmail' | translate }}
+            } @else {
+            {{ 'form.required' | translate }}
+            }
+        </p-message>
+        }
+    </div>
+
+    <div>
+        <label for="password" class="p-control-label p-control-label-required">{{ 'form.password' | translate }}</label>
+        <div class="relative">
+            <input id="password" pInputText fluid autocomplete="current-password" formControlName="password"
+                [type]="showPassword() ? 'text' : 'password'" [placeholder]="'form.passwordPlaceholder' | translate"
+                [class.p-invalid]="form.controls.password.invalid && form.controls.password.touched" />
+            <button type="button" class="absolute top-1/2 -translate-y-1/2 inset-e-3 text-gray-400 cursor-pointer"
+                [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'" (click)="toggleShowPassword()">
+                <i class="pi" [class.pi-eye]="!showPassword()" [class.pi-eye-slash]="showPassword()"></i>
+            </button>
+        </div>
+        @if (form.controls.password.invalid && form.controls.password.touched) {
+        <p-message severity="error" variant="simple" size="small" class="mt-1 block">
+            {{ 'form.required' | translate }}
+        </p-message>
+        }
+    </div>
+
+    <div class="flex items-center justify-between">
+        <div class="inline-flex items-center gap-1">
+            <p-checkbox binary="true" formControlName="rememberMe" inputId="rememberMe"></p-checkbox>
+            <label class="inline-flex items-center gap-2 cursor-pointer" for="rememberMe">
+                <span class="text-sm">{{ 'form.rememberMe' | translate }}</span>
+            </label>
+        </div>
+        <a [routerLink]="forgotPasswordLink" class="text-sm text-primary-500 font-medium hover:underline">
+            {{ 'form.forgotPassword' | translate }}
+        </a>
+    </div>
+
+    <button type="submit" pButton fluid [loading]="submitting()" [disabled]="submitting()">
+        {{ 'buttons.login' | translate }}
+    </button>
+
+</form>

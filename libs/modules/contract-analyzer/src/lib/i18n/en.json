@@ -1,0 +1,232 @@
+{
+    "contractAnalyzer": {
+        "nav": {
+            "analyze": "Analyze",
+            "myContracts": "My Contracts"
+        },
+        "common": {
+            "unclassified": "Unclassified",
+            "unknownParty": "Unknown party"
+        },
+        "risk": {
+            "low": "low",
+            "medium": "medium",
+            "high": "high",
+            "critical": "critical",
+            "unknown": "unknown"
+        },
+        "classification": {
+            "Confidential": "Confidential",
+            "Critical": "Critical",
+            "PublicCopy": "Public Copy",
+            "ControlledCopy": "Controlled Copy",
+            "Internal": "Internal"
+        },
+        "callTypes": {
+            "detect": "Detect Parties",
+            "questions": "Clarifying Questions",
+            "analyze": "Risk Analysis",
+            "qa": "Ask Agent"
+        },
+        "toolbar": {
+            "eyebrow": "Contract Analyzer Agent",
+            "rateAgent": "Rate Agent",
+            "performance": "Performance",
+            "reviewQueue": "Review Queue",
+            "stats": "Stats"
+        },
+        "reviewQueue": {
+            "title": "Review queue",
+            "empty": "Nothing needs review right now — every contract met the confidence and risk bar automatically.",
+            "footerNote": "Flagged when confidence is low or risk is high"
+        },
+        "performance": {
+            "title": "Agent performance report",
+            "footerNote": "Telemetry stored in Postgres (agent_telemetry)"
+        },
+        "feedback": {
+            "title": "Rate the agent",
+            "forDocument": "This contract's analysis",
+            "overall": "The agent overall",
+            "commentPlaceholder": "What worked well, or what should improve…"
+        },
+        "stats": {
+            "title": "Agent statistics",
+            "totalContracts": "Contracts analyzed",
+            "totalQuestions": "Questions asked",
+            "totalFeedback": "Feedback entries",
+            "averageRating": "Average rating",
+            "averageRiskScore": "Average risk score",
+            "averageConfidence": "Average confidence",
+            "mofaItOutsourcing": "MOFA / IT-outsourcing contracts",
+            "byRiskLevel": "By risk level",
+            "byClassification": "By classification",
+            "byReviewStatus": "By review status",
+            "ratingDistribution": "Rating distribution",
+            "searchHistory": "Search history",
+            "searchHistoryEmpty": "No searches recorded yet.",
+            "resultCount": "{{ count }} result(s)"
+        },
+        "dropzone": {
+            "dropTitle": "Drop a contract here, or click to browse",
+            "dropSubtitle": "PDF, DOCX, TXT, JPG, or PNG — up to 20MB, uploaded in chunks",
+            "cancel": "Cancel",
+            "chunks": "chunks",
+            "pages": "page(s)"
+        },
+        "upload": {
+            "title": "Analyze a contract",
+            "subtitle": "Upload a contract to detect the parties, work out what still needs clarifying, and assess risk across every category.",
+            "continue": "Continue"
+        },
+        "party": {
+            "title": "Confirm the parties",
+            "subtitle": "The agent detected the following — review and adjust before continuing.",
+            "detectedLanguage": "Detected language",
+            "contractType": "Contract type",
+            "partyA": "Party A",
+            "partyB": "Party B",
+            "name": "Name",
+            "type": "Type",
+            "namePlaceholder": "Party name",
+            "types": {
+                "governmentMofa": "Government / MOFA",
+                "commercial": "Commercial",
+                "itOutsourcing": "IT / Outsourcing Company",
+                "individual": "Individual",
+                "other": "Other"
+            },
+            "mofaBanner": "This looks like a Ministry of Foreign Affairs IT-outsourcing contract — risk analysis will apply the relevant government/outsourcing checks.",
+            "back": "Back",
+            "continue": "Continue"
+        },
+        "questions": {
+            "title": "A few clarifying questions",
+            "subtitle": "Answers to these questions sharpen the risk analysis.",
+            "contractSummary": "Contract summary",
+            "questionLabel": "Question {{ index }}",
+            "answerPlaceholder": "Your answer (optional)…",
+            "cashFlowLabel": "Cash flow / liquidity context",
+            "cashFlowPlaceholder": "Describe the cash flow or liquidity context relevant to this contract…",
+            "cashFlowRequired": "Cash flow / liquidity context is required to assess risk exposure",
+            "previousNotesLabel": "Notes on previous/related contracts (optional)",
+            "previousNotesPlaceholder": "Any notes about prior dealings with these parties…",
+            "back": "Back",
+            "submit": "Analyze contract"
+        },
+        "myContracts": {
+            "title": "My Contracts",
+            "subtitle": "Search, filter, and manage every contract the agent has analyzed.",
+            "searchPlaceholder": "Search by filename or party…",
+            "search": "Search",
+            "resultCount": "{{ count }} contract(s)",
+            "delete": "Delete",
+            "table": {
+                "filename": "File name",
+                "partyA": "Party A",
+                "partyB": "Party B",
+                "risk": "Risk",
+                "reviewStatus": "Review status",
+                "classification": "Classification",
+                "created": "Created"
+            }
+        },
+        "filters": {
+            "anyRisk": "Any risk",
+            "anyClassification": "Any classification",
+            "anyReviewStatus": "Any review status",
+            "from": "From",
+            "to": "To"
+        },
+        "pagination": {
+            "prev": "← Prev",
+            "next": "Next →",
+            "pageOf": "Page {{ page }} of {{ total }}"
+        },
+        "confirm": {
+            "header": "Please confirm",
+            "deleteContract": "Remove \"{{ filename }}\" from your contract library?"
+        },
+        "tabs": {
+            "overview": "Overview",
+            "risk": "Risk Dashboard",
+            "clauses": "Key Clauses",
+            "recommendations": "Recommendations",
+            "ask": "Ask Agent"
+        },
+        "reviewStatus": {
+            "needs_review": "Needs Review",
+            "approved": "Approved",
+            "rejected": "Rejected"
+        },
+        "detail": {
+            "title": "Contract",
+            "loading": "Loading contract…",
+            "risk": "risk",
+            "newContract": "New contract",
+            "copyLink": "Copy link",
+            "linkCopied": "Link copied to clipboard",
+            "linkCopyFailed": "Could not copy link.",
+            "downloadReport": "Download report",
+            "reportDownloaded": "Report downloaded",
+            "reportDownloadFailed": "Download failed. Please try again.",
+            "flaggedForReview": "This contract was flagged for human review",
+            "confidence": "confidence",
+            "highRisk": "high risk",
+            "reviewNow": "Review now",
+            "recordDecision": "Record review decision",
+            "reviewerNamePlaceholder": "Your name (optional)",
+            "reviewerNotesPlaceholder": "Notes on this decision (optional)…",
+            "cancel": "Cancel",
+            "reject": "Reject",
+            "approve": "Approve",
+            "partyA": "Party A",
+            "partyB": "Party B",
+            "contractType": "Contract Type",
+            "contractValue": "Contract Value",
+            "startDate": "Start Date",
+            "endDate": "End Date",
+            "classification": "Classification",
+            "mofaItOutsourcing": "MOFA / IT-Outsourcing",
+            "executiveSummary": "Executive Summary",
+            "noExecutiveSummary": "No executive summary was generated for this contract.",
+            "applicableContext": "Applicable Context",
+            "detectedLanguage": "Detected Language",
+            "file": "File",
+            "note": "Note",
+            "overallRisk": "Overall Risk",
+            "riskScore": "Risk Score",
+            "noRiskCategories": "No risk categories were identified for this contract.",
+            "clauseReference": "Clause reference",
+            "cashFlowImpact": "Cash flow impact",
+            "noKeyClauses": "No key clauses were identified for this contract.",
+            "pageReference": "Page reference",
+            "noRecommendations": "No recommendations were generated for this contract.",
+            "suggestedQuestions": "Suggested questions — click to select",
+            "you": "U",
+            "agentInitials": "IX",
+            "thinking": "Thinking…",
+            "askEmpty": "Click a suggestion above, or type your own question below.",
+            "askPlaceholder": "Ask a question about this contract…",
+            "send": "Send"
+        },
+        "toast": {
+            "dropAcceptedOnly": "Please drop a PDF, DOCX, TXT, JPG, or PNG file up to 20MB",
+            "uploadCancelled": "Upload cancelled",
+            "uploadFailed": "Upload failed. Please try again.",
+            "detectFailed": "Could not read the contract. Please try again.",
+            "questionsFailed": "Could not analyze that contract. Please try again.",
+            "analysisFailed": "Analysis failed. Please try again.",
+            "loadContractsFailed": "Could not load contracts. Please try again.",
+            "loadContractFailed": "Could not open that contract.",
+            "contractDeleted": "Contract removed",
+            "deleteFailed": "Could not remove that contract.",
+            "askFailed": "Could not get an answer. Please try again.",
+            "reviewApproved": "Contract approved",
+            "reviewRejected": "Contract rejected",
+            "reviewFailed": "Could not record the review decision.",
+            "feedbackSubmitted": "Thanks for rating the agent!",
+            "feedbackFailed": "Could not submit feedback. Please try again."
+        }
+    }
+}

@@ -1,0 +1,68 @@
+<p-drawer [visible]="visible" position="right" appendTo="body" [baseZIndex]="1200" (visibleChange)="!$event && closed.emit()">
+    <ng-template #header>
+        <div>
+            <div class="text-lg font-bold tracking-wide text-gray-800">{{ "executiveSummary.insights.scheduleRefresh" | translate }}</div>
+        </div>
+    </ng-template>
+    
+    <div class="pt-5 space-y-3">
+        
+        <div class="p-3 border border-gray-200 rounded-md">
+            <p class="text-sm text-gray-500">{{ "executiveSummary.insights.scheduleRefreshSub" | translate }}</p>
+        </div>
+    
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+                <label class="mb-1.5 block text-sm font-semibold text-gray-600" for="scheduleFrequency">{{ "executiveSummary.insights.frequency" | translate }}</label>
+                <p-select class="w-full" [options]="frequencyOptions" [(ngModel)]="model.frequency" optionLabel="label" optionValue="label" styleClass="w-full" appendTo="body" />
+            </div>
+            <div>
+                <label class="mb-1.5 block text-sm font-semibold text-gray-600" for="scheduleTime">{{ "executiveSummary.insights.timeUtc" | translate }}</label>
+                <input pInputText type="time" id="scheduleTime" class="w-full" [(ngModel)]="model.time" />
+            </div>
+        </div>
+    
+        @if (model.frequency === 'Weekly') {
+            <div>
+                <label class="mb-1.5 block text-sm font-semibold text-gray-600" for="scheduleDayOfWeek">{{ "executiveSummary.insights.dayOfWeek" | translate }}</label>
+                <p-select class="w-full" [options]="dayOfWeekOptions" [(ngModel)]="model.dayOfWeek" optionLabel="label" optionValue="label" styleClass="w-full" appendTo="body" />
+            </div>
+        }
+        @if (model.frequency === 'Monthly') {
+            <div>
+                <label class="mb-1.5 block text-sm font-semibold text-gray-600" for="scheduleDayOfMonth">{{ "executiveSummary.insights.dayOfMonth" | translate }}</label>
+                <p-select class="w-full" [options]="dayOfMonthOptions" [(ngModel)]="model.dayOfMonth" optionLabel="label" optionValue="label" styleClass="w-full" appendTo="body" />
+            </div>
+        }
+        @if (model.frequency === 'Quarterly') {
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                    <label class="mb-1.5 block text-sm font-semibold text-gray-600" for="scheduleQuarterlyMonth">{{ "executiveSummary.insights.startingMonth" | translate }}</label>
+                    <p-select class="w-full" [options]="monthOptions" [(ngModel)]="model.quarterlyMonth" optionLabel="label" optionValue="label" styleClass="w-full" appendTo="body" />
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-semibold text-gray-600" for="scheduleDayOfMonth2">{{ "executiveSummary.insights.dayOfMonth" | translate }}</label>
+                    <p-select class="w-full" [options]="dayOfMonthOptions" [(ngModel)]="model.dayOfMonth" optionLabel="label" optionValue="label" styleClass="w-full" appendTo="body" />
+                </div>
+            </div>
+            <p class="text-xs text-gray-500" [innerHTML]="'executiveSummary.insights.quarterlyHint' | translate: { month: model.quarterlyMonth }"></p>
+        }
+    
+        <div>
+            <label class="mb-1.5 block text-sm font-semibold text-gray-600" for="scheduleEmail">{{ "executiveSummary.insights.sendReportTo" | translate }}</label>
+            <input pInputText type="email" id="scheduleEmail" class="w-full" [(ngModel)]="model.email" placeholder="name@company.com" />
+        </div>
+        <div>
+            <label class="mb-1.5 block text-sm font-semibold text-gray-600" for="scheduleNotifyMode">{{ "executiveSummary.insights.notify" | translate }}</label>
+            <p-select class="w-full" [options]="notifyOptions" [(ngModel)]="model.notifyMode" optionLabel="label" optionValue="label" styleClass="w-full" appendTo="body" />
+        </div>
+
+    </div>
+
+    <ng-template #footer>
+        <div class="flex gap-2 items-center justify-between">
+            <button type="button" pButton severity="secondary" [outlined]="true" (click)="closed.emit()"><span>{{ 'executiveSummary.actions.cancel' | translate }}</span></button>
+            <button type="button" pButton [disabled]="!model.email.trim()" (click)="confirm.emit()"><span>{{ 'executiveSummary.insights.confirmSchedule' | translate }}</span></button>
+        </div>
+    </ng-template>
+</p-drawer>

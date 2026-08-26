@@ -1,0 +1,56 @@
+<div class="flex flex-col gap-3">
+    @if (suggestions.length) {
+    <div class="flex flex-col gap-1.5">
+        <span class="text-sm font-semibold text-gray-500">{{ "contractAnalyzer.detail.suggestedQuestions" | translate }}</span>
+        <div class="flex flex-wrap gap-2">
+            @for (s of suggestions; track s) {
+            <button type="button"
+                class="cursor-pointer rounded-md border px-3 py-1.5 text-sm font-medium transition-colors"
+                [class.bg-primary-500]="selectedSuggestion === s" [class.text-white]="selectedSuggestion === s"
+                [class.border-primary-500]="selectedSuggestion === s"
+                [class.border-gray-200]="selectedSuggestion !== s" [class.text-gray-600]="selectedSuggestion !== s"
+                (click)="selectPromptSuggestion(s)">
+                {{ s }}
+            </button>
+            }
+        </div>
+    </div>
+    }
+
+    <div class="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4">
+        @for (ex of history; track ex.id) {
+        <div class="flex flex-col gap-2">
+            <div class="flex items-start gap-2">
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-gray-200 text-xs font-bold text-gray-600">{{ "contractAnalyzer.detail.you" | translate }}</span>
+                <span class="text-gray-800">{{ ex.question }}</span>
+            </div>
+            <div class="flex items-start gap-2">
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-primary-100 text-xs font-bold text-primary-700">{{ "contractAnalyzer.detail.agentInitials" | translate }}</span>
+                <span class="text-gray-700">
+                    {{ ex.answer }}
+                    @if (ex.confidence_score !== null) {
+                    <span class="ms-2 rounded-full px-2 py-0.5 text-xs font-semibold" [ngClass]="confidenceClass(ex.confidence_score)">{{ fmtConfidence(ex.confidence_score) }}</span>
+                    }
+                </span>
+            </div>
+        </div>
+        }
+        @if (asking) {
+        <div class="flex items-start gap-2">
+            <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-primary-100 text-xs font-bold text-primary-700">{{ "contractAnalyzer.detail.agentInitials" | translate }}</span>
+            <span class="italic text-gray-400">{{ "contractAnalyzer.detail.thinking" | translate }}</span>
+        </div>
+        }
+        <div id="contract-qa-scroll-anchor"></div>
+        @if (history.length === 0 && !asking) {
+        <p class="text-gray-500">{{ "contractAnalyzer.detail.askEmpty" | translate }}</p>
+        }
+    </div>
+
+    <div class="flex gap-2">
+        <input id="contract-qa-question-input" pInputText type="text" class="w-full" [(ngModel)]="questionInput"
+            [placeholder]="'contractAnalyzer.detail.askPlaceholder' | translate" [disabled]="asking"
+            (keydown.enter)="send()" />
+        <button type="button" pButton [disabled]="asking || !questionInput.trim()" (click)="send()"><i class="pi pi-send"></i><span>{{ 'contractAnalyzer.detail.send' | translate }}</span></button>
+    </div>
+</div>

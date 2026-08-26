@@ -1,0 +1,58 @@
+<p-drawer [(visible)]="visible" position="right" styleClass="p-drawer-sm" appendTo="body" [baseZIndex]="1200" (onHide)="visibleChange.emit(false)">
+    <ng-template pTemplate="header">
+        <div class="flex flex-col">
+            <span class="text-xs font-semibold uppercase tracking-wide text-gray-400">{{ "docCompare.mergeDrawer.eyebrow" | translate }}</span>
+            <span class="text-base font-semibold text-gray-800">{{ "docCompare.mergeDrawer.title" | translate }}</span>
+        </div>
+    </ng-template>
+
+    <div class="flex flex-col gap-4">
+        <div class="rounded-lg border border-primary-200 bg-primary-50 p-3 text-xs text-gray-700">
+            @if (overriddenCount === 0) {
+            <span>{{ "docCompare.mergeDrawer.defaultNoteAllCompare" | translate: { compareLabel } }}</span>
+            } @else {
+            <span>{{ "docCompare.mergeDrawer.defaultNoteWithOverrides" | translate: { compareLabel, overriddenCount, baseLabel } }}</span>
+            }
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-semibold text-gray-600">{{ "docCompare.mergeDrawer.label" | translate }}</label>
+            <input pInputText type="text" class="w-full" [(ngModel)]="label" [placeholder]="'docCompare.mergeDrawer.labelPlaceholder' | translate" />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-semibold text-gray-600">{{ "docCompare.saveDrawer.tag" | translate }}</label>
+            <div class="flex flex-wrap gap-2">
+                @for (t of tagOptions; track t) {
+                <button type="button"
+                    class="cursor-pointer rounded-full border px-3 py-1.5 text-xs font-medium transition-colors"
+                    [class.bg-primary-500]="tag === t" [class.text-white]="tag === t" [class.border-primary-500]="tag === t"
+                    [class.border-gray-200]="tag !== t" [class.text-gray-600]="tag !== t"
+                    (click)="tag = t">
+                    {{ t }}
+                </button>
+                }
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-semibold text-gray-600">
+                {{ "docCompare.saveDrawer.notes" | translate }}
+                <span class="font-normal text-gray-400">({{ "docCompare.optional" | translate }})</span>
+            </label>
+            <textarea class="w-full rounded-lg border border-gray-300 p-2 text-sm" rows="3" [(ngModel)]="notes"></textarea>
+        </div>
+
+        <label class="flex cursor-pointer items-start gap-2">
+            <p-checkbox [(ngModel)]="setAsMaster" [binary]="true" />
+            <span class="text-xs text-gray-600">{{ "docCompare.mergeDrawer.setMaster" | translate }}</span>
+        </label>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <div class="flex justify-end gap-2">
+            <button type="button" pButton severity="secondary" [outlined]="true" (click)="close()"><span>{{ 'docCompare.actions.cancel' | translate }}</span></button>
+            <button type="button" pButton (click)="confirm()"><span>{{ 'docCompare.mergeDrawer.confirm' | translate }}</span></button>
+        </div>
+    </ng-template>
+</p-drawer>

@@ -1,0 +1,16 @@
+@if(loader.isVisible) {
+
+<div class="fixed start-0 top-0 w-screen h-screen bg-black/80 z-1000000 flex justify-center p-10 text-white">
+    <div class="my-auto items-center flex flex-col pointer-events-none select-none gap-6">
+        <svg class="w-12 h-12" viewBox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve">
+            <circle fill="none" stroke="#fff" stroke-width="5" cx="50" cy="50" r="44" style="opacity: 0.5" />
+            <circle fill="#fff" stroke="#fff" stroke-width="4" cx="8" cy="54" r="6">
+                <animateTransform attributeName="transform" dur="2s" type="rotate" from="0 50 48" to="360 50 52"
+                    repeatCount="indefinite" />
+            </circle>
+        </svg>
+        <div class="text-center" [innerHTML]="loader.template"></div>
+    </div>
+</div>
+
+}

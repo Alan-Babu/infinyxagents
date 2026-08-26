@@ -1,0 +1,61 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["es2020", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "strict": false,
+    "baseUrl": ".",
+    "paths": {
+      "@nfinyx/agents-landing": [
+        "libs/common/components/agents-landing/src/index.ts"
+      ],
+      "@nfinyx/chunk-transfer": ["libs/common/chunk-transfer/src/index.ts"],
+      "@nfinyx/contract-analyzer": ["libs/modules/contract-analyzer/src/index.ts"],
+      "@nfinyx/data-table": ["libs/common/components/data-table/src/index.ts"],
+      "@nfinyx/digital-attestation": [
+        "libs/modules/digital-attestation/src/index.ts"
+      ],
+      "@nfinyx/directives": ["libs/common/directives/src/index.ts"],
+      "@nfinyx/doc-compare": ["libs/modules/doc-compare/src/index.ts"],
+      "@nfinyx/doc-intel-agent": ["libs/modules/doc-intel-agent/src/index.ts"],
+      "@nfinyx/document-agent": [
+        "libs/common/components/document-agent/src/index.ts"
+      ],
+      "@nfinyx/executive-summary": [
+        "libs/modules/executive-summary/src/index.ts"
+      ],
+      "@nfinyx/functions": ["libs/common/functions/src/index.ts"],
+      "@nfinyx/grammar-agent": ["libs/modules/grammar-agent/src/index.ts"],
+      "@nfinyx/email-compose-agent": ["libs/modules/email-compose-agent/src/index.ts"],
+      "@nfinyx/hr-agent": ["libs/modules/hr-agent/src/index.ts"],
+      "@nfinyx/icon": ["libs/common/icon/src/index.ts"],
+      "@nfinyx/layouts": ["libs/common/layouts/src/index.ts"],
+      "@nfinyx/loader": ["libs/common/components/loader/src/index.ts"],
+      "@nfinyx/main-menu": ["libs/common/main-menu/src/index.ts"],
+      "@nfinyx/mofa-chatbot": ["libs/modules/mofa-chatbot/src/index.ts"],
+      "@nfinyx/no-data": ["libs/common/components/no-data/src/index.ts"],
+      "@nfinyx/page-header": [
+        "libs/common/components/page-header/src/index.ts"
+      ],
+      "@nfinyx/services": ["libs/common/services/src/index.ts"],
+      "@nfinyx/shared-assets": ["libs/common/shared-assets/src/index.ts"],
+      "@nfinyx/stat-card": ["libs/common/components/stat-card/src/index.ts"],
+      "@nfinyx/translator-agent": [
+        "libs/modules/translator-agent/src/index.ts"
+      ],
+      "@nfinyx/types": ["libs/common/types/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

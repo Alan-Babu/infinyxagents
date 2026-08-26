@@ -1,0 +1,13 @@
+<div class="flex flex-col gap-5 p-6">
+    <h1 class="text-xl font-bold text-gray-800">{{ 'mofaChatbot.admin.riskSessions.title' | translate }}</h1>
+
+    @if (loading) {
+        <div class="flex items-center justify-center py-16">
+            <i class="pi pi-spin pi-spinner text-2xl text-primary-500"></i>
+        </div>
+    } @else {
+        <lib-data-table [rowData]="sessions" [colDefs]="colDefs" [showSearch]="false" [paginator]="true" [noRowsMessage]="'mofaChatbot.admin.riskSessions.noSessions' | translate" />
+    }
+</div>
+
+<lib-risk-session-transcript-drawer [transcript]="transcript" (closed)="closeTranscript()" />

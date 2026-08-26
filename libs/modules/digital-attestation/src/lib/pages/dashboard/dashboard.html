@@ -1,0 +1,67 @@
+<div class="flex h-full min-h-0 flex-col">
+    <lib-page-header titleKey="digitalAttestation.dashboard.title" subtitleKey="digitalAttestation.dashboard.subtitle" [showBack]="false" />
+
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+        <div class="flex flex-col gap-6">
+            @if (errorMessage) {
+            <p class="text-sm text-red-600">{{ errorMessage }}</p>
+            }
+            <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
+                <lib-stat-card
+                    [label]="'digitalAttestation.dashboard.stats.awaitingReview' | translate"
+                    [value]="pendingCount"
+                    [sub]="'digitalAttestation.dashboard.stats.awaitingReviewSub' | translate: { total: cases.length }"
+                    icon="pi pi-clock"
+                    fgClass="text-amber-600"
+                    bgClass="bg-amber-50"
+                />
+                <lib-stat-card
+                    [label]="'digitalAttestation.dashboard.stats.pipelineFailures' | translate"
+                    [value]="failedCount"
+                    [sub]="'digitalAttestation.dashboard.stats.pipelineFailuresSub' | translate"
+                    icon="pi pi-exclamation-triangle"
+                    fgClass="text-red-600"
+                    bgClass="bg-red-50"
+                />
+                <lib-stat-card
+                    [label]="'digitalAttestation.dashboard.stats.approvalRate' | translate"
+                    [value]="approvalRate + '%'"
+                    [sub]="'digitalAttestation.dashboard.stats.approvalRateSub' | translate: { completed: completedCount }"
+                    icon="pi pi-check-circle"
+                    fgClass="text-green-600"
+                    bgClass="bg-green-50"
+                />
+                <lib-stat-card
+                    [label]="'digitalAttestation.dashboard.stats.avgConfidence' | translate"
+                    [value]="avgConfidence + '%'"
+                    [sub]="'digitalAttestation.dashboard.stats.avgConfidenceSub' | translate"
+                    icon="pi pi-gauge"
+                    fgClass="text-primary-600"
+                    bgClass="bg-primary-50"
+                />
+            </div>
+
+            <div class="flex flex-col items-start justify-between gap-4 rounded-lg border border-primary-100 bg-primary-50 p-5 sm:flex-row sm:items-center">
+                <div>
+                    <div class="text-xs font-bold uppercase tracking-wide text-primary-600">{{ "digitalAttestation.dashboard.banner.eyebrow" | translate }}</div>
+                    <h2 class="mt-1 text-lg font-bold text-gray-800">{{ "digitalAttestation.dashboard.banner.title" | translate }}</h2>
+                    <p class="mt-1 text-sm text-gray-600">{{ "digitalAttestation.dashboard.banner.subtitle" | translate }}</p>
+                    <button type="button" pButton class="mt-3 inline-block" (click)="goToManualReview()"><span>{{ 'digitalAttestation.dashboard.banner.cta' | translate }}</span><i class="pi pi-arrow-right"></i></button>
+                </div>
+                <div class="shrink-0 rounded-lg border border-gray-200 bg-white px-6 py-3 text-center">
+                    <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{ "digitalAttestation.dashboard.banner.pending" | translate }}</div>
+                    <div class="text-2xl font-extrabold text-gray-800">{{ pendingCount }}</div>
+                </div>
+            </div>
+
+            <div>
+                <div class="mb-2.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-gray-400">
+                    <i class="pi pi-history"></i> {{ "digitalAttestation.dashboard.recentlyUpdated" | translate }}
+                </div>
+                <lib-data-table [rowData]="recentCases" [colDefs]="colDefs" [paginator]="false" [showSearch]="false" (rowClick)="openCase($event)" />
+            </div>
+        </div>
+    </div>
+
+    <lib-case-drawer [row]="drawerCase" (closed)="closeDrawer()" (decided)="onDecided()" />
+</div>

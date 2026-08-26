@@ -1,0 +1,58 @@
+<p-drawer [visible]="!!flag" position="right" styleClass="p-drawer-md" appendTo="body" [baseZIndex]="1200" (onHide)="closed.emit()">
+    <ng-template #header>
+        <div>
+            <div class="text-xs font-bold uppercase tracking-wide text-primary-600">{{ "executiveSummary.guardrails.drawerEyebrow" | translate }}</div>
+            @if (flag) {
+                <div class="text-lg font-bold text-gray-800">{{ categoryLabel(flag.category) }}</div>
+            }
+        </div>
+    </ng-template>
+
+    @if (flag) {
+        <div class="flex items-center gap-2">
+            <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700">{{ initials(flag.user_id) }}</span>
+            <div>
+                <div class="text-sm font-semibold text-gray-800">{{ flag.user_id }}</div>
+                <div class="text-xs text-gray-400">{{ flag.created_at | date: 'mediumDate' }}</div>
+            </div>
+        </div>
+
+        <div class="mt-4 grid grid-cols-2 gap-3">
+            <div class="rounded-lg border border-gray-200 bg-white p-3">
+                <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{ "executiveSummary.guardrails.priority" | translate }}</div>
+                <span class="mt-1 inline-block rounded-full px-2.5 py-1 text-xs font-medium"
+                    [class.bg-red-100]="guardrailPriority(flag.category) === 'High'" [class.text-red-700]="guardrailPriority(flag.category) === 'High'"
+                    [class.bg-yellow-100]="guardrailPriority(flag.category) === 'Medium'" [class.text-yellow-700]="guardrailPriority(flag.category) === 'Medium'"
+                    [class.bg-gray-100]="guardrailPriority(flag.category) === 'Low'" [class.text-gray-600]="guardrailPriority(flag.category) === 'Low'">
+                    {{ guardrailPriority(flag.category) }}
+                </span>
+            </div>
+            <div class="rounded-lg border border-gray-200 bg-white p-3">
+                <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{ "executiveSummary.guardrails.status" | translate }}</div>
+                <span class="mt-1 inline-block rounded-full px-2.5 py-1 text-xs font-medium"
+                    [class.bg-red-100]="flag.status === 'flagged'" [class.text-red-700]="flag.status === 'flagged'"
+                    [class.bg-green-100]="flag.status === 'corrective_action_taken'" [class.text-green-700]="flag.status === 'corrective_action_taken'"
+                    [class.bg-gray-100]="flag.status === 'reviewed'" [class.text-gray-600]="flag.status === 'reviewed'">
+                    {{ statusLabel(flag.status) }}
+                </span>
+            </div>
+        </div>
+
+        <div class="mt-5">
+            <div class="mb-1.5 text-xs font-bold uppercase tracking-wide text-gray-400">{{ "executiveSummary.guardrails.reason" | translate }}</div>
+            <p class="text-sm text-gray-700">{{ flag.matched_terms.join(', ') || '—' }}</p>
+        </div>
+
+        <div class="mt-5">
+            <div class="mb-1.5 text-xs font-bold uppercase tracking-wide text-gray-400">{{ "executiveSummary.guardrails.fullInput" | translate }}</div>
+            <p class="rounded-lg border border-gray-200 bg-white p-3 text-sm text-gray-700">{{ flag.input_text }}</p>
+        </div>
+
+        <ng-template #footer>
+            <div class="flex gap-2">
+                <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="flag.status === 'reviewed' || updatingId === flag.id" (click)="onSetStatus('reviewed')"><span>{{ 'executiveSummary.guardrails.markReviewed' | translate }}</span></button>
+                <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="flag.status === 'corrective_action_taken' || updatingId === flag.id" (click)="onSetStatus('corrective_action_taken')"><span>{{ 'executiveSummary.guardrails.markActionTaken' | translate }}</span></button>
+            </div>
+        </ng-template>
+    }
+</p-drawer>

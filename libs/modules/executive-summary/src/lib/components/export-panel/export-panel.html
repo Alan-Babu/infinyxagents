@@ -1,0 +1,39 @@
+<p-drawer [(visible)]="visible" position="right" styleClass="p-drawer-sm" appendTo="body" [baseZIndex]="1200" (onHide)="visibleChange.emit(false)">
+    <ng-template pTemplate="header">
+        <span class="truncate text-base font-semibold text-gray-800" [title]="title">{{ title || ("executiveSummary.exportPanel.title" | translate) }}</span>
+    </ng-template>
+
+    <div class="flex flex-col items-center gap-1.5 text-center">
+        <i class="pi pi-file mb-3.5 text-5xl text-gray-300"></i>
+        <div class="max-w-64 truncate text-base font-bold text-gray-800">{{ title || ("executiveSummary.exportPanel.untitled" | translate) }}</div>
+        <div class="text-xs text-gray-500">{{ formatLabel }}</div>
+
+        <p-select class="mt-4 w-full max-w-52" [options]="formatOptions" [ngModel]="format" (ngModelChange)="formatChange.emit($event)"
+            optionLabel="label" optionValue="value" appendTo="body" />
+
+        <button type="button" pButton styleClass="mt-5!" [loading]="downloading" (click)="download.emit()"><span>{{ downloading ? ('executiveSummary.exportPanel.preparing' | translate) : ('executiveSummary.exportPanel.download' | translate) + ' ' + formatLabel }}</span></button>
+    </div>
+
+    @if (recentReports.length) {
+    <div class="mt-8 border-t border-gray-200 pt-5">
+        <div class="mb-2.5 text-xs font-bold uppercase tracking-wide text-gray-400">{{ "executiveSummary.exportPanel.recentReports" | translate }}</div>
+        @for (r of recentReports; track r.session_id) {
+        <div class="flex items-center justify-between gap-2.5 rounded-lg px-1 py-2 hover:bg-gray-50">
+            <div class="min-w-0">
+                <div class="truncate text-xs font-semibold text-gray-800" [title]="r.name">{{ r.name }}</div>
+                <div class="text-xs text-gray-400">{{ r.framework }} · {{ r.word_count }} {{ "executiveSummary.history.words" | translate }}</div>
+            </div>
+            <button type="button" class="inline-flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-md border border-gray-200 text-gray-500 hover:border-primary-400 hover:text-primary-600 disabled:opacity-50"
+                [disabled]="downloadingRecentId === r.session_id" (click)="downloadRecent.emit(r.session_id)"
+                [attr.aria-label]="'Download ' + r.name">
+                @if (downloadingRecentId === r.session_id) {
+                <i class="pi pi-spin pi-spinner text-xs"></i>
+                } @else {
+                <i class="pi pi-download text-xs"></i>
+                }
+            </button>
+        </div>
+        }
+    </div>
+    }
+</p-drawer>

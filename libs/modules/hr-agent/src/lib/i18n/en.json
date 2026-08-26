@@ -1,0 +1,65 @@
+{
+    "hrAgent": {
+        "greeting": "Hi, I'm your HR assistant. Ask me about leave balances, applying for leave, or company policies.",
+        "newChat": "New chat",
+        "conversation": "Conversation",
+        "talkToHuman": "Talk to a human",
+        "talkToHumanMessage": "I would like to talk to a human from the HR team about my question, please.",
+        "attachedDocumentFallback": "Please find my attached document.",
+        "thinking": "Thinking…",
+        "genericError": "Sorry, something went wrong reaching the HR agent.",
+        "composerPlaceholder": "Ask about leave, medical certificates, or policies...",
+        "attachFile": "Attach a file",
+        "send": "Send",
+        "tokenCount": "{{ count }} tokens",
+        "quickActions": {
+            "title": "Quick actions",
+            "leaveBalance": "Leave balance",
+            "appliedLeaves": "Applied leaves",
+            "cancelLeaves": "Cancel leaves",
+            "applyForLeave": "Apply for leave",
+            "leavePolicy": "Leave policy"
+        },
+        "history": {
+            "title": "History",
+            "empty": "No previous conversations yet.",
+            "noMessages": "(no messages)",
+            "today": "Today",
+            "previous7Days": "Previous 7 Days",
+            "older": "Older",
+            "delete": "Delete conversation"
+        },
+        "actions": {
+            "readAloud": "Read aloud",
+            "copy": "Copy",
+            "regenerate": "Regenerate",
+            "goodResponse": "Good response",
+            "notHelpful": "Not helpful"
+        },
+        "dislike": {
+            "whatWentWrong": "What went wrong? (optional)",
+            "placeholder": "Tell us what was wrong with this response…",
+            "skip": "Skip",
+            "submit": "Submit"
+        },
+        "verification": {
+            "title": "Medical certificate verification",
+            "field": "Field",
+            "uploadedCopy": "Uploaded copy",
+            "officialCopy": "Official copy",
+            "match": "Match",
+            "matches": "Matches the official copy",
+            "differs": "Differs from the official copy",
+            "notApplicable": "Not applicable",
+            "noFields": "No fields could be extracted for comparison.",
+            "viewUploaded": "View uploaded copy",
+            "viewOfficial": "View official (downloaded) copy",
+            "noOfficialCopy": "No official copy could be downloaded",
+            "leaveApplied": "Leave applied: {{ days }} day(s), {{ start }} to {{ end }}",
+            "approved": "APPROVED",
+            "notApproved": "NOT APPROVED",
+            "approvedSummary": "I've verified your medical certificate against the official record and applied your leave on your behalf — {{ days }} day(s), {{ start }} to {{ end }}. Full comparison below.",
+            "notApprovedSummary": "I couldn't approve this medical leave request: {{ reason }}"
+        }
+    }
+}

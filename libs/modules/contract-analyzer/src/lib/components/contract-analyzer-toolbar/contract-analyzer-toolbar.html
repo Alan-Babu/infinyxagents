@@ -1,0 +1,37 @@
+<div class="flex flex-wrap gap-2">
+    <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="openFeedback()"><i class="pi pi-star"></i><span>{{ 'contractAnalyzer.toolbar.rateAgent' | translate }}</span></button>
+    <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="openPerformance()"><i class="pi pi-chart-line"></i><span>{{ 'contractAnalyzer.toolbar.performance' | translate }}</span></button>
+    <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="openStats()"><i class="pi pi-chart-bar"></i><span>{{ 'contractAnalyzer.toolbar.stats' | translate }}</span></button>
+    <span class="relative">
+        <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="openReviewQueue()"><i class="pi pi-check-square"></i><span>{{ 'contractAnalyzer.toolbar.reviewQueue' | translate }}</span></button>
+        @if (reviewQueueCount > 0) {
+        <span
+            class="absolute -end-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-xs font-bold text-white">
+            {{ reviewQueueCount }}
+        </span>
+        }
+    </span>
+</div>
+
+<lib-review-queue-drawer [visible]="drawer === 'reviewQueue'" (visibleChange)="closeDrawer()"
+    [title]="'contractAnalyzer.reviewQueue.title' | translate" [items]="reviewQueueItems"
+    [pagination]="reviewQueuePagination" [emptyMessage]="'contractAnalyzer.reviewQueue.empty' | translate"
+    [footerNote]="'contractAnalyzer.reviewQueue.footerNote' | translate" (open)="openDocumentFromQueue($event)"
+    (decide)="onReviewDecide($event)" (page)="onReviewQueuePage($event)" />
+
+<lib-performance-drawer [visible]="drawer === 'performance'" (visibleChange)="closeDrawer()"
+    [title]="'contractAnalyzer.performance.title' | translate" [tab]="performanceTab" [report]="performanceReport"
+    [callTypeLabels]="callTypeLabels" [callTypeOptions]="callTypeOptions" [logs]="logs"
+    [logsPagination]="logsPagination" [filters]="logFilters"
+    [footerNote]="'contractAnalyzer.performance.footerNote' | translate" (tabChange)="onPerformanceTabChange($event)"
+    (filtersChange)="onLogFiltersChange($event)" (logsPage)="onLogsPage($event)" />
+
+<lib-feedback-drawer [visible]="drawer === 'feedback'" (visibleChange)="closeDrawer()"
+    [title]="'contractAnalyzer.feedback.title' | translate"
+    [scopeLabels]="documentId ? { forDocument: ('contractAnalyzer.feedback.forDocument' | translate), overall: ('contractAnalyzer.feedback.overall' | translate) } : null"
+    [commentPlaceholder]="'contractAnalyzer.feedback.commentPlaceholder' | translate"
+    (submitFeedback)="onSubmitFeedback($event)" />
+
+<lib-contract-analyzer-stats-drawer [visible]="drawer === 'stats'" (visibleChange)="closeDrawer()"
+    [stats]="stats" [loading]="statsLoading" [searchHistory]="searchHistory"
+    [searchHistoryPagination]="searchHistoryPagination" (searchHistoryPage)="onSearchHistoryPage($event)" />

@@ -1,0 +1,41 @@
+{
+    "auth": {
+        "slides": {
+            "security": {
+                "title": "Security by design",
+                "subtitle": "Every agent runs behind the same access controls and audit trail as the rest of the platform."
+            },
+            "insights": {
+                "title": "Insights on demand",
+                "subtitle": "Turn long reports and findings into leadership-ready briefs in minutes."
+            },
+            "integrations": {
+                "title": "Built to connect",
+                "subtitle": "Plug into your existing systems and data sources without re-architecting your workflows."
+            }
+        }
+    },
+    "page": {
+        "login": "Welcome back",
+        "loginSubtitle": "Sign in to access your AI agents"
+    },
+    "form": {
+        "email": "Email",
+        "emailPlaceholder": "name@company.com",
+        "invalidEmail": "Enter a valid email address",
+        "required": "This field is required",
+        "password": "Password",
+        "passwordPlaceholder": "Enter your password",
+        "rememberMe": "Remember me",
+        "forgotPassword": "Forgot password?"
+    },
+    "buttons": {
+        "login": "Sign in"
+    },
+    "alerts": {
+        "loginFailed": "Incorrect email or password. Please try again.",
+        "permissionDenied": "You don't have permission to access this account.",
+        "accountLocked": "This account has been locked. Please contact your administrator.",
+        "oidcUserNotProvisioned": "Your account hasn't been provisioned yet. Please contact your administrator."
+    }
+}

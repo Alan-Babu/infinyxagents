@@ -1,0 +1,174 @@
+{
+    "grammarAgent": {
+        "nav": {
+            "check": "Check",
+            "myDocuments": "My Documents"
+        },
+        "common": {
+            "unknownLanguage": "Unknown language",
+            "words": "words"
+        },
+        "classification": {
+            "Confidential": "Confidential",
+            "Internal": "Internal",
+            "Public": "Public"
+        },
+        "severity": {
+            "critical": "critical",
+            "major": "major",
+            "minor": "minor"
+        },
+        "callTypes": {
+            "grammarCheck": "Grammar Check",
+            "qa": "Ask Document (Q&A)"
+        },
+        "toolbar": {
+            "eyebrow": "Grammar Check Agent",
+            "rateAgent": "Rate Agent",
+            "performance": "Performance",
+            "reviewQueue": "Review Queue"
+        },
+        "reviewQueue": {
+            "title": "Review queue",
+            "empty": "Nothing needs review right now — every document met the score and confidence bar automatically.",
+            "footerNote": "Flagged when grammar score is low or confidence is low"
+        },
+        "performance": {
+            "title": "Agent performance report",
+            "footerNote": "Telemetry stored in Postgres (infinyx_grammar_check)"
+        },
+        "feedback": {
+            "title": "Rate the agent",
+            "forDocument": "This document's check",
+            "overall": "The agent overall",
+            "commentPlaceholder": "What worked well, or what should improve…"
+        },
+        "dropzone": {
+            "dropTitle": "Drop a document here, or click to browse",
+            "dropSubtitle": "PDF, DOCX, TXT, JPG, or PNG — uploaded in chunks",
+            "cancel": "Cancel",
+            "chunks": "chunks",
+            "pages": "page(s)"
+        },
+        "upload": {
+            "title": "Check your writing",
+            "subtitle": "Paste text directly, or upload a document (PDF, DOCX, TXT, JPG, PNG). The agent finds grammar, spelling, punctuation, style, and clarity issues, scores overall quality and readability, and produces a corrected version.",
+            "modeUpload": "Upload a document",
+            "modePaste": "Paste text",
+            "readDocument": "Read document",
+            "checkGrammar": "Check grammar",
+            "detectedLanguage": "Detected language",
+            "unknownLanguage": "Unknown",
+            "wordCount": "Word count",
+            "exceedsLength": "This document is longer than the agent checks in one pass. Please shorten it or split it into parts.",
+            "pastePlaceholder": "Paste or type the text you want checked…",
+            "noTextYet": "No text yet",
+            "words": "word(s)"
+        },
+        "myDocuments": {
+            "title": "My Documents",
+            "subtitle": "Search, filter, and manage every document the agent has checked.",
+            "searchPlaceholder": "Search by filename or text…",
+            "search": "Search",
+            "resultCount": "{{ count }} document(s)",
+            "delete": "Delete",
+            "table": {
+                "filename": "File name",
+                "score": "Score",
+                "readability": "Readability",
+                "wordCount": "Word count",
+                "issues": "Issues",
+                "classification": "Classification",
+                "reviewStatus": "Review status",
+                "created": "Created"
+            }
+        },
+        "filters": {
+            "anyClassification": "Any classification",
+            "anyReviewStatus": "Any review status",
+            "from": "From",
+            "to": "To"
+        },
+        "pagination": {
+            "prev": "← Prev",
+            "next": "Next →",
+            "pageOf": "Page {{ page }} of {{ total }}"
+        },
+        "confirm": {
+            "header": "Please confirm",
+            "deleteDocument": "Remove \"{{ filename }}\" from your document library?"
+        },
+        "tabs": {
+            "overview": "Overview",
+            "issues": "Issues",
+            "ask": "Ask Document"
+        },
+        "reviewStatus": {
+            "auto_approved": "Auto-approved",
+            "needs_review": "Needs Review",
+            "approved": "Approved",
+            "rejected": "Rejected"
+        },
+        "detail": {
+            "title": "Document",
+            "loading": "Loading document…",
+            "newDocument": "New document",
+            "flaggedForReview": "This document was flagged for human review",
+            "criticalIssues": "critical issue(s)",
+            "reviewNow": "Review now",
+            "recordDecision": "Record review decision",
+            "reviewerNamePlaceholder": "Your name (optional)",
+            "reviewerNotesPlaceholder": "Notes on this decision (optional)…",
+            "cancel": "Cancel",
+            "reject": "Reject",
+            "approve": "Approve",
+            "score": "Score",
+            "grammarScore": "Grammar Score",
+            "readability": "Readability",
+            "gradeLevel": "Grade level",
+            "fleschKincaidGrade": "Flesch-Kincaid grade",
+            "wordCount": "Word Count",
+            "issuesFound": "Issues Found",
+            "noIssuesFound": "No issues found",
+            "original": "Original",
+            "clickHint": "click a highlighted phrase to see the fix",
+            "noOriginalText": "No original text captured.",
+            "corrected": "Corrected",
+            "noCorrectedText": "No corrected version available.",
+            "confidence": "Confidence",
+            "confidenceLower": "confidence",
+            "sourceLanguage": "Source Language",
+            "dataClassification": "Data Classification",
+            "file": "File",
+            "pages": "No. of Pages",
+            "note": "Note",
+            "noIssues": "No issues were found in this text.",
+            "suggested": "Suggested",
+            "suggestedQuestions": "Suggested questions — click to select",
+            "you": "U",
+            "agentInitials": "IX",
+            "thinking": "Thinking…",
+            "askEmpty": "Click a suggestion above, or type your own question below.",
+            "askPlaceholder": "Ask a question about this text or its issues…",
+            "send": "Send"
+        },
+        "toast": {
+            "dropAcceptedOnly": "Please drop a PDF, DOCX, TXT, JPG, or PNG file",
+            "uploadCancelled": "Upload cancelled",
+            "uploadFailed": "Upload failed. Please try again.",
+            "detectFailed": "Could not read the document. Please try again.",
+            "checkFailed": "Grammar check failed. Please try again.",
+            "pasteTextFirst": "Paste some text first",
+            "loadDocumentsFailed": "Could not load documents. Please try again.",
+            "loadDocumentFailed": "Could not open that document.",
+            "documentDeleted": "Document removed",
+            "deleteFailed": "Could not remove that document.",
+            "askFailed": "Could not get an answer. Please try again.",
+            "reviewApproved": "Document approved",
+            "reviewRejected": "Document rejected",
+            "reviewFailed": "Could not record the review decision.",
+            "feedbackSubmitted": "Thanks for rating the agent!",
+            "feedbackFailed": "Could not submit feedback. Please try again."
+        }
+    }
+}

@@ -1,0 +1,278 @@
+{
+    "mofaChatbot": {
+        "nav": {
+            "chat": "المحادثة",
+            "admin": "الإدارة"
+        },
+        "chat": {
+            "assistantName": "المساعد الافتراضي لوزارة الخارجية",
+            "aiBadge": "ذكاء اصطناعي",
+            "aiBadgeTitle": "مساعد يعمل بالذكاء الاصطناعي، وليس إنسانًا",
+            "onlineNow": "متصل الآن",
+            "talkToHuman": "التحدث مع فريق الدعم",
+            "privacyNoticeTooltip": "ملاحظة الخصوصية",
+            "saveShare": "حفظ ومشاركة",
+            "newChat": "محادثة جديدة",
+            "staffBackoffice": "لوحة تحكم الموظفين",
+            "moodTooltip": "مزاج المحادثة الحالي",
+            "placeholder": "اكتب سؤالك هنا...",
+            "sendTooltip": "إرسال",
+            "micTooltip": "بدء محادثة صوتية مباشرة",
+            "quickPromptsLabel": "جرّب أحد هذه الأسئلة",
+            "quickPrompts": [
+                "كيف أصدق مستندًا رقميًا؟",
+                "كيف أجدد جواز سفر دبلوماسي؟",
+                "ما متطلبات وثيقة العودة للإقامة الذهبية؟",
+                "كم يستغرق التصديق؟"
+            ],
+            "followUpsLabel": "قد ترغب أيضًا في السؤال عن:",
+            "listenTooltip": "استماع",
+            "feedbackUpTooltip": "مفيد",
+            "feedbackDownTooltip": "غير مفيد",
+            "delivery": {
+                "sent": "تم الإرسال",
+                "delivered": "تم التسليم",
+                "read": "تمت المعالجة",
+                "failed": "فشل الإرسال"
+            },
+            "handoff": {
+                "banner": "يبدو أن هذا الأمر محبط. هل ترغب في التحدث مباشرة مع أحد فريق الدعم؟",
+                "noThanks": "لا، شكرًا",
+                "yesPlease": "نعم، أريد ذلك",
+                "acceptedMessage": "يمكنك التواصل مباشرة مع فريق الدعم البشري على الرقم {{ number }}، وهو متاح على مدار الساعة."
+            },
+            "idle": {
+                "prompt": "هل ما زلت هناك؟ هل تحتاج إلى مساعدة إضافية؟",
+                "stillHere": "نعم، لا أزال هنا",
+                "closingMessage": "شكرًا لتواصلك معنا! يبدو أنك غير متصل الآن، لذا سنغلق هذه المحادثة. لا تتردد في بدء محادثة جديدة في أي وقت."
+            },
+            "rating": {
+                "title": "كيف كانت تجربتك؟",
+                "subtitle": "ملاحظاتك تساعدنا على التحسن",
+                "commentPlaceholder": "تعليق اختياري...",
+                "skip": "تخطي",
+                "submit": "إرسال",
+                "thanks": "شكرًا لملاحظاتك!"
+            },
+            "privacy": {
+                "title": "الخصوصية والاستخدام الأخلاقي",
+                "body1": "هذا مساعد يعمل بالذكاء الاصطناعي، وليس شخصًا. قد تتم مراجعة المحادثات لتحسين جودة الخدمة والسلامة.",
+                "body2": "لا تشارك معلومات حساسة (مثل كلمات المرور أو بيانات البطاقة المصرفية) في هذه المحادثة.",
+                "body3": "يمكنك التحدث مع فريق الدعم البشري في أي وقت عبر الرقم {{ number }}.",
+                "gotIt": "حسنًا"
+            },
+            "voice": {
+                "titleIdle": "المحادثة الصوتية",
+                "titleListening": "جارٍ الاستماع",
+                "titleTransmitting": "جارٍ إرسال صوتك",
+                "titleThinking": "جارٍ تجهيز الرد",
+                "titleSpeaking": "المساعد يتحدث",
+                "hintIdle": "اضغط للتحدث أو أنهِ المكالمة",
+                "hintListening": "تحدث بشكل طبيعي — سأُرسل تلقائيًا عندما تتوقف",
+                "hintTransmitting": "يتم رفع التسجيل وتحويله إلى نص",
+                "hintThinking": "يتم فهم سؤالك وإعداد الإجابة",
+                "hintSpeaking": "استمع للرد — سيُعاد الاستماع بعد ذلك",
+                "stepListen": "استماع",
+                "stepSend": "إرسال",
+                "stepThink": "تفكير",
+                "stepSpeak": "رد",
+                "endCall": "إنهاء المكالمة",
+                "micError": "تعذر الوصول إلى الميكروفون",
+                "cancelled": "تم إلغاء الإرسال الصوتي",
+                "processError": "تعذر فهم الرسالة الصوتية",
+                "speakUnavailable": "الصوت غير متاح حاليًا"
+            },
+            "toast": {
+                "startFailed": "تعذر بدء جلسة محادثة. يرجى تحديث الصفحة.",
+                "sendFailed": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+                "saveFailed": "تعذر حفظ المحادثة.",
+                "linkCopied": "تم نسخ رابط المحادثة!",
+                "chatSaved": "تم حفظ المحادثة"
+            }
+        },
+        "sharedChat": {
+            "newChat": "محادثة جديدة",
+            "title": "محادثة محفوظة",
+            "loading": "جارٍ التحميل…",
+            "error": "تعذر العثور على هذه المحادثة المشتركة.",
+            "missingToken": "رمز المشاركة مفقود.",
+            "you": "أنت",
+            "assistant": "المساعد"
+        },
+        "admin": {
+            "backToChat": "العودة إلى المحادثة",
+            "nav": {
+                "overview": "نظرة عامة",
+                "crawl": "جدولة الزحف",
+                "kb": "قاعدة المعرفة",
+                "blacklist": "القائمة السوداء",
+                "riskSessions": "المخاطر والمشاعر",
+                "feedback": "الملاحظات والفجوات"
+            },
+            "common": {
+                "languageEn": "الإنجليزية",
+                "languageAr": "العربية",
+                "dash": "—",
+                "noDataYet": "لا توجد بيانات بعد."
+            },
+            "overview": {
+                "title": "نظرة عامة",
+                "range24h": "آخر 24 ساعة",
+                "range7d": "آخر 7 أيام",
+                "range30d": "آخر 30 يومًا",
+                "sessions": "الجلسات",
+                "userMessages": "رسائل المستخدمين",
+                "riskFlagged": "جلسات مُعلَّمة بالخطر",
+                "unansweredQuestions": "أسئلة بلا إجابة",
+                "averageRating": "متوسط التقييم",
+                "noRatingsYet": "لا توجد تقييمات بعد",
+                "thumbsUpDown": "إعجاب / عدم إعجاب",
+                "sentimentTitle": "المشاعر",
+                "endReasonTitle": "طريقة إنهاء المحادثات",
+                "languageTitle": "اللغة"
+            },
+            "crawl": {
+                "title": "جدولة الزحف",
+                "enabledLabel": "تفعيل التحديث الليلي",
+                "hourLabel": "الساعة (0-23، بتوقيت الخادم)",
+                "minuteLabel": "الدقيقة",
+                "modeLabel": "نمط الزحف",
+                "modeIncremental": "تدريجي",
+                "modeFull": "زحف كامل",
+                "maxPagesLabel": "الحد الأقصى للصفحات لكل تشغيل",
+                "seedUrlsLabel": "روابط البداية (رابط في كل سطر)",
+                "saveButton": "حفظ الجدولة",
+                "saved": "تم حفظ الجدولة",
+                "saveFailed": "تعذر حفظ الجدولة.",
+                "manualCrawlTitle": "زحف يدوي",
+                "runIncremental": "تشغيل الزحف التدريجي الآن",
+                "runFull": "تشغيل الزحف الكامل",
+                "startedIncremental": "بدأ الزحف التدريجي",
+                "startedFull": "بدأ الزحف الكامل",
+                "startFailed": "تعذر بدء الزحف.",
+                "refresh": "تحديث",
+                "recentRunsTitle": "عمليات الزحف الأخيرة",
+                "table": {
+                    "trigger": "المُشغِّل",
+                    "mode": "النمط",
+                    "status": "الحالة",
+                    "discovered": "المكتشفة",
+                    "changed": "المتغيرة",
+                    "unchanged": "غير المتغيرة",
+                    "failed": "الفاشلة",
+                    "chunks": "المقاطع",
+                    "started": "بدأ في"
+                },
+                "noRuns": "لا توجد عمليات زحف بعد."
+            },
+            "kb": {
+                "versionsTitle": "إصدارات قاعدة المعرفة",
+                "newVersionLabel": "تسمية الإصدار الجديد",
+                "newVersionPlaceholder": "مثال: v1.3 - تحديث أسئلة الإقامة الذهبية",
+                "notesLabel": "ملاحظات",
+                "notesOptional": "اختياري",
+                "createButton": "إنشاء إصدار مسودة",
+                "versionCreated": "تم إنشاء إصدار المسودة",
+                "createFailed": "تعذر إنشاء الإصدار.",
+                "noVersions": "لا توجد إصدارات لقاعدة المعرفة بعد — أنشئ واحدًا أعلاه.",
+                "documents": "مستند (مستندات)",
+                "chunks": "مقطع",
+                "published": "نُشر في",
+                "backToVersions": "جميع الإصدارات",
+                "uploadCardTitle": "رفع المستندات",
+                "dropzoneHint": "انقر لرفع ملف .txt أو .docx أو .pdf",
+                "noDocs": "لم يتم رفع أي مستندات بعد.",
+                "uploaded": "تم رفع {{ name }}",
+                "uploadFailed": "فشل الرفع.",
+                "simulateCardTitle": "محاكاة (اختبار على هذه المسودة دون التأثير على المحادثة المباشرة)",
+                "simulateQuestionPlaceholder": "اطرح سؤالاً لاختبار محتوى هذه المسودة...",
+                "runSimulation": "تشغيل المحاكاة",
+                "running": "جارٍ التشغيل...",
+                "simulationFailed": "فشلت المحاكاة.",
+                "noConfidentAnswer": "تعذر إنتاج إجابة موثوقة من المحتوى المتاح.",
+                "confidenceLabel": "الثقة",
+                "fromDraft": "من هذه المسودة",
+                "fromLive": "من قاعدة المعرفة المباشرة",
+                "chunkCount": "مقطع (مقاطع)",
+                "publishCardTitle": "نشر",
+                "publishBody": "يؤدي النشر إلى إتاحة محتوى هذا الإصدار لجميع زوار المحادثة المباشرة فورًا، وأرشفة الإصدار الذي كان منشورًا سابقًا.",
+                "publishButton": "نشر هذا الإصدار",
+                "published2": "{{ label }} أصبح الآن مباشرًا",
+                "publishFailed": "تعذر النشر.",
+                "status": {
+                    "draft": "مسودة",
+                    "simulating": "قيد المحاكاة",
+                    "published": "منشور",
+                    "archived": "مؤرشف"
+                }
+            },
+            "blacklist": {
+                "title": "القائمة السوداء",
+                "addCardTitle": "إضافة مصطلح",
+                "termPlaceholder": "مصطلح، عبارة، أو نمط تعبير نمطي",
+                "typeContains": "يحتوي على",
+                "typeExact": "تطابق تام",
+                "typeRegex": "تعبير نمطي",
+                "categoryPlaceholder": "الفئة (مثال: ألفاظ نابية)",
+                "addButton": "إضافة المصطلح",
+                "added": "تمت إضافة المصطلح",
+                "addFailed": "تعذر إضافة هذا المصطلح.",
+                "testCardTitle": "اختبار رسالة",
+                "testPlaceholder": "اكتب رسالة نموذجية...",
+                "testButton": "اختبار",
+                "blocked": "محظور",
+                "allowed": "مسموح",
+                "matched": "تطابق: \"{{ term }}\" ({{ category }})",
+                "table": {
+                    "term": "المصطلح",
+                    "type": "النوع",
+                    "category": "الفئة",
+                    "status": "الحالة",
+                    "addedBy": "أضيف بواسطة"
+                },
+                "active": "نشط",
+                "inactive": "غير نشط",
+                "noTerms": "لا توجد مصطلحات محظورة مُهيأة.",
+                "deactivateTooltip": "إلغاء التفعيل",
+                "activateTooltip": "تفعيل",
+                "deleteTooltip": "حذف",
+                "deleteConfirm": "حذف المصطلح \"{{ term }}\"؟",
+                "deleteConfirmHeader": "حذف مصطلح من القائمة السوداء"
+            },
+            "riskSessions": {
+                "title": "الجلسات المُعلَّمة بالخطر",
+                "table": {
+                    "language": "اللغة",
+                    "sentiment": "المشاعر",
+                    "reason": "السبب",
+                    "rating": "التقييم",
+                    "started": "بدأت في"
+                },
+                "view": "عرض",
+                "noSessions": "لا توجد جلسات مُعلَّمة بالخطر حاليًا.",
+                "transcriptTitle": "نص المحادثة",
+                "blockedLabel": "محظور"
+            },
+            "feedback": {
+                "unansweredTitle": "أسئلة بلا إجابة",
+                "table": {
+                    "question": "السؤال",
+                    "language": "اللغة",
+                    "score": "أفضل درجة تطابق",
+                    "asked": "طُرح في"
+                },
+                "markReviewed": "تمييز كمُراجَع",
+                "noUnanswered": "لا توجد فجوات غير مُراجَعة — عمل رائع.",
+                "recentFeedbackTitle": "الملاحظات الأخيرة",
+                "feedbackTable": {
+                    "rating": "التقييم",
+                    "comment": "التعليق",
+                    "ended": "الإنهاء",
+                    "when": "التوقيت"
+                },
+                "defaultRating": "(افتراضي)",
+                "noFeedback": "لا توجد ملاحظات بعد."
+            }
+        }
+    }
+}

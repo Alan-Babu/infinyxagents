@@ -1,0 +1,230 @@
+<lib-page-header titleKey="contractAnalyzer.detail.title" [showBack]="true" (back)="backToContracts()">
+    <ng-template #titleContent>
+        @if (doc) {
+        <div class="flex flex-col gap-2">
+            <span class="text-lg font-semibold text-gray-800">{{ doc.filename }}</span>
+            <div class="flex flex-wrap gap-1.5">
+                @if (doc.overall_risk_level) {
+                <span class="rounded border px-2 py-0.5 text-sm font-semibold" [ngClass]="riskClass(doc.overall_risk_level)">
+                    {{ ('contractAnalyzer.risk.' + doc.overall_risk_level.toLowerCase() | translate) }} {{ "contractAnalyzer.detail.risk" | translate }}
+                </span>
+                }
+                <span class="rounded bg-gray-100 px-2 py-0.5 text-sm font-semibold text-gray-600">{{ doc.document_classification }}</span>
+                @if (doc.is_mofa_it_outsourcing_contract) {
+                <span class="rounded bg-amber-100 px-2 py-0.5 text-sm font-semibold text-amber-700">{{ "contractAnalyzer.detail.mofaItOutsourcing" | translate }}</span>
+                }
+                @if (doc.review_status !== 'auto_approved') {
+                <span class="rounded px-2 py-0.5 text-sm font-semibold" [ngClass]="reviewStatusClass(doc.review_status)">
+                    {{ "contractAnalyzer.reviewStatus." + doc.review_status | translate }}
+                </span>
+                }
+            </div>
+        </div>
+        } @else {
+        <h1 class="text-lg font-semibold text-gray-800">{{ "contractAnalyzer.detail.title" | translate }}</h1>
+        }
+    </ng-template>
+
+    <div class="flex flex-wrap items-center gap-2">
+        @if (doc) {
+        <button type="button" pButton size="small" severity="secondary" [outlined]="true" [attr.aria-label]="'contractAnalyzer.detail.copyLink' | translate" [pTooltip]="'contractAnalyzer.detail.copyLink' | translate" (click)="copyLink()"><i class="pi pi-link"></i></button>
+        <button type="button" pButton size="small" severity="secondary" [outlined]="true" [loading]="downloadingReport" (click)="downloadReport()"><i class="pi pi-download"></i><span>{{ 'contractAnalyzer.detail.downloadReport' | translate }}</span></button>
+        <button type="button" pButton size="small" severity="secondary" [outlined]="true" routerLink="/contract-analyzer"><i class="pi pi-plus"></i><span>{{ 'contractAnalyzer.detail.newContract' | translate }}</span></button>
+        }
+        <lib-contract-analyzer-toolbar [documentId]="doc?.id ?? null" />
+    </div>
+</lib-page-header>
+
+<div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+    @if (loading) {
+    <p class="text-gray-500">{{ "contractAnalyzer.detail.loading" | translate }}</p>
+    }
+
+    @if (doc) {
+    <div class="flex flex-col gap-5">
+        <!-- Needs-review banner -->
+        @if (doc.review_status === 'needs_review' && !reviewing) {
+        <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3.5 text-amber-800">
+            <span class="flex items-center gap-2">
+                <i class="pi pi-exclamation-triangle"></i>
+                {{ "contractAnalyzer.detail.flaggedForReview" | translate }}
+                @if (doc.confidence_score !== null) { <span>&mdash; {{ fmtConfidence(doc.confidence_score) }} {{ "contractAnalyzer.detail.confidence" | translate }}</span> }
+                @if (doc.overall_risk_level === 'High' || doc.overall_risk_level === 'Critical') { <span>&mdash; {{ "contractAnalyzer.detail.highRisk" | translate }}</span> }
+            </span>
+            <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="startReview()"><span>{{ 'contractAnalyzer.detail.reviewNow' | translate }}</span></button>
+        </div>
+        }
+
+        <!-- Inline review form -->
+        @if (reviewing) {
+        <div class="flex flex-col gap-2.5 rounded-lg border border-gray-200 bg-white p-4">
+            <div class="font-semibold text-gray-800">{{ "contractAnalyzer.detail.recordDecision" | translate }}</div>
+            <input pInputText type="text" class="w-full" [(ngModel)]="reviewerName" [placeholder]="'contractAnalyzer.detail.reviewerNamePlaceholder' | translate" />
+            <textarea class="w-full rounded-lg border border-gray-300 p-2" rows="2" [(ngModel)]="reviewerNotes" [placeholder]="'contractAnalyzer.detail.reviewerNotesPlaceholder' | translate"></textarea>
+            <div class="flex justify-end gap-2">
+                <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="cancelReview()"><span>{{ 'contractAnalyzer.detail.cancel' | translate }}</span></button>
+                <button type="button" pButton size="small" severity="danger" [outlined]="true" (click)="submitReviewDecision('reject')"><span>{{ 'contractAnalyzer.detail.reject' | translate }}</span></button>
+                <button type="button" pButton size="small" (click)="submitReviewDecision('approve')"><span>{{ 'contractAnalyzer.detail.approve' | translate }}</span></button>
+            </div>
+        </div>
+        }
+
+        <!-- Party strip -->
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
+            <div class="rounded-lg border border-gray-200 bg-white p-3">
+                <div class="text-sm font-semibold text-gray-500">{{ "contractAnalyzer.detail.partyA" | translate }}</div>
+                <div class="font-medium text-gray-800">{{ doc.party_a_name || ('contractAnalyzer.common.unknownParty' | translate) }}</div>
+                @if (doc.party_a_type) { <div class="text-sm text-gray-400">{{ doc.party_a_type }}</div> }
+            </div>
+            <div class="rounded-lg border border-gray-200 bg-white p-3">
+                <div class="text-sm font-semibold text-gray-500">{{ "contractAnalyzer.detail.partyB" | translate }}</div>
+                <div class="font-medium text-gray-800">{{ doc.party_b_name || ('contractAnalyzer.common.unknownParty' | translate) }}</div>
+                @if (doc.party_b_type) { <div class="text-sm text-gray-400">{{ doc.party_b_type }}</div> }
+            </div>
+            <div class="rounded-lg border border-gray-200 bg-white p-3">
+                <div class="text-sm font-semibold text-gray-500">{{ "contractAnalyzer.detail.contractType" | translate }}</div>
+                <div class="font-medium text-gray-800">{{ doc.contract_type || '—' }}</div>
+            </div>
+            <div class="rounded-lg border border-gray-200 bg-white p-3">
+                <div class="text-sm font-semibold text-gray-500">{{ "contractAnalyzer.detail.contractValue" | translate }}</div>
+                <div class="font-medium text-gray-800">{{ fmtCurrency(doc.contract_value, doc.currency) }}</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div>
+            <nav class="inline-flex flex-wrap rounded-lg border border-gray-200 bg-white p-1" role="tablist">
+                <button type="button" class="cursor-pointer whitespace-nowrap rounded-md px-6 py-2.5 text-center text-sm transition-colors"
+                    [ngClass]="activeTab === 'overview' ? 'bg-primary-500 text-white font-bold' : 'text-gray-500 font-semibold'" (click)="activeTab = 'overview'">
+                    {{ "contractAnalyzer.tabs.overview" | translate }}
+                </button>
+                <button type="button" class="cursor-pointer whitespace-nowrap rounded-md px-6 py-2.5 text-center text-sm transition-colors"
+                    [ngClass]="activeTab === 'risk' ? 'bg-primary-500 text-white font-bold' : 'text-gray-500 font-semibold'" (click)="activeTab = 'risk'">
+                    {{ "contractAnalyzer.tabs.risk" | translate }}
+                    @if (doc.risk_categories.length) {
+                    <span class="ms-1.5 rounded-full px-2 py-0.5 text-xs" [ngClass]="activeTab === 'risk' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'">{{ doc.risk_categories.length }}</span>
+                    }
+                </button>
+                <button type="button" class="cursor-pointer whitespace-nowrap rounded-md px-6 py-2.5 text-center text-sm transition-colors"
+                    [ngClass]="activeTab === 'clauses' ? 'bg-primary-500 text-white font-bold' : 'text-gray-500 font-semibold'" (click)="activeTab = 'clauses'">
+                    {{ "contractAnalyzer.tabs.clauses" | translate }}
+                    @if (doc.key_clauses.length) {
+                    <span class="ms-1.5 rounded-full px-2 py-0.5 text-xs" [ngClass]="activeTab === 'clauses' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'">{{ doc.key_clauses.length }}</span>
+                    }
+                </button>
+                <button type="button" class="cursor-pointer whitespace-nowrap rounded-md px-6 py-2.5 text-center text-sm transition-colors"
+                    [ngClass]="activeTab === 'recommendations' ? 'bg-primary-500 text-white font-bold' : 'text-gray-500 font-semibold'" (click)="activeTab = 'recommendations'">
+                    {{ "contractAnalyzer.tabs.recommendations" | translate }}
+                </button>
+                <button type="button" class="cursor-pointer whitespace-nowrap rounded-md px-6 py-2.5 text-center text-sm transition-colors"
+                    [ngClass]="activeTab === 'ask' ? 'bg-primary-500 text-white font-bold' : 'text-gray-500 font-semibold'" (click)="activeTab = 'ask'">
+                    {{ "contractAnalyzer.tabs.ask" | translate }}
+                </button>
+            </nav>
+        </div>
+
+        <!-- Overview tab -->
+        @if (activeTab === 'overview') {
+        <div class="flex flex-col gap-4">
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
+                <div class="rounded-lg border border-gray-200 bg-white p-3">
+                    <div class="text-sm font-semibold text-gray-500">{{ "contractAnalyzer.detail.startDate" | translate }}</div>
+                    <div class="font-medium text-gray-800">{{ fmtDate(doc.contract_start_date) }}</div>
+                </div>
+                <div class="rounded-lg border border-gray-200 bg-white p-3">
+                    <div class="text-sm font-semibold text-gray-500">{{ "contractAnalyzer.detail.endDate" | translate }}</div>
+                    <div class="font-medium text-gray-800">{{ fmtDate(doc.contract_end_date) }}</div>
+                </div>
+                <div class="rounded-lg border border-gray-200 bg-white p-3">
+                    <div class="text-sm font-semibold text-gray-500">{{ "contractAnalyzer.detail.detectedLanguage" | translate }}</div>
+                    <div class="font-medium text-gray-800">{{ doc.detected_language || '—' }}</div>
+                </div>
+                <div class="rounded-lg border border-gray-200 bg-white p-3">
+                    <div class="text-sm font-semibold text-gray-500">{{ "contractAnalyzer.detail.classification" | translate }}</div>
+                    <div class="font-medium text-gray-800">{{ doc.document_classification }}</div>
+                </div>
+                <div class="rounded-lg border border-gray-200 bg-white p-3">
+                    <div class="text-sm font-semibold text-gray-500">{{ "contractAnalyzer.detail.file" | translate }}</div>
+                    <div class="font-medium text-gray-800">{{ doc.file_type.toUpperCase() }} &middot; {{ fmtBytes(doc.file_size_bytes) }}</div>
+                </div>
+                @if (doc.confidence_score !== null) {
+                <div class="rounded-lg border border-gray-200 bg-white p-3">
+                    <div class="text-sm font-semibold text-gray-500">{{ "contractAnalyzer.detail.confidence" | translate }}</div>
+                    <span class="rounded-full px-2.5 py-1 text-sm font-semibold" [ngClass]="confidenceClass(doc.confidence_score)">{{ fmtConfidence(doc.confidence_score) }}</span>
+                </div>
+                }
+            </div>
+
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+                <div class="mb-2 flex items-center gap-1.5 text-sm font-semibold uppercase tracking-wide text-primary-600">
+                    <i class="pi pi-file-edit"></i>{{ "contractAnalyzer.detail.executiveSummary" | translate }}
+                </div>
+                <p class="text-gray-700">{{ doc.executive_summary || ("contractAnalyzer.detail.noExecutiveSummary" | translate) }}</p>
+                @if (doc.extraction_error) {
+                <p class="mt-2 text-sm text-gray-500">{{ "contractAnalyzer.detail.note" | translate }}: {{ doc.extraction_error }}</p>
+                }
+            </div>
+
+            @if (doc.applicable_context) {
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+                <div class="mb-2 flex items-center gap-1.5 text-sm font-semibold uppercase tracking-wide text-primary-600">
+                    <i class="pi pi-info-circle"></i>{{ "contractAnalyzer.detail.applicableContext" | translate }}
+                </div>
+                <p class="text-gray-700">{{ doc.applicable_context }}</p>
+            </div>
+            }
+        </div>
+        }
+
+        <!-- Risk Dashboard tab -->
+        @if (activeTab === 'risk') {
+        <lib-contract-analyzer-risk-dashboard [categories]="doc.risk_categories" />
+        }
+
+        <!-- Key Clauses tab -->
+        @if (activeTab === 'clauses') {
+        <div class="flex flex-col gap-3">
+            @if (doc.key_clauses.length === 0) {
+            <p class="text-gray-500">{{ "contractAnalyzer.detail.noKeyClauses" | translate }}</p>
+            }
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                @for (c of doc.key_clauses; track $index) {
+                <div class="flex flex-col gap-1.5 rounded-lg border border-gray-200 bg-white p-4">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="rounded bg-primary-50 px-2 py-0.5 text-sm font-semibold text-primary-700">{{ c.clause_type }}</span>
+                        @if (c.risk_flag) {
+                        <span class="rounded border px-2 py-0.5 text-sm font-semibold" [ngClass]="riskClass(c.risk_flag)">{{ c.risk_flag }}</span>
+                        }
+                    </div>
+                    <p class="text-gray-700">{{ c.summary }}</p>
+                    @if (c.page_reference) {
+                    <p class="text-sm text-gray-400">{{ "contractAnalyzer.detail.pageReference" | translate }}: {{ c.page_reference }}</p>
+                    }
+                </div>
+                }
+            </div>
+        </div>
+        }
+
+        <!-- Recommendations tab -->
+        @if (activeTab === 'recommendations') {
+        <div class="flex flex-col gap-2">
+            @if (doc.recommendations.length === 0) {
+            <p class="text-gray-500">{{ "contractAnalyzer.detail.noRecommendations" | translate }}</p>
+            }
+            @for (r of doc.recommendations; track $index) {
+            <div class="flex items-start gap-2 rounded-lg border border-gray-200 bg-white p-3 text-gray-700">
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700">{{ $index + 1 }}</span>
+                <span>{{ r }}</span>
+            </div>
+            }
+        </div>
+        }
+
+        <!-- Ask Agent tab -->
+        @if (activeTab === 'ask') {
+        <lib-contract-analyzer-ask-agent-chat [history]="qaHistory" [suggestions]="doc.prompt_suggestions" [asking]="asking" (ask)="sendQuestion($event)" />
+        }
+    </div>
+    }
+</div>

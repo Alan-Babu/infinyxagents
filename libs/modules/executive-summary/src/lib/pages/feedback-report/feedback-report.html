@@ -1,0 +1,64 @@
+<lib-page-header titleKey="executiveSummary.feedback.title" subtitleKey="executiveSummary.feedback.subtitle" [showBack]="false" />
+
+<div class="flex flex-col gap-5 p-6">
+    <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-4">
+        <lib-stat-card [label]="'executiveSummary.feedback.averageRating' | translate" [value]="averageRatingDisplay" icon="pi pi-star-fill" fgClass="text-primary-600" bgClass="bg-primary-50" />
+        <lib-stat-card [label]="'executiveSummary.feedback.totalRatings' | translate" [value]="feedback.length" icon="pi pi-users" fgClass="text-primary-600" bgClass="bg-primary-50" />
+        <lib-stat-card [label]="'executiveSummary.feedback.withComments' | translate" [value]="withCommentsCount" icon="pi pi-comments" fgClass="text-amber-600" bgClass="bg-amber-50" />
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-[1fr_1.3fr]">
+        <div class="rounded-lg border border-gray-200 bg-white p-5">
+            <div class="mb-3.5 text-sm font-semibold text-gray-800">{{ "executiveSummary.feedback.ratingDistribution" | translate }}</div>
+            @if (loading) {
+            <p class="text-sm text-gray-500">{{ "executiveSummary.loading" | translate }}</p>
+            } @else {
+            @for (row of distribution; track row.stars) {
+            <div class="mb-2.5 flex items-center gap-2.5 last:mb-0">
+                <span class="w-9 shrink-0 text-xs font-semibold text-gray-500">{{ row.stars }} &#9733;</span>
+                <div class="h-2.5 flex-1 overflow-hidden rounded-full bg-gray-100">
+                    <div class="h-full rounded-full bg-primary-500" [style.width.%]="row.pct"></div>
+                </div>
+                <span class="w-6 shrink-0 text-end text-xs font-semibold text-gray-500">{{ row.count }}</span>
+            </div>
+            }
+            @if (!feedback.length) {
+            <p class="text-center text-sm text-gray-500">{{ "executiveSummary.feedback.noRatings" | translate }}</p>
+            }
+            }
+        </div>
+
+        <div class="rounded-lg border border-gray-200 bg-white p-5">
+            <div class="mb-3 flex items-center justify-between">
+                <span class="text-sm font-semibold text-gray-800">{{ "executiveSummary.feedback.recentFeedback" | translate }}</span>
+                <span class="relative">
+                    <i class="pi pi-search absolute start-3 top-1/2 -translate-y-1/2 text-xs text-gray-400"></i>
+                    <input pInputText type="text" class="ps-8" [(ngModel)]="search" [placeholder]="'executiveSummary.feedback.searchComments' | translate" />
+                </span>
+            </div>
+            @for (f of filteredFeedback; track f.id) {
+            <div class="flex gap-2.5 border-b border-gray-100 py-2.5 last:border-b-0">
+                <div class="flex shrink-0 gap-0.5 pt-0.5 text-primary-500">
+                    @for (filled of stars(f.rating); track $index) {
+                    <i class="text-xs" [class.pi-star-fill]="filled" [class.pi-star]="!filled" class="pi"></i>
+                    }
+                </div>
+                <div class="min-w-0">
+                    @if (f.comment) {
+                    <p class="text-sm text-gray-700">{{ f.comment }}</p>
+                    } @else {
+                    <p class="text-sm italic text-gray-400">{{ "executiveSummary.feedback.noComment" | translate }}</p>
+                    }
+                    <span class="text-xs text-gray-400">{{ f.created_at | date: 'mediumDate' }}</span>
+                </div>
+            </div>
+            }
+            @if (!loading && feedback.length && !filteredFeedback.length) {
+            <p class="py-4 text-center text-sm text-gray-500">{{ "executiveSummary.feedback.noMatch" | translate: { search } }}</p>
+            }
+            @if (!loading && !feedback.length) {
+            <p class="py-4 text-center text-sm text-gray-500">{{ "executiveSummary.feedback.empty" | translate }}</p>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,41 @@
+<div class="relative h-full w-full overflow-hidden">
+    @for (slide of slides; track $index; let i = $index) {
+        <div
+            class="absolute inset-0 flex flex-col items-center justify-center gap-6 px-12 text-center text-white transition-opacity duration-700"
+            [class.opacity-100]="index() === i"
+            [class.opacity-0]="index() !== i"
+            [class.pointer-events-none]="index() !== i"
+        >
+            <div class="flex h-32 w-32 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm">
+                <i class="text-6xl text-white" [ngClass]="slide.icon || 'pi pi-shield'"></i>
+            </div>
+            <h2 class="text-3xl font-semibold">
+                @if (slide.titleKey) {
+                    {{ slide.titleKey | translate }}
+                } @else {
+                    {{ 'app.name' | translate }}
+                }
+            </h2>
+            <p class="max-w-md text-base opacity-90">
+                @if (slide.subtitleKey) {
+                    {{ slide.subtitleKey | translate }}
+                }
+            </p>
+        </div>
+    }
+
+    @if (slides.length > 1) {
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
+            @for (_ of slides; track $index; let i = $index) {
+                <button
+                    type="button"
+                    class="h-2 w-8 rounded-full bg-white/40 transition-all cursor-pointer hover:bg-white/70"
+                    [class.bg-white]="index() === i"
+                    [class.!w-12]="index() === i"
+                    (click)="go(i)"
+                    [attr.aria-label]="'slide ' + (i + 1)"
+                ></button>
+            }
+        </div>
+    }
+</div>

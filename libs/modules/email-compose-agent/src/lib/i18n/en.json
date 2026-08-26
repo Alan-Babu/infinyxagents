@@ -1,0 +1,246 @@
+{
+    "emailComposeAgent": {
+        "nav": {
+            "compose": "Compose",
+            "myEmails": "My Emails"
+        },
+        "common": {
+            "noSubject": "(no subject)",
+            "mode": {
+                "compose": "Compose",
+                "reply": "Reply"
+            }
+        },
+        "tones": {
+            "Professional": "Professional",
+            "Friendly": "Friendly",
+            "Formal": "Formal",
+            "Persuasive": "Persuasive",
+            "Concise": "Concise",
+            "Apologetic": "Apologetic",
+            "Assertive": "Assertive",
+            "Diplomatic": "Diplomatic"
+        },
+        "classification": {
+            "Confidential": "Confidential",
+            "Internal": "Internal",
+            "Public": "Public"
+        },
+        "reviewStatus": {
+            "auto_approved": "Auto-approved",
+            "needs_review": "Needs Review",
+            "approved": "Approved",
+            "rejected": "Rejected"
+        },
+        "emotionalTone": {
+            "heated": "Heated",
+            "frustrated": "Frustrated",
+            "urgent": "Urgent",
+            "neutral": "Neutral"
+        },
+        "callTypes": {
+            "compose": "Compose Email",
+            "replyQuestions": "Reply — Clarifying Questions",
+            "replyDraft": "Reply — Draft",
+            "translate": "Translate",
+            "qa": "Ask Document (Q&A)"
+        },
+        "toolbar": {
+            "eyebrow": "Email Compose Agent",
+            "rateAgent": "Rate Agent",
+            "performance": "Performance",
+            "reviewQueue": "Review Queue",
+            "stats": "Stats",
+            "writingProfile": "Writing Profile"
+        },
+        "compose": {
+            "title": "Compose an email",
+            "subtitle": "Describe what you want to say, or paste a thread you're replying to. The agent drafts a full email in the tone you choose.",
+            "modeCompose": "New email",
+            "modeReply": "Reply to a thread",
+            "context": "What do you want to say?",
+            "contextPlaceholder": "Describe the email you want — who it's to, what it's about, and any key points to include…",
+            "recipientHint": "Recipient (optional)",
+            "recipientHintPlaceholder": "e.g. a client, my manager, a government office…",
+            "tone": "Tone",
+            "submit": "Compose email"
+        },
+        "reply": {
+            "modePaste": "Paste thread",
+            "modeUpload": "Upload thread",
+            "threadTextLabel": "Paste the email thread you're replying to",
+            "threadTextPlaceholder": "Paste the full email thread here…",
+            "readThread": "Read thread & continue",
+            "threadSummary": "Thread summary",
+            "emotionalToneBannerHeated": "This thread reads as heated — consider a diplomatic tone for your reply.",
+            "emotionalToneBannerFrustrated": "This thread reads as frustrated — consider a diplomatic tone for your reply.",
+            "useDiplomaticTone": "Use Diplomatic tone",
+            "questionsTitle": "A few quick questions before drafting your reply",
+            "questionsEmpty": "No clarifying questions — you're ready to draft the reply.",
+            "answerPlaceholder": "Your answer…",
+            "tone": "Reply tone",
+            "back": "Back",
+            "draftReply": "Draft reply"
+        },
+        "dropzone": {
+            "dropTitle": "Drop the thread here, or click to browse",
+            "dropSubtitle": "PDF, DOCX, or TXT — uploaded in chunks",
+            "cancel": "Cancel",
+            "chunks": "chunks",
+            "pages": "page(s)"
+        },
+        "myEmails": {
+            "title": "My Emails",
+            "subtitle": "Search, filter, and manage every email the agent has composed or drafted.",
+            "searchPlaceholder": "Search by subject or text…",
+            "search": "Search",
+            "resultCount": "{{ count }} email(s)",
+            "delete": "Delete",
+            "table": {
+                "subject": "Subject",
+                "mode": "Mode",
+                "tone": "Tone",
+                "language": "Language",
+                "wordCount": "Word count",
+                "classification": "Classification",
+                "reviewStatus": "Review status",
+                "created": "Created"
+            }
+        },
+        "filters": {
+            "anyClassification": "Any classification",
+            "anyMode": "Any mode",
+            "from": "From",
+            "to": "To"
+        },
+        "pagination": {
+            "prev": "← Prev",
+            "next": "Next →",
+            "pageOf": "Page {{ page }} of {{ total }}"
+        },
+        "confirm": {
+            "header": "Please confirm",
+            "deleteEmail": "Remove \"{{ subject }}\" from your email library?"
+        },
+        "tabs": {
+            "overview": "Overview",
+            "ask": "Ask Agent"
+        },
+        "detail": {
+            "title": "Email",
+            "loading": "Loading email…",
+            "newEmail": "New email",
+            "flaggedForReview": "This email was flagged for human review",
+            "reviewNow": "Review now",
+            "recordDecision": "Record review decision",
+            "reviewerNamePlaceholder": "Your name (optional)",
+            "reviewerNotesPlaceholder": "Notes on this decision (optional)…",
+            "cancel": "Cancel",
+            "reject": "Reject",
+            "approve": "Approve",
+            "translate": "Translate",
+            "showOriginal": "Show original",
+            "copy": "Copy",
+            "copied": "Copied!",
+            "checklistTitle": "Pre-send checklist",
+            "checklistAllClear": "All clear — nothing missing or sensitive detected.",
+            "missingInfo": "Missing information",
+            "sensitivePatterns": "Sensitive content detected",
+            "readTime": "{{ minutes }} min read",
+            "tone": "Tone",
+            "wordCount": "Word Count",
+            "confidence": "Confidence",
+            "classification": "Classification",
+            "clarificationsAnswered": "Clarifications Answered",
+            "mode": "Mode",
+            "contextInput": "Original brief",
+            "replyThread": "Original thread",
+            "you": "U",
+            "agentInitials": "IX",
+            "thinking": "Thinking…",
+            "askEmpty": "Click a suggestion above, or type your own question below.",
+            "askPlaceholder": "Ask a question about this email…",
+            "send": "Send",
+            "suggestedQuestions": "Suggested questions — click to select",
+            "note": "Note"
+        },
+        "reviewQueue": {
+            "title": "Review queue",
+            "empty": "Nothing needs review right now — every email met the confidence bar automatically.",
+            "footerNote": "Flagged when confidence is low or sensitive content is detected"
+        },
+        "performance": {
+            "title": "Agent performance report",
+            "footerNote": "Telemetry stored in Postgres (infinyx_email_compose)"
+        },
+        "stats": {
+            "eyebrow": "Email Compose Agent",
+            "title": "Agent stats",
+            "totalEmails": "Total Emails",
+            "totalComposed": "Composed",
+            "totalReplied": "Replied",
+            "totalTranslated": "Translated",
+            "totalQuestions": "Questions Asked",
+            "totalFeedback": "Feedback Given",
+            "averageRating": "Average Rating",
+            "averageConfidence": "Average Confidence",
+            "wordsComposed": "Words Composed",
+            "byTone": "Emails by tone",
+            "byClassification": "Emails by classification",
+            "searchHistory": "Recent searches",
+            "noSearchHistory": "No searches recorded yet.",
+            "emptyQuery": "(empty query)"
+        },
+        "feedback": {
+            "title": "Rate the agent",
+            "forEmail": "This email",
+            "overall": "The agent overall",
+            "commentPlaceholder": "What worked well, or what should improve…"
+        },
+        "writingProfile": {
+            "eyebrow": "Email Compose Agent",
+            "title": "Writing profile",
+            "senderName": "Your name",
+            "senderNamePlaceholder": "e.g. Sara Al Mansoori",
+            "senderTitle": "Your title",
+            "senderTitlePlaceholder": "e.g. Protocol Officer",
+            "senderCompany": "Your organization",
+            "senderCompanyPlaceholder": "e.g. Ministry of Foreign Affairs",
+            "signatureBlock": "Signature block",
+            "signatureBlockPlaceholder": "How you'd like emails signed off…",
+            "defaultTone": "Default tone",
+            "notes": "Notes",
+            "notesPlaceholder": "Anything else the agent should know when writing on your behalf…",
+            "cancel": "Cancel",
+            "save": "Save"
+        },
+        "toast": {
+            "toneSwitchFailed": "Could not switch tone. Please try again.",
+            "copied": "Copied to clipboard",
+            "copyFailed": "Could not copy to clipboard",
+            "dropAcceptedOnly": "Please drop a PDF, DOCX, or TXT file",
+            "fileTooLarge": "That file is larger than 15MB. Please upload a smaller file.",
+            "uploadCancelled": "Upload cancelled",
+            "uploadFailed": "Upload failed. Please try again.",
+            "composeFailed": "Could not compose the email. Please try again.",
+            "contextRequired": "Describe what you want to say first",
+            "threadRequired": "Paste or upload the thread first",
+            "readThreadFailed": "Could not read the thread. Please try again.",
+            "draftReplyFailed": "Could not draft the reply. Please try again.",
+            "loadEmailsFailed": "Could not load emails. Please try again.",
+            "loadEmailFailed": "Could not open that email.",
+            "emailDeleted": "Email removed",
+            "deleteFailed": "Could not remove that email.",
+            "askFailed": "Could not get an answer. Please try again.",
+            "translateFailed": "Could not translate the email. Please try again.",
+            "reviewApproved": "Email approved",
+            "reviewRejected": "Email rejected",
+            "reviewFailed": "Could not record the review decision.",
+            "feedbackSubmitted": "Thanks for rating the agent!",
+            "feedbackFailed": "Could not submit feedback. Please try again.",
+            "loadProfileFailed": "Could not load your writing profile.",
+            "profileSaved": "Writing profile saved",
+            "profileSaveFailed": "Could not save your writing profile."
+        }
+    }
+}

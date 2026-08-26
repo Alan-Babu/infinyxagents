@@ -1,0 +1,33 @@
+export enum Icon {
+  ApproveCircle = 'approve-circle',
+  Cancel = 'cancel',
+  ChatText = 'chat-text',
+  ClockCountdown = 'clock-countdown',
+  FileDashed = 'file-dashed',
+  Flag = 'flag',
+  FlagCheckered = 'flag-checkered',
+  HandPalm = 'hand-palm',
+  ListNumbers = 'list-numbers',
+  Notebook = 'notebook',
+  Package = 'package',
+  Pencil = 'pencil',
+  PullRequest = 'pull-request',
+  Reject = 'reject',
+  RevertBack = 'revert-back',
+  SealCheck = 'seal-check',
+  SealWarning = 'seal-warning',
+  ThumbsUp = 'thumbs-up',
+  Truck = 'truck',
+  User = 'user',
+  Wallet = 'wallet',
+  Warning = 'warning',
+  XCircle = 'x-circle',
+  Reviewed = 'reviewed',
+  ClockCountDown = 'clock-countdown',
+  NoteBook = 'notebook',
+}
+
+export enum IconStyle {
+  Fill = 'FILL',
+  Default = 'DEFAULT',
+}

@@ -1,0 +1,133 @@
+<p-confirmdialog>
+    <ng-template #message let-message>
+        <div class="flex gap-4">
+            <i [class]="message.icon" class="text-3xl!"></i>
+            <div class="flex-1" [innerHTML]="message.message"></div>
+        </div>
+    </ng-template>
+</p-confirmdialog>
+<p-confirmdialog key="userCard" styleClass="p-user-card-dialog">
+    <ng-template #headless let-message let-onReject="onReject">
+        <div class="relative">
+            <button class="size-9 absolute top-4 end-4 p-1 rounded-lg bg-white/95 text-gray-600 cursor-pointer"
+                (click)="onReject()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-full fill-current" viewBox="0 0 256 256"><path
+                        d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg>
+            </button>
+            <div [innerHTML]="message.message">
+            </div>
+        </div>
+    </ng-template>
+</p-confirmdialog>
+<header class="sticky top-0 z-10 flex items-center justify-between bg-white p-4 py-2 border-b border-gray-200">
+    <div class="flex items-center gap-4">
+        <a routerLink="/dashboard" class="cursor-pointer" [attr.aria-label]="'labels.backToAgents' | translate">
+            <img src="./platform-logo.png" class="max-h-12" />
+        </a>
+    </div>
+
+    <div class="flex items-center gap-3">
+        @if (showBackToAgents && currentAgent) {
+        <a routerLink="/dashboard"
+            class="inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-primary-200 bg-primary-50 px-3 text-sm font-semibold text-primary-700 transition-colors hover:bg-primary-100"
+            [attr.aria-label]="'labels.backToAgents' | translate">
+            <i class="pi pi-th-large text-xs"></i>
+            <span>{{ currentAgent.nameKey | translate }}</span>
+        </a>
+        }
+        <div class="relative">
+            <button type="button"
+                class="inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg p-0 text-primary-500 transition-colors hover:text-primary-700"
+                (click)="preferencesDropdown.toggle($event)" [attr.aria-label]="'labels.preferences' | translate">
+                <i class="pi pi-cog text-lg"></i>
+            </button>
+        </div>
+
+        <div class="relative">
+            <button type="button"
+                class="inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg p-0 text-primary-500 transition-colors hover:text-primary-700"
+                (click)="userDropdown.toggle($event)" [attr.aria-label]="'labels.myprofile' | translate">
+                <svg class="h-6 w-6" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M16.7969 11.7188C16.7969 12.5686 16.5449 13.3993 16.0727 14.106C15.6006 14.8126 14.9295 15.3633 14.1443 15.6885C13.3592 16.0138 12.4952 16.0989 11.6617 15.9331C10.8282 15.7673 10.0626 15.358 9.46166 14.7571C8.86073 14.1562 8.45149 13.3905 8.28569 12.557C8.1199 11.7235 8.20499 10.8596 8.53021 10.0744C8.85543 9.28926 9.40617 8.61818 10.1128 8.14603C10.8194 7.67388 11.6502 7.42188 12.5 7.42188C13.6392 7.42317 14.7314 7.87629 15.5369 8.68183C16.3425 9.48737 16.7956 10.5795 16.7969 11.7188ZM22.6563 12.5C22.6563 14.5087 22.0606 16.4723 20.9446 18.1425C19.8286 19.8127 18.2424 21.1145 16.3866 21.8832C14.5308 22.6519 12.4887 22.853 10.5186 22.4611C8.5485 22.0692 6.73883 21.1019 5.31845 19.6816C3.89807 18.2612 2.93079 16.4515 2.5389 14.4814C2.14702 12.5113 2.34815 10.4692 3.11685 8.61337C3.88556 6.75756 5.18731 5.17137 6.85749 4.05539C8.52768 2.9394 10.4913 2.34375 12.5 2.34375C15.1927 2.34659 17.7744 3.41754 19.6784 5.32159C21.5825 7.22564 22.6534 9.80727 22.6563 12.5ZM21.0938 12.5C21.0925 11.3433 20.858 10.1987 20.4042 9.13473C19.9505 8.07073 19.2868 7.10917 18.4529 6.30755C17.6191 5.50593 16.6321 4.88072 15.551 4.4693C14.4699 4.05788 13.317 3.8687 12.1611 3.91309C7.56153 4.09082 3.89356 7.92188 3.90625 12.5244C3.91066 14.6197 4.68342 16.6405 6.07813 18.2041C6.64612 17.3803 7.36762 16.6737 8.20313 16.123C8.27436 16.076 8.35905 16.0536 8.44423 16.0592C8.52942 16.0649 8.6104 16.0983 8.67481 16.1543C9.73651 17.0726 11.0933 17.578 12.4971 17.578C13.9008 17.578 15.2576 17.0726 16.3193 16.1543C16.3837 16.0983 16.4647 16.0649 16.5499 16.0592C16.6351 16.0536 16.7198 16.076 16.791 16.123C17.6276 16.6734 18.3501 17.38 18.919 18.2041C20.3206 16.6348 21.0948 14.6041 21.0938 12.5Z"
+                        fill="currentColor" />
+                </svg>
+            </button>
+            <!-- <div #userDropdownDiv></div> -->
+        </div>
+    </div>
+</header>
+
+<p-popover #preferencesDropdown appendTo="body" [baseZIndex]="1300" styleClass="preferences-dropdown">
+    <div class="w-64 p-3">
+        <div class="mb-2 text-xs font-bold uppercase tracking-wide text-gray-400">{{ "labels.language" | translate }}</div>
+        <div class="mb-4 flex gap-2">
+            @for (option of languageOptions; track option.value) {
+            <button type="button"
+                class="flex-1 cursor-pointer rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors"
+                [class.border-primary-500]="currentLanguage === option.value"
+                [class.bg-primary-50]="currentLanguage === option.value"
+                [class.text-primary-700]="currentLanguage === option.value"
+                [class.border-gray-200]="currentLanguage !== option.value"
+                [class.text-gray-600]="currentLanguage !== option.value"
+                (click)="setLanguage(option.value)">
+                {{ option.label }}
+            </button>
+            }
+        </div>
+
+        <div class="mb-2 text-xs font-bold uppercase tracking-wide text-gray-400">{{ "labels.theme" | translate }}</div>
+        <div class="flex gap-2">
+            <button type="button"
+                class="h-7 w-7 cursor-pointer rounded-full border-2 bg-white transition-colors"
+                [class.border-gray-800]="!currentTheme"
+                [class.border-transparent]="!!currentTheme"
+                [attr.aria-label]="'labels.themeDefault' | translate" [title]="'labels.themeDefault' | translate"
+                (click)="setTheme('')"></button>
+            @for (option of themeOptions; track option) {
+            <button type="button"
+                class="h-7 w-7 cursor-pointer rounded-full border-2 transition-colors"
+                [class.border-gray-800]="currentTheme === option"
+                [class.border-transparent]="currentTheme !== option"
+                [ngClass]="'theme-swatch-' + option"
+                [attr.aria-label]="option" [title]="option"
+                (click)="setTheme(option)"></button>
+            }
+        </div>
+    </div>
+</p-popover>
+
+<p-popover #userDropdown [styleClass]="'user-account-dropdown'" appendTo="body" styleClass="user-account-dropdown">
+    <div class="flex items-center gap-2 border-b border-gray-100 p-3 px-5">
+        <div class="bg-primary-500 inline-flex h-12 w-12 items-center justify-center rounded-full text-white">
+            <i class="pi pi-user text-xl"></i>
+        </div>
+        <div>
+            <div class="font-semibold">{{ userdetails.username }}</div>
+            <small>{{ userdetails.rolename }}</small>
+        </div>
+    </div>
+    <ul class="min-w-60 p-2">
+        <li>
+            <button (click)="logout()" class="inline-flex w-full items-center cursor-pointer gap-3 px-3 py-2 hover:bg-gray-100">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 256 256">
+                    <path
+                        d="M120,216a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V40a8,8,0,0,1,8-8h64a8,8,0,0,1,0,16H56V208h56A8,8,0,0,1,120,216Zm109.66-93.66-40-40a8,8,0,0,0-11.32,11.32L204.69,120H112a8,8,0,0,0,0,16h92.69l-26.35,26.34a8,8,0,0,0,11.32,11.32l40-40A8,8,0,0,0,229.66,122.34Z">
+                    </path>
+                </svg>
+                <span>{{ "labels.signout" | translate }}</span>
+            </button>
+        </li>
+    </ul>
+</p-popover>
+
+<main class="flex flex-1 overflow-hidden relative z-0">
+    <router-outlet></router-outlet>
+</main>
+
+<footer
+    class="flex flex-col items-center z-1 text-xs justify-center gap-5 bg-white text-gray-600 p-4 py-3 text-center border-t border-gray-200 md:flex-row">
+    <p href="javascript:void(0)">
+        © Copyright {{ thisYear }} {{ 'app.name' | translate }}@if (version) { . {{ version }} }
+    </p>
+</footer>

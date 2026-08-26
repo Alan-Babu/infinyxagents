@@ -1,0 +1,183 @@
+<div class="flex flex-1 flex-col overflow-hidden" [dir]="isRtl ? 'rtl' : 'ltr'">
+    <!-- ===== Top bar ===== -->
+    <div class="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-3">
+        <div class="flex items-center gap-3">
+            <span class="grid h-10 w-10 shrink-0 place-items-center rounded-full border-2 border-primary-500 bg-white text-primary-500">
+                <i class="pi pi-android text-lg"></i>
+            </span>
+            <div>
+                <div class="flex items-center gap-2 text-sm font-bold text-gray-800">
+                    {{ 'mofaChatbot.chat.assistantName' | translate }}
+                    <span
+                        class="rounded-full bg-primary-50 px-2 py-0.5 text-xs font-bold text-primary-600"
+                        [pTooltip]="'mofaChatbot.chat.aiBadgeTitle' | translate"
+                        tooltipPosition="bottom"
+                    >
+                        {{ 'mofaChatbot.chat.aiBadge' | translate }}
+                    </span>
+                </div>
+                <div class="flex items-center gap-1.5 text-xs text-gray-400">
+                    <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>
+                    {{ 'mofaChatbot.chat.onlineNow' | translate }}
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-1">
+            @if (currentHappiness !== null) {
+                <span
+                    class="me-1 grid h-8 w-8 place-items-center rounded-full text-lg"
+                    [pTooltip]="'mofaChatbot.chat.moodTooltip' | translate"
+                    tooltipPosition="bottom"
+                >
+                    @if (currentHappiness >= 70) {
+                        😊
+                    } @else if (currentHappiness >= 40) {
+                        😐
+                    } @else {
+                        😞
+                    }
+                </span>
+            }
+            <button
+                type="button"
+                class="grid h-9 w-9 cursor-pointer place-items-center rounded-full text-gray-400 transition hover:bg-gray-100 hover:text-primary-600"
+                [pTooltip]="'mofaChatbot.chat.talkToHuman' | translate"
+                tooltipPosition="bottom"
+                (click)="requestHumanHelp()"
+            >
+                <i class="pi pi-headphones"></i>
+            </button>
+            <button
+                type="button"
+                class="grid h-9 w-9 cursor-pointer place-items-center rounded-full text-gray-400 transition hover:bg-gray-100 hover:text-primary-600"
+                [pTooltip]="'mofaChatbot.chat.privacyNoticeTooltip' | translate"
+                tooltipPosition="bottom"
+                (click)="showPrivacyNotice = true"
+            >
+                <i class="pi pi-shield"></i>
+            </button>
+            <button
+                type="button"
+                class="grid h-9 w-9 cursor-pointer place-items-center rounded-full text-gray-400 transition hover:bg-gray-100 hover:text-primary-600"
+                [pTooltip]="'mofaChatbot.chat.saveShare' | translate"
+                tooltipPosition="bottom"
+                (click)="saveAndShare()"
+            >
+                <i class="pi pi-share-alt"></i>
+            </button>
+            <button
+                type="button"
+                class="grid h-9 w-9 cursor-pointer place-items-center rounded-full text-primary-600 transition hover:bg-gray-100"
+                [pTooltip]="'mofaChatbot.chat.newChat' | translate"
+                tooltipPosition="bottom"
+                (click)="startNewSession()"
+            >
+                <i class="pi pi-plus"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== Messages ===== -->
+    <div class="flex-1 space-y-5 overflow-y-auto px-6 py-6">
+        <div class="mx-auto flex max-w-4xl flex-col gap-5">
+            @if (starting) {
+                <div class="flex items-center justify-center py-10">
+                    <i class="pi pi-spin pi-spinner text-2xl text-primary-500"></i>
+                </div>
+            }
+
+            @for (message of messages; track message.message_id) {
+                <lib-message-bubble
+                    [message]="message"
+                    [isPlaying]="playingMessageId === message.message_id"
+                    [showActions]="message.message_id !== 'greeting' && !sending"
+                    [deliveryLabel]="deliveryStatusLabel(message.deliveryStatus)"
+                    (feedback)="giveFeedback(message, $event)"
+                    (listen)="playMessageAudio(message)"
+                    (followupSelect)="selectQuickPrompt($event)"
+                />
+            }
+
+            @if (sending) {
+                <div class="flex items-start gap-3">
+                    <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full border-2 border-primary-500 bg-white text-primary-500">
+                        <i class="pi pi-android"></i>
+                    </span>
+                    <div class="flex items-center gap-1.5 rounded-lg bg-white px-4 py-3.5">
+                        <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400"></span>
+                        <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400 [animation-delay:150ms]"></span>
+                        <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400 [animation-delay:300ms]"></span>
+                    </div>
+                </div>
+            }
+
+            @if (messages.length <= 1 && !sending && !starting) {
+                <lib-quick-prompts [prompts]="quickPrompts" (promptSelect)="selectQuickPrompt($event)" />
+            }
+
+            <div #scrollAnchor></div>
+        </div>
+    </div>
+
+    @if (showHandoffOffer) {
+        <lib-human-handoff-banner (accept)="acceptHandoff()" (dismiss)="dismissHandoff()" />
+    }
+    @if (showIdlePrompt) {
+        <lib-idle-timeout-banner (stillHere)="imStillHere()" />
+    }
+
+    <!-- ===== Input bar / voice overlay ===== -->
+    @if (!showVoiceOverlay) {
+        <div class="border-t border-gray-200 bg-white px-6 py-4">
+            <div class="mx-auto flex max-w-4xl items-end gap-2 rounded-lg border-2 border-gray-200 bg-white p-2 focus-within:border-primary-500">
+                <textarea
+                    #messageInputEl
+                    class="max-h-32 flex-1 resize-none border-0 bg-transparent px-2 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none"
+                    rows="1"
+                    [(ngModel)]="messageInput"
+                    (keydown)="onInputKeydown($event)"
+                    [placeholder]="'mofaChatbot.chat.placeholder' | translate"
+                    [disabled]="sending || starting"
+                ></textarea>
+                <button
+                    type="button"
+                    class="grid h-9 w-9 shrink-0 cursor-pointer place-items-center rounded-full text-gray-400 transition hover:bg-gray-100 hover:text-primary-600 disabled:cursor-not-allowed disabled:opacity-50"
+                    [pTooltip]="'mofaChatbot.chat.micTooltip' | translate"
+                    tooltipPosition="top"
+                    [disabled]="sending || starting"
+                    (click)="startSpeechToSpeech()"
+                >
+                    <i class="pi pi-microphone"></i>
+                </button>
+                <button
+                    type="button"
+                    class="grid h-9 w-9 shrink-0 cursor-pointer place-items-center rounded-full text-white transition disabled:cursor-not-allowed"
+                    [class.bg-primary-500]="!sending && !starting && messageInput.trim()"
+                    [class.hover:bg-primary-400]="!sending && !starting && messageInput.trim()"
+                    [class.bg-gray-300]="sending || starting || !messageInput.trim()"
+                    [pTooltip]="'mofaChatbot.chat.sendTooltip' | translate"
+                    tooltipPosition="top"
+                    [disabled]="!messageInput.trim() || sending || starting"
+                    (click)="sendMessage()"
+                >
+                    <i class="pi pi-send text-sm"></i>
+                </button>
+            </div>
+        </div>
+    } @else {
+        <lib-voice-orb [phase]="voicePhase" [audioLevels]="audioLevels" (endCall)="endSpeechToSpeech()" />
+    }
+</div>
+
+<lib-privacy-notice-modal [visible]="showPrivacyNotice" (visibleChange)="showPrivacyNotice = $event" />
+
+<lib-session-end-rating-modal
+    [visible]="showRatingModal"
+    [rating]="ratingValue"
+    [comment]="ratingComment"
+    (ratingChange)="ratingValue = $event"
+    (commentChange)="ratingComment = $event"
+    (submitRating)="submitRating()"
+    (skip)="skipRating()"
+/>

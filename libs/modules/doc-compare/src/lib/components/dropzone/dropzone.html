@@ -1,0 +1,96 @@
+<div class="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4">
+    <div class="flex items-center justify-between">
+        <span class="text-sm font-semibold text-gray-700">{{ label }}</span>
+        <span class="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-600">{{ roleBadge }}</span>
+    </div>
+
+    @if (showMasterBanner && doc?.isMaster) {
+    <div class="flex items-center gap-2 rounded-lg bg-primary-50 px-3 py-2 text-xs font-medium text-primary-700">
+        <i class="pi pi-star-fill"></i>
+        {{ "docCompare.dropzone.lockedToMaster" | translate }}
+    </div>
+    }
+
+    @if (!doc) {
+    <div class="flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed border-gray-200 px-4 py-8 text-center transition-colors hover:border-primary-400 hover:bg-primary-50"
+        (click)="fileInput.click()" (dragover)="$event.preventDefault()" (drop)="onDrop($event)">
+        <div class="bg-primary-100 text-primary-600 inline-flex h-10 w-10 items-center justify-center rounded-full">
+            <i class="pi pi-upload"></i>
+        </div>
+        <div class="text-sm font-semibold text-gray-700">{{ "docCompare.dropzone.dropTitle" | translate }}</div>
+        <div class="text-xs text-gray-500">{{ "docCompare.dropzone.dropSubtitle" | translate }}</div>
+        <input #fileInput type="file" accept="application/pdf" class="hidden" (change)="onFileInput($event)" />
+    </div>
+    <button type="button" class="cursor-pointer self-start text-xs font-semibold text-primary-600 hover:underline"
+        (click)="openPicker.emit()">
+        {{ "docCompare.dropzone.useSaved" | translate }}
+    </button>
+    }
+
+    @if (doc?.source === 'uploading') {
+    <div class="flex flex-col gap-2 rounded-lg border border-gray-200 p-3">
+        <div class="flex items-center justify-between">
+            <span class="truncate text-sm font-medium text-gray-700">{{ uploadProgress?.filename }}</span>
+            <button type="button" class="cursor-pointer text-xs font-semibold text-red-600 hover:underline"
+                (click)="cancelUpload.emit()">
+                {{ "docCompare.dropzone.cancel" | translate }}
+            </button>
+        </div>
+        <p-progressbar [value]="uploadProgress?.percent || 0" [showValue]="false" styleClass="h-2!" />
+        <div class="flex justify-between text-xs text-gray-500">
+            <span>{{ uploadProgress?.percent || 0 }}%</span>
+            <span>{{ uploadProgress?.chunksDone || 0 }} / {{ uploadProgress?.totalChunks || 0 }} {{ "docCompare.dropzone.chunks" | translate }}</span>
+            <span>{{ fmtBytes(uploadProgress?.bytesUploaded) }} / {{ fmtBytes(uploadProgress?.totalBytes) }}</span>
+        </div>
+        <div class="flex flex-wrap gap-1">
+            @for (c of uploadProgress?.chunks; track c.index) {
+            <span class="h-2 w-2 rounded-sm"
+                [class.bg-gray-200]="c.state === 'pending'"
+                [class.bg-primary-400]="c.state === 'uploading'"
+                [class.bg-green-500]="c.state === 'done'"
+                [class.bg-red-500]="c.state === 'error'"
+                [attr.title]="'Chunk ' + (c.index + 1) + ' · ' + c.state"></span>
+            }
+        </div>
+    </div>
+    }
+
+    @if (doc?.source === 'upload') {
+    <div class="flex items-center gap-3 rounded-lg border border-gray-200 p-3">
+        <i class="pi pi-file-pdf text-xl text-primary-500"></i>
+        <div class="min-w-0 flex-1">
+            <div class="truncate text-sm font-medium text-gray-800">{{ doc?.filename }}</div>
+            <div class="text-xs text-gray-500">{{ fmtBytes(doc?.size) }}</div>
+        </div>
+        <button type="button" class="cursor-pointer text-gray-400 hover:text-red-600" (click)="clearSlot.emit()">
+            <i class="pi pi-times"></i>
+        </button>
+    </div>
+    }
+
+    @if (doc?.source === 'saved') {
+    <div class="flex items-center gap-3 rounded-lg p-3" [class.bg-primary-600]="doc?.isMaster" [class.text-white]="doc?.isMaster"
+        [class.border]="!doc?.isMaster" [class.border-gray-200]="!doc?.isMaster">
+        <i class="pi pi-file-pdf text-xl" [class.text-primary-500]="!doc?.isMaster"></i>
+        <div class="min-w-0 flex-1">
+            <div class="truncate text-sm font-medium">
+                {{ doc?.label }}
+                @if (doc?.isMaster) {
+                <span class="ms-2 rounded bg-white/20 px-1.5 py-0.5 text-xs font-bold uppercase">{{ "docCompare.dropzone.master" | translate }}</span>
+                }
+            </div>
+            <div class="text-xs" [class.opacity-80]="doc?.isMaster" [class.text-gray-500]="!doc?.isMaster">
+                {{ "docCompare.dropzone.fromLibrary" | translate }} · {{ doc?.pageCount }} {{ "docCompare.dropzone.pages" | translate }}
+            </div>
+        </div>
+        <button type="button" class="cursor-pointer" [class.text-white/70]="doc?.isMaster" [class.text-gray-400]="!doc?.isMaster"
+            (click)="clearSlot.emit()">
+            <i class="pi pi-times"></i>
+        </button>
+    </div>
+    <button type="button" class="cursor-pointer self-start text-xs font-semibold text-primary-600 hover:underline"
+        (click)="openPicker.emit()">
+        {{ doc?.isMaster ? ("docCompare.dropzone.compareDifferentBaseline" | translate) : ("docCompare.dropzone.chooseDifferent" | translate) }}
+    </button>
+    }
+</div>

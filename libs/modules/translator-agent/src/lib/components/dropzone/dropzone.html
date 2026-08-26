@@ -1,0 +1,50 @@
+<div class="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-6">
+    @if (!doc) {
+    <div class="flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed border-gray-200 px-4 py-12 text-center transition-colors hover:border-primary-400 hover:bg-primary-50"
+        role="button" tabindex="0" (click)="fileInput.click()" (keydown.enter)="fileInput.click()" (keydown.space)="fileInput.click()"
+        (dragover)="$event.preventDefault()" (drop)="onDrop($event)">
+        <div class="bg-primary-100 text-primary-600 inline-flex h-12 w-12 items-center justify-center rounded-full">
+            <i class="pi pi-upload text-lg"></i>
+        </div>
+        <div class="text-sm font-semibold text-gray-700">{{ "translatorAgent.dropzone.dropTitle" | translate }}</div>
+        <div class="text-xs text-gray-500">{{ "translatorAgent.dropzone.dropSubtitle" | translate }}</div>
+        <input #fileInput type="file" accept="application/pdf,image/jpeg,image/png" class="hidden" (change)="onFileInput($event)" />
+    </div>
+    }
+
+    @if (doc && uploadProgress) {
+    <div class="flex flex-col gap-2 rounded-lg border border-gray-200 p-3">
+        <div class="flex items-center justify-between">
+            <span class="truncate text-sm font-medium text-gray-700">{{ uploadProgress.filename }}</span>
+            <button type="button" class="cursor-pointer text-xs font-semibold text-red-600 hover:underline" (click)="cancelUpload.emit()">
+                {{ "translatorAgent.dropzone.cancel" | translate }}
+            </button>
+        </div>
+        <p-progressbar [value]="uploadProgress.percent" [showValue]="false" styleClass="h-2!" />
+        <div class="flex flex-wrap justify-between gap-1 text-xs text-gray-500">
+            <span>{{ uploadProgress.percent }}%</span>
+            <span>{{ uploadProgress.chunksDone }} / {{ uploadProgress.totalChunks }} {{ "translatorAgent.dropzone.chunks" | translate }}</span>
+            <span>{{ fmtBytes(uploadProgress.bytesUploaded) }} / {{ fmtBytes(uploadProgress.totalBytes) }}</span>
+        </div>
+        <div class="flex flex-wrap gap-1">
+            @for (c of uploadProgress.chunks; track c.index) {
+            <span class="h-2 w-2 rounded-sm" [class.bg-gray-200]="c.state === 'pending'" [class.bg-primary-400]="c.state === 'uploading'"
+                [class.bg-green-500]="c.state === 'done'" [class.bg-red-500]="c.state === 'error'"></span>
+            }
+        </div>
+    </div>
+    }
+
+    @if (doc && !uploadProgress) {
+    <div class="flex items-center gap-3 rounded-lg border border-gray-200 p-4">
+        <i class="pi pi-file text-2xl text-primary-500"></i>
+        <div class="min-w-0 flex-1">
+            <div class="truncate text-sm font-medium text-gray-800">{{ doc.filename }}</div>
+            <div class="text-xs text-gray-500">{{ fmtBytes(doc.size) }} &middot; {{ doc.pageCount }} {{ "translatorAgent.dropzone.pages" | translate }}</div>
+        </div>
+        <button type="button" class="cursor-pointer text-gray-400 hover:text-red-600" (click)="clearDoc.emit()">
+            <i class="pi pi-times"></i>
+        </button>
+    </div>
+    }
+</div>

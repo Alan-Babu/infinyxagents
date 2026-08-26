@@ -1,0 +1,226 @@
+{
+    "translatorAgent": {
+        "nav": {
+            "translate": "Translate",
+            "myDocuments": "My Documents"
+        },
+        "common": {
+            "unclassified": "Unclassified",
+            "unknownIssuer": "Unknown issuer",
+            "unknownLanguage": "Unknown"
+        },
+        "risk": {
+            "low": "low",
+            "medium": "medium",
+            "high": "high"
+        },
+        "status": {
+            "Valid": "Valid",
+            "Expired": "Expired",
+            "NoExpiry": "No Expiry",
+            "Unknown": "Unknown"
+        },
+        "category": {
+            "Individual": "Individual",
+            "Commercial": "Commercial"
+        },
+        "classification": {
+            "Confidential": "Confidential",
+            "Critical": "Critical",
+            "PublicCopy": "Public Copy",
+            "ControlledCopy": "Controlled Copy",
+            "Internal": "Internal"
+        },
+        "callTypes": {
+            "extraction": "Document Extraction",
+            "translation": "Page Translation",
+            "qa": "Ask Document (Q&A)"
+        },
+        "toolbar": {
+            "eyebrow": "Translation Agent",
+            "rateAgent": "Rate Agent",
+            "performance": "Performance",
+            "reviewQueue": "Review Queue"
+        },
+        "reviewQueue": {
+            "title": "Review queue",
+            "empty": "Nothing needs review right now — every document met the confidence and risk bar automatically.",
+            "footerNote": "Flagged when confidence is low or risk is high"
+        },
+        "performance": {
+            "title": "Agent performance report",
+            "footerNote": "Telemetry stored in Postgres (agent_telemetry)"
+        },
+        "feedback": {
+            "title": "Rate the agent",
+            "forDocument": "This document's analysis",
+            "overall": "The agent overall",
+            "commentPlaceholder": "What worked well, or what should improve…"
+        },
+        "dropzone": {
+            "dropTitle": "Drop a document here, or click to browse",
+            "dropSubtitle": "PDF, JPG, or PNG — uploaded in chunks",
+            "cancel": "Cancel",
+            "chunks": "chunks",
+            "pages": "page(s)"
+        },
+        "upload": {
+            "title": "Translate a document",
+            "subtitle": "Upload any certificate, degree, medical record, or legal document. The agent detects its language, translates it page by page, identifies who issued it, flags any risks, and lets you ask it questions.",
+            "translate": "Translate document"
+        },
+        "pageSelect": {
+            "title": "Choose which pages to translate",
+            "allPages": "All pages",
+            "customSelection": "Custom selection",
+            "pages": "page(s)",
+            "detectedLanguage": "Detected language",
+            "selectedCount": "{{ count }} of {{ total }} page(s) selected",
+            "selectAtLeastOne": "Select at least one page to translate",
+            "cancel": "Cancel",
+            "confirm": "Translate selected pages"
+        },
+        "myDocuments": {
+            "title": "My Documents",
+            "subtitle": "Search, filter, and manage every document the agent has translated.",
+            "searchPlaceholder": "Search by name, issuer, or type…",
+            "search": "Search",
+            "resultCount": "{{ count }} document(s)",
+            "delete": "Delete",
+            "table": {
+                "filename": "File name",
+                "documentType": "Document type",
+                "language": "Language",
+                "issuedBy": "Issued by",
+                "status": "Status",
+                "risk": "Risk",
+                "category": "Category",
+                "classification": "Classification",
+                "created": "Created"
+            }
+        },
+        "filters": {
+            "anyStatus": "Any status",
+            "anyRisk": "Any risk",
+            "anyCategory": "Any category",
+            "anyClassification": "Any classification",
+            "from": "From",
+            "to": "To"
+        },
+        "pagination": {
+            "prev": "← Prev",
+            "next": "Next →",
+            "pageOf": "Page {{ page }} of {{ total }}"
+        },
+        "confirm": {
+            "header": "Please confirm",
+            "deleteDocument": "Remove \"{{ filename }}\" from your document library?"
+        },
+        "tabs": {
+            "overview": "Overview",
+            "risk": "Risk",
+            "compliance": "Approval & Attestation",
+            "stamps": "Stamps & Signatures",
+            "translation": "Translation",
+            "ask": "Ask Document"
+        },
+        "fields": {
+            "issued_by_name": "Issued By",
+            "issued_to_name": "Issued To",
+            "document_type": "Document Type",
+            "issued_on": "Issued On",
+            "valid_through": "Valid Through"
+        },
+        "reviewStatus": {
+            "needs_review": "Needs Review",
+            "approved": "Approved",
+            "rejected": "Rejected"
+        },
+        "detail": {
+            "title": "Document",
+            "loading": "Loading document…",
+            "risk": "risk",
+            "newDocument": "New document",
+            "verifySource": "Verify source",
+            "flaggedForReview": "This document was flagged for human review",
+            "confidence": "confidence",
+            "highRisk": "high risk",
+            "reviewNow": "Review now",
+            "recordDecision": "Record review decision",
+            "reviewerNamePlaceholder": "Your name (optional)",
+            "reviewerNotesPlaceholder": "Notes on this decision (optional)…",
+            "cancel": "Cancel",
+            "reject": "Reject",
+            "approve": "Approve",
+            "status": "Document Status",
+            "pages": "No. of Pages",
+            "category": "Document Category",
+            "classification": "Document Classification",
+            "file": "File",
+            "detectedLanguage": "Detected Language",
+            "unknown": "Unknown",
+            "insights": "Insights",
+            "noInsights": "No insights were generated for this document.",
+            "note": "Note",
+            "lowConfidence": "Low-confidence extraction ({{ score }}%) — please verify these fields manually.",
+            "noExpiry": "No expiry",
+            "overallRisk": "Overall Risk",
+            "noRiskFactors": "No risk factors were identified for this document.",
+            "complianceDisclaimer": "These are the agent's suggestions to guide a reviewer — not a legal determination that this document has been approved, authorized, or attested.",
+            "canBeApproved": "Can this be approved?",
+            "canBeAuthorized": "Can this be authorized?",
+            "uaeEligible": "Eligible for UAE attestation?",
+            "noAssessment": "No assessment available.",
+            "suggestedNextStep": "Suggested next step",
+            "noComplianceAssessment": "No approval/authorization/attestation assessment is available for this document.",
+            "noStamps": "No stamps or signatures were identified in this document.",
+            "viewOnPage": "View on page",
+            "mofa": "Ministry of Foreign Affairs",
+            "country": "Country",
+            "date": "Date",
+            "signedBy": "Signed By",
+            "referenceNo": "Reference No.",
+            "locationUnavailable": "Location on page could not be determined.",
+            "noTranslatedPages": "No pages have been translated for this document yet.",
+            "page": "Page",
+            "original": "Original",
+            "translated": "Translated",
+            "pageNotTranslated": "This page hasn't been translated.",
+            "loadingPages": "Loading source page images…",
+            "noImage": "Source page images aren't available for this document.",
+            "suggestedQuestions": "Suggested questions — click to select",
+            "you": "U",
+            "agentInitials": "IX",
+            "thinking": "Thinking…",
+            "askEmpty": "Click a suggestion above, or type your own question below.",
+            "askPlaceholder": "Ask a question about this document…",
+            "send": "Send"
+        },
+        "verifySource": {
+            "title": "Verify against source",
+            "page": "Page",
+            "noImage": "Source page images aren't available for this document (translated before this feature, or the upload didn't persist an image).",
+            "noLocation": "No source location available",
+            "unlabeled": "Unlabeled",
+            "footerNote": "Boxes are the model's own reported reading location, not independently verified"
+        },
+        "toast": {
+            "dropAcceptedOnly": "Please drop a PDF, JPG, or PNG file",
+            "uploadCancelled": "Upload cancelled",
+            "uploadFailed": "Upload failed. Please try again.",
+            "detectionFailed": "Could not detect the document's language. Please try again.",
+            "translationFailed": "Translation failed. Please try again.",
+            "loadDocumentsFailed": "Could not load documents. Please try again.",
+            "loadDocumentFailed": "Could not open that document.",
+            "documentDeleted": "Document removed",
+            "deleteFailed": "Could not remove that document.",
+            "askFailed": "Could not get an answer. Please try again.",
+            "loadPagesFailed": "Could not load the source page images.",
+            "reviewApproved": "Document approved",
+            "reviewRejected": "Document rejected",
+            "reviewFailed": "Could not record the review decision.",
+            "feedbackSubmitted": "Thanks for rating the agent!",
+            "feedbackFailed": "Could not submit feedback. Please try again."
+        }
+    }
+}

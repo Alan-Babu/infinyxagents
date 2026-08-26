@@ -1,0 +1,42 @@
+<div class="flex h-full min-h-0 flex-col">
+    <lib-page-header titleKey="emailComposeAgent.myEmails.title" subtitleKey="emailComposeAgent.myEmails.subtitle" [showBack]="false">
+        <lib-email-compose-toolbar />
+    </lib-page-header>
+
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+        <div class="flex flex-col gap-4">
+            <div class="flex flex-wrap items-center gap-2.5">
+                <span class="relative min-w-56 flex-1">
+                    <i class="pi pi-search absolute start-3 top-1/2 -translate-y-1/2 text-xs text-gray-400"></i>
+                    <input pInputText type="text" class="w-full ps-8" [placeholder]="'emailComposeAgent.myEmails.searchPlaceholder' | translate"
+                        [(ngModel)]="search" (keydown.enter)="applyFilters()" />
+                </span>
+                <p-select [options]="modeOptions" [(ngModel)]="mode" optionLabel="label" optionValue="value" styleClass="min-w-40" appendTo="body" (ngModelChange)="applyFilters()" />
+                <p-select [options]="classificationOptions" [(ngModel)]="classification" optionLabel="label" optionValue="value" styleClass="min-w-44" appendTo="body" (ngModelChange)="applyFilters()" />
+                <button type="button" pButton size="small" (click)="applyFilters()"><span>{{ 'emailComposeAgent.myEmails.search' | translate }}</span></button>
+            </div>
+
+            <div class="hidden flex-wrap items-center gap-3 text-xs text-gray-600">
+                <label class="flex items-center gap-1.5">{{ "emailComposeAgent.filters.from" | translate }}
+                    <input type="date" class="rounded-lg border border-gray-300 px-2 py-1" [(ngModel)]="dateFrom" (change)="applyFilters()" />
+                </label>
+                <label class="flex items-center gap-1.5">{{ "emailComposeAgent.filters.to" | translate }}
+                    <input type="date" class="rounded-lg border border-gray-300 px-2 py-1" [(ngModel)]="dateTo" (change)="applyFilters()" />
+                </label>
+                @if (pagination) {
+                <span class="text-gray-400">{{ "emailComposeAgent.myEmails.resultCount" | translate: { count: pagination.total_count } }}</span>
+                }
+            </div>
+
+            <lib-data-table [rowData]="emails" [colDefs]="colDefs" [paginator]="false" [showSearch]="false" (rowClick)="openEmail($event)" />
+
+            @if (pagination && pagination.total_pages > 1) {
+            <div class="flex items-center justify-between">
+                <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="!pagination.has_prev" (click)="goToPage(-1)"><span>{{ 'emailComposeAgent.pagination.prev' | translate }}</span></button>
+                <span class="text-xs text-gray-500">{{ "emailComposeAgent.pagination.pageOf" | translate: { page: pagination.page, total: pagination.total_pages } }}</span>
+                <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="!pagination.has_next" (click)="goToPage(1)"><span>{{ 'emailComposeAgent.pagination.next' | translate }}</span></button>
+            </div>
+            }
+        </div>
+    </div>
+</div>

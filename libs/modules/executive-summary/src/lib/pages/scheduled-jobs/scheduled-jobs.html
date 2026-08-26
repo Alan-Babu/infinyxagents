@@ -1,0 +1,13 @@
+<lib-page-header titleKey="executiveSummary.scheduledJobs.title" subtitleKey="executiveSummary.scheduledJobs.subtitle" [showBack]="false" />
+
+<div class="flex flex-col gap-5 p-6">
+    <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-4">
+        <lib-stat-card [label]="'executiveSummary.scheduledJobs.jobs' | translate" [value]="activeJobs.length" icon="pi pi-clock" fgClass="text-primary-600" bgClass="bg-primary-50" />
+        <lib-stat-card [label]="'executiveSummary.scheduledJobs.failedLabel' | translate" [value]="failedCount"
+            icon="pi pi-exclamation-triangle" [fgClass]="failedCount > 0 ? 'text-red-600' : 'text-gray-800'" [bgClass]="failedCount > 0 ? 'bg-red-50' : 'bg-gray-100'" />
+    </div>
+
+    <lib-data-table [rowData]="activeJobs" [colDefs]="colDefs" [paginator]="true" [searchPlaceholder]="'executiveSummary.search' | translate">
+        <span class="font-semibold text-gray-700">{{ activeJobs.length }} {{ "executiveSummary.records" | translate }}</span>
+    </lib-data-table>
+</div>

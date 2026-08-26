@@ -1,0 +1,116 @@
+@if (data) {
+<div class="mt-4 w-full rounded-lg border border-gray-200 bg-white p-5">
+    <div class="mb-4 flex items-center justify-between">
+        <h3 class="text-sm font-semibold text-gray-800">{{ "executiveSummary.countryDashboard.title" | translate }}</h3>
+        <span class="rounded-full bg-primary-50 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-primary-700">
+            {{ "executiveSummary.countryDashboard.badge" | translate }}
+        </span>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        @if (data.trade_by_year?.length) {
+        <div class="rounded-lg bg-gray-50 p-4">
+            <h4 class="mb-3 text-xs font-bold uppercase tracking-wide text-gray-500">{{ "executiveSummary.countryDashboard.tradeVolume" | translate }}</h4>
+            <lib-bar-chart [data]="tradeBarData" unit="B" />
+        </div>
+        }
+
+        @if (data.uae_investment_by_sector?.length) {
+        <div class="rounded-lg bg-gray-50 p-4">
+            <h4 class="mb-3 text-xs font-bold uppercase tracking-wide text-gray-500">{{ "executiveSummary.countryDashboard.investmentBySector" | translate }}</h4>
+            <lib-donut-chart [data]="investmentDonutData" />
+        </div>
+        }
+
+        @if (data.uae_locals_by_reason?.length) {
+        <div class="rounded-lg bg-gray-50 p-4">
+            <h4 class="mb-3 text-xs font-bold uppercase tracking-wide text-gray-500">{{ "executiveSummary.countryDashboard.localsByReason" | translate }}</h4>
+            <lib-donut-chart [data]="localsDonutData" />
+        </div>
+        }
+
+        @if (data.risks?.length) {
+        <div class="rounded-lg bg-gray-50 p-4">
+            <h4 class="mb-3 text-xs font-bold uppercase tracking-wide text-gray-500">{{ "executiveSummary.countryDashboard.riskOverview" | translate }}</h4>
+            @for (r of data.risks; track r.category) {
+            <div class="mb-2.5 flex items-start gap-2.5 last:mb-0">
+                <span class="mt-0.5 shrink-0 rounded-full px-2 py-0.5 text-xs font-bold uppercase"
+                    [class.bg-green-100]="r.level === 'Low'" [class.text-green-700]="r.level === 'Low'"
+                    [class.bg-yellow-100]="r.level === 'Medium'" [class.text-yellow-700]="r.level === 'Medium'"
+                    [class.bg-red-100]="r.level === 'High'" [class.text-red-700]="r.level === 'High'">
+                    {{ r.level }}
+                </span>
+                <div>
+                    <div class="text-sm font-semibold text-gray-800">{{ r.category }}</div>
+                    @if (r.note) {
+                    <div class="text-xs text-gray-500">{{ r.note }}</div>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+        }
+
+        @if (data.embassy) {
+        <div class="rounded-lg bg-gray-50 p-4">
+            <h4 class="mb-3 text-xs font-bold uppercase tracking-wide text-gray-500">{{ "executiveSummary.countryDashboard.embassyPresence" | translate }}</h4>
+            @if (data.embassy.city) {
+            <p class="mb-1.5 text-sm font-bold text-gray-800">{{ data.embassy.city }}</p>
+            }
+            <p class="text-sm text-gray-500">{{ data.embassy.note || ("executiveSummary.countryDashboard.noFurtherDetail" | translate) }}</p>
+        </div>
+        }
+
+        @if (data.last_meetings?.length) {
+        <div class="rounded-lg bg-gray-50 p-4">
+            <h4 class="mb-3 text-xs font-bold uppercase tracking-wide text-gray-500">{{ "executiveSummary.countryDashboard.lastMeetings" | translate }}</h4>
+            @for (m of data.last_meetings; track m.date) {
+            <div class="mb-2 flex items-baseline gap-2.5 text-sm last:mb-0">
+                <span class="shrink-0 text-xs font-bold text-primary-700">{{ m.date }}</span>
+                <span class="text-gray-700">{{ m.description }}</span>
+            </div>
+            }
+        </div>
+        }
+
+        @if (data.consular_services?.length) {
+        <div class="rounded-lg bg-gray-50 p-4">
+            <h4 class="mb-3 text-xs font-bold uppercase tracking-wide text-gray-500">{{ "executiveSummary.countryDashboard.consularServices" | translate }}</h4>
+            <ul class="list-disc space-y-1 ps-4 text-sm text-gray-700">
+                @for (s of data.consular_services; track s) {
+                <li>{{ s }}</li>
+                }
+            </ul>
+        </div>
+        }
+
+        @if (data.shared_services?.length) {
+        <div class="rounded-lg bg-gray-50 p-4">
+            <h4 class="mb-3 text-xs font-bold uppercase tracking-wide text-gray-500">{{ "executiveSummary.countryDashboard.sharedServices" | translate }}</h4>
+            <ul class="list-disc space-y-1 ps-4 text-sm text-gray-700">
+                @for (s of data.shared_services; track s) {
+                <li>{{ s }}</li>
+                }
+            </ul>
+        </div>
+        }
+
+        @if (data.recent_updates?.length) {
+        <div class="rounded-lg bg-gray-50 p-4">
+            <h4 class="mb-3 text-xs font-bold uppercase tracking-wide text-gray-500">{{ "executiveSummary.countryDashboard.recentUpdates" | translate }}</h4>
+            <ul class="list-disc space-y-1 ps-4 text-sm text-gray-700">
+                @for (s of data.recent_updates; track s) {
+                <li>{{ s }}</li>
+                }
+            </ul>
+        </div>
+        }
+    </div>
+
+    @if (data.data_confidence_note) {
+    <p class="mt-4 rounded-lg bg-primary-50 p-3 text-xs text-primary-800">
+        <i class="pi pi-exclamation-triangle me-1.5"></i>{{ data.data_confidence_note }}
+    </p>
+    }
+</div>
+}

@@ -1,0 +1,70 @@
+<p-drawer [(visible)]="visible" position="right" styleClass="p-drawer-lg" appendTo="body" [baseZIndex]="1200" (onHide)="visibleChange.emit(false)">
+    <ng-template #header>
+        <div class="flex flex-col">
+            <!-- <span class="text-xs font-bold uppercase tracking-wide text-primary-600">{{ 'emailComposeAgent.stats.eyebrow' | translate }}</span> -->
+            <span class="text-lg font-bold text-gray-800">{{ 'emailComposeAgent.stats.title' | translate }}</span>
+        </div>
+    </ng-template>
+
+    @if (stats) {
+    <div class="flex flex-col gap-5 pt-5">
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <lib-stat-card [label]="'emailComposeAgent.stats.totalEmails' | translate" [value]="stats.total_emails" icon="pi pi-envelope" />
+            <lib-stat-card [label]="'emailComposeAgent.stats.totalComposed' | translate" [value]="stats.total_composed" icon="pi pi-pencil" />
+            <lib-stat-card [label]="'emailComposeAgent.stats.totalReplied' | translate" [value]="stats.total_replied" icon="pi pi-reply" />
+            <lib-stat-card [label]="'emailComposeAgent.stats.totalTranslated' | translate" [value]="stats.total_translated" icon="pi pi-language" />
+            <lib-stat-card [label]="'emailComposeAgent.stats.totalQuestions' | translate" [value]="stats.total_questions" icon="pi pi-question-circle" />
+            <lib-stat-card [label]="'emailComposeAgent.stats.totalFeedback' | translate" [value]="stats.total_feedback" icon="pi pi-star" />
+            <lib-stat-card [label]="'emailComposeAgent.stats.averageRating' | translate" [value]="stats.average_rating !== null ? stats.average_rating.toFixed(1) : '—'" icon="pi pi-star-fill" />
+            <lib-stat-card [label]="'emailComposeAgent.stats.averageConfidence' | translate" [value]="stats.average_confidence !== null ? (stats.average_confidence + '%') : '—'" icon="pi pi-shield" />
+            <lib-stat-card [label]="'emailComposeAgent.stats.wordsComposed' | translate" [value]="stats.total_words_composed" icon="pi pi-file-edit" />
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <span class="text-sm font-semibold text-gray-700">{{ 'emailComposeAgent.stats.byTone' | translate }}</span>
+            @for (entry of breakdownEntries(stats.emails_by_tone); track entry[0]) {
+            <div class="flex items-center gap-2 text-xs">
+                <span class="w-24 shrink-0 truncate text-gray-500">{{ 'emailComposeAgent.tones.' + entry[0] | translate }}</span>
+                <div class="h-2 flex-1 overflow-hidden rounded-full bg-gray-100">
+                    <div class="h-2 rounded-full bg-primary-400" [style.width.%]="barWidth(entry[1], stats.emails_by_tone)"></div>
+                </div>
+                <span class="w-6 shrink-0 text-end font-semibold text-gray-700">{{ entry[1] }}</span>
+            </div>
+            }
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <span class="text-sm font-semibold text-gray-700">{{ 'emailComposeAgent.stats.byClassification' | translate }}</span>
+            @for (entry of breakdownEntries(stats.emails_by_classification); track entry[0]) {
+            <div class="flex items-center gap-2 text-xs">
+                <span class="w-24 shrink-0 truncate text-gray-500">{{ 'emailComposeAgent.classification.' + entry[0] | translate }}</span>
+                <div class="h-2 flex-1 overflow-hidden rounded-full bg-gray-100">
+                    <div class="h-2 rounded-full bg-primary-400" [style.width.%]="barWidth(entry[1], stats.emails_by_classification)"></div>
+                </div>
+                <span class="w-6 shrink-0 text-end font-semibold text-gray-700">{{ entry[1] }}</span>
+            </div>
+            }
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <span class="text-sm font-semibold text-gray-700">{{ 'emailComposeAgent.stats.searchHistory' | translate }}</span>
+            @if (searchHistory.length === 0) {
+            <p class="text-sm text-gray-500">{{ 'emailComposeAgent.stats.noSearchHistory' | translate }}</p>
+            }
+            @for (entry of searchHistory; track entry.id) {
+            <div class="flex items-center justify-between gap-2 rounded-lg border border-gray-200 p-2.5 text-xs">
+                <span class="truncate text-gray-700">{{ entry.query_text || ('emailComposeAgent.stats.emptyQuery' | translate) }}</span>
+                <span class="shrink-0 text-gray-400">{{ entry.result_count }} · {{ fmtDate(entry.created_at) }}</span>
+            </div>
+            }
+            @if (searchHistoryPagination && searchHistoryPagination.total_pages > 1) {
+            <div class="flex items-center justify-between pt-1">
+                <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="!searchHistoryPagination.has_prev" (click)="page.emit(-1)"><span>{{ 'emailComposeAgent.pagination.prev' | translate }}</span></button>
+                <span class="text-xs text-gray-500">{{ 'emailComposeAgent.pagination.pageOf' | translate: { page: searchHistoryPagination.page, total: searchHistoryPagination.total_pages } }}</span>
+                <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="!searchHistoryPagination.has_next" (click)="page.emit(1)"><span>{{ 'emailComposeAgent.pagination.next' | translate }}</span></button>
+            </div>
+            }
+        </div>
+    </div>
+    }
+</p-drawer>

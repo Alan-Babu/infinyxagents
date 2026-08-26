@@ -1,0 +1,87 @@
+<div class="flex flex-col gap-5 p-6">
+    <div class="flex items-center justify-between">
+        <h1 class="text-xl font-bold text-gray-800">{{ 'mofaChatbot.admin.overview.title' | translate }}</h1>
+        <p-select [options]="rangeOptions" [(ngModel)]="days" optionLabel="label" optionValue="value" appendTo="body" (ngModelChange)="load()" />
+    </div>
+
+    @if (loading) {
+        <div class="flex items-center justify-center py-16">
+            <i class="pi pi-spin pi-spinner text-2xl text-primary-500"></i>
+        </div>
+    } @else if (overview) {
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+            <lib-stat-card [label]="'mofaChatbot.admin.overview.sessions' | translate" [value]="overview.total_sessions" icon="pi pi-comments" />
+            <lib-stat-card [label]="'mofaChatbot.admin.overview.userMessages' | translate" [value]="overview.total_user_messages" icon="pi pi-send" />
+            <lib-stat-card
+                [label]="'mofaChatbot.admin.overview.riskFlagged' | translate"
+                [value]="overview.risk_flagged_sessions"
+                icon="pi pi-exclamation-triangle"
+                [fgClass]="overview.risk_flagged_sessions > 0 ? 'text-red-600' : 'text-primary-600'"
+                [bgClass]="overview.risk_flagged_sessions > 0 ? 'bg-red-50' : 'bg-primary-50'"
+            />
+            <lib-stat-card
+                [label]="'mofaChatbot.admin.overview.unansweredQuestions' | translate"
+                [value]="overview.unanswered_questions"
+                icon="pi pi-question-circle"
+                fgClass="text-amber-600"
+                bgClass="bg-amber-50"
+            />
+            <lib-stat-card
+                [label]="'mofaChatbot.admin.overview.averageRating' | translate"
+                [value]="overview.average_rating ? overview.average_rating + ' ★' : ('mofaChatbot.admin.overview.noRatingsYet' | translate)"
+                icon="pi pi-star"
+            />
+            <lib-stat-card [label]="'mofaChatbot.admin.overview.thumbsUpDown' | translate" [value]="overview.thumbs_up + ' / ' + overview.thumbs_down" icon="pi pi-thumbs-up" />
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+                <div class="mb-3 text-xs font-bold uppercase tracking-wide text-gray-400">{{ 'mofaChatbot.admin.overview.sentimentTitle' | translate }}</div>
+                @if (breakdownEntries(overview.sentiment_breakdown).length === 0) {
+                    <p class="text-xs text-gray-400">{{ 'mofaChatbot.admin.common.noDataYet' | translate }}</p>
+                }
+                @for (b of breakdownEntries(overview.sentiment_breakdown); track b.key) {
+                    <div class="mb-2 flex items-center gap-2 text-xs">
+                        <span class="w-20 shrink-0 truncate font-semibold text-gray-600">{{ b.key }}</span>
+                        <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-100">
+                            <div class="h-full rounded-full bg-primary-500" [style.width.%]="(b.count / maxBreakdownCount(overview.sentiment_breakdown)) * 100"></div>
+                        </div>
+                        <span class="w-6 text-end text-gray-500">{{ b.count }}</span>
+                    </div>
+                }
+            </div>
+
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+                <div class="mb-3 text-xs font-bold uppercase tracking-wide text-gray-400">{{ 'mofaChatbot.admin.overview.endReasonTitle' | translate }}</div>
+                @if (breakdownEntries(overview.end_reason_breakdown).length === 0) {
+                    <p class="text-xs text-gray-400">{{ 'mofaChatbot.admin.common.noDataYet' | translate }}</p>
+                }
+                @for (b of breakdownEntries(overview.end_reason_breakdown); track b.key) {
+                    <div class="mb-2 flex items-center gap-2 text-xs">
+                        <span class="w-20 shrink-0 truncate font-semibold text-gray-600">{{ b.key }}</span>
+                        <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-100">
+                            <div class="h-full rounded-full bg-primary-500" [style.width.%]="(b.count / maxBreakdownCount(overview.end_reason_breakdown)) * 100"></div>
+                        </div>
+                        <span class="w-6 text-end text-gray-500">{{ b.count }}</span>
+                    </div>
+                }
+            </div>
+
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+                <div class="mb-3 text-xs font-bold uppercase tracking-wide text-gray-400">{{ 'mofaChatbot.admin.overview.languageTitle' | translate }}</div>
+                @if (breakdownEntries(overview.language_breakdown).length === 0) {
+                    <p class="text-xs text-gray-400">{{ 'mofaChatbot.admin.common.noDataYet' | translate }}</p>
+                }
+                @for (b of breakdownEntries(overview.language_breakdown); track b.key) {
+                    <div class="mb-2 flex items-center gap-2 text-xs">
+                        <span class="w-20 shrink-0 truncate font-semibold text-gray-600">{{ languageLabel(b.key) }}</span>
+                        <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-100">
+                            <div class="h-full rounded-full bg-primary-500" [style.width.%]="(b.count / maxBreakdownCount(overview.language_breakdown)) * 100"></div>
+                        </div>
+                        <span class="w-6 text-end text-gray-500">{{ b.count }}</span>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

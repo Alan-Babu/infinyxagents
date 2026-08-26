@@ -1,0 +1,70 @@
+<p-confirmdialog>
+    <ng-template #message let-message>
+        <div class="flex gap-4">
+            <i [class]="message.icon" class="text-3xl"></i>
+            <div class="flex-1" [innerHTML]="message.message"></div>
+        </div>
+    </ng-template>
+</p-confirmdialog>
+
+<main class="flex flex-1">
+    <div class="hidden lg:flex lg:w-4/6 2xl:w-5/7 relative overflow-hidden bg-[linear-gradient(160deg,var(--p-primary-800)_0%,var(--p-primary-900)_35%,var(--p-primary-600)_70%,var(--p-primary-500)_100%)]">
+        <div class="absolute inset-0 pointer-events-none">
+            <svg class="w-full h-full" viewBox="0 0 930 768" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <radialGradient id="rg1" cx="30%" cy="40%" r="60%">
+                        <stop offset="0%" style="stop-color: var(--p-primary-400)" stop-opacity=".5"></stop>
+                        <stop offset="100%" style="stop-color: var(--p-primary-300)" stop-opacity="0"></stop>
+                    </radialGradient>
+                    <radialGradient id="rg2" cx="80%" cy="70%" r="50%">
+                        <stop offset="0%" style="stop-color: var(--p-primary-800)" stop-opacity=".6"></stop>
+                        <stop offset="100%" style="stop-color: var(--p-primary-950)" stop-opacity="0"></stop>
+                    </radialGradient>
+                </defs>
+                <ellipse cx="200" cy="280" rx="340" ry="280" fill="url(#rg1)"></ellipse>
+                <ellipse cx="750" cy="560" rx="280" ry="240" fill="url(#rg2)"></ellipse>
+                <path
+                    d="M0,480 C120,420 240,500 360,440 C480,380 600,460 720,400 C840,340 930,380 930,380 L930,768 L0,768 Z"
+                    fill="rgba(0,0,0,.15)"
+                ></path>
+                <path
+                    d="M0,560 C150,500 300,580 450,520 C600,460 750,540 930,480 L930,768 L0,768 Z"
+                    fill="rgba(0,0,0,.1)"
+                ></path>
+                <path
+                    d="M-80,60 Q300,-60 600,80 Q800,160 1000,40"
+                    fill="none"
+                    stroke="rgba(255,255,255,.07)"
+                    stroke-width="120"
+                ></path>
+            </svg>
+        </div>
+
+        <lib-image-slider [slides]="slides" class="absolute inset-0"></lib-image-slider>
+    </div>
+
+    <div class="flex flex-1 flex-col lg:w-2/6 2xl:w-2/7 bg-white px-3 py-5 lg:p-7 xl:p-10">
+        <div class="flex items-center gap-2 mb-8 justify-between">
+            <div class="inline-flex items-start justify-start">
+                <!-- <div class="bg-primary-500 inline-flex h-12 w-12 items-center justify-center rounded-full text-white">
+                    <i class="pi pi-bolt text-xl"></i>
+                </div>
+                <div>
+                    <div class="font-semibold text-lg">{{ 'app.name' | translate }}</div>
+                    <small class="text-gray-500">{{ 'app.tagline' | translate }}</small>
+                </div> -->
+                <img src="./platform-logo.png" class="h-14" />
+            </div>
+        </div>
+
+        <div class="m-auto w-full max-w-md">
+            <router-outlet />
+        </div>
+
+        <div class="text-sm text-gray-600 mt-8 space-y-2">
+            <p>
+                <bdi>© {{ thisYear }} {{ 'app.name' | translate }}. {{ 'labels.copyright' | translate }}. {{ 'app.version' | translate }}</bdi>
+            </p>
+        </div>
+    </div>
+</main>

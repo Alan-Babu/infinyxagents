@@ -1,0 +1,125 @@
+{
+    "digitalAttestation": {
+        "nav": {
+            "dashboard": "Dashboard",
+            "manualReview": "Manual review",
+            "failures": "Failures",
+            "completed": "Completed tasks"
+        },
+        "dashboard": {
+            "title": "Digital Attestation",
+            "subtitle": "Review Hub — inspect agent confidence, documents, and approve or reject attestation cases.",
+            "stats": {
+                "awaitingReview": "Awaiting review",
+                "awaitingReviewSub": "across {{ total }} total cases",
+                "pipelineFailures": "Pipeline failures",
+                "pipelineFailuresSub": "need investigation",
+                "approvalRate": "Approval rate",
+                "approvalRateSub": "of {{ completed }} completed",
+                "avgConfidence": "Avg. confidence",
+                "avgConfidenceSub": "across active pipeline"
+            },
+            "banner": {
+                "eyebrow": "Review Hub",
+                "title": "Awaiting review",
+                "subtitle": "Open a case to inspect agent confidence scores and source documents before deciding.",
+                "cta": "Go to manual review",
+                "pending": "Pending"
+            },
+            "recentlyUpdated": "Recently updated"
+        },
+        "pending": {
+            "title": "Manual review",
+            "subtitle": "Cases awaiting a reviewer decision, ranked by most recently updated."
+        },
+        "failures": {
+            "title": "Failures",
+            "subtitle": "Cases where the automated pipeline could not complete — usually an upstream source or connectivity issue."
+        },
+        "completed": {
+            "title": "Completed tasks",
+            "subtitle": "Cases with a final human decision recorded, approved or rejected."
+        },
+        "filters": {
+            "searchPlaceholder": "Search workflow ID, file name...",
+            "allDocTypes": "All document types",
+            "allCountries": "All countries",
+            "countOf": "{{ shown }} of {{ total }} cases"
+        },
+        "table": {
+            "workflowId": "Workflow ID",
+            "documentType": "Document type",
+            "file": "File",
+            "country": "Country",
+            "confidence": "Confidence",
+            "mismatch": "Mismatch / reasons",
+            "risk": "Risk",
+            "status": "Status",
+            "updated": "Updated",
+            "approve": "Approve",
+            "reject": "Reject",
+            "view": "view",
+            "empty": "No cases match these filters."
+        },
+        "status": {
+            "PENDING": "Awaiting review",
+            "APPROVED": "Approved",
+            "REJECTED": "Rejected",
+            "FAILED": "Failed"
+        },
+        "errors": {
+            "loadFailed": "Couldn't load cases. Please try again."
+        },
+        "drawer": {
+            "eyebrow": "Digital Attestation",
+            "title": "Attestation case",
+            "overallConfidence": "Overall confidence",
+            "tabs": {
+                "overview": "Overview",
+                "agents": "Agents",
+                "files": "Files"
+            },
+            "documentType": "Document type",
+            "country": "Country",
+            "risk": "Risk",
+            "confidence": "Confidence",
+            "mode": "Mode",
+            "status": "Status",
+            "mismatchDetected": "Mismatch detected",
+            "failureDetected": "Failure detected",
+            "itemsFlagged": "{{ count }} item(s) flagged",
+            "stepsFailed": "{{ count }} pipeline step(s) failed",
+            "decisionDetails": "Decision details",
+            "actionTaken": "Action taken",
+            "reviewedAt": "Reviewed at",
+            "reviewer": "Reviewer",
+            "reviewerNotes": "Reviewer notes",
+            "notesPlaceholder": "Optional notes for the audit trail...",
+            "approve": "Approve",
+            "reject": "Reject",
+            "reviewedBy": "This case was {{ decision }} by {{ reviewer }} on {{ date }}.",
+            "approved": "approved",
+            "rejected": "rejected",
+            "agents": {
+                "loading": "Loading agent runs...",
+                "loadFailed": "Couldn't load agent runs.",
+                "empty": "No agent run data for this case.",
+                "confidence": "Confidence",
+                "duration": "Duration"
+            },
+            "files": {
+                "title": "Workflow documents",
+                "input": "Input upload",
+                "trueCopy": "True copy",
+                "attestedCopy": "Attested copy",
+                "download": "Download",
+                "selectFile": "Select a file to preview",
+                "availableBadge": "Preview",
+                "unavailableBadge": "Unavailable",
+                "loading": "Loading preview...",
+                "loadFailed": "Couldn't load this file.",
+                "previewUnavailable": "This file isn't available for this case."
+            }
+        }
+    }
+}

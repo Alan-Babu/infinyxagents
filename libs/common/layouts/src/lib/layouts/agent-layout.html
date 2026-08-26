@@ -1,0 +1,39 @@
+<aside
+    class="flex shrink-0 flex-col overflow-hidden border-e border-gray-200 bg-white transition-[width] duration-200"
+    [class.w-16]="collapsed" [class.w-72]="!collapsed">
+    <div class="flex shrink-0 items-center gap-1 border-b border-gray-100 py-2 px-3.5">
+        <button type="button"
+            class="hover:text-primary-500 hover:bg-primary-50 inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg text-gray-600 transition-colors"
+            (click)="toggleCollapsed()"
+            [attr.aria-label]="(collapsed ? 'labels.expandMenu' : 'labels.collapseMenu') | translate">
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path clip-rule="evenodd" fill-rule="evenodd"
+                    d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
+                    fill="currentColor" />
+            </svg>
+        </button>
+        @if (!collapsed && currentAgent) {
+        <span class="min-w-0 flex-1 truncate text-sm font-semibold text-gray-800">{{ currentAgent.nameKey | translate }}</span>
+        }
+    </div>
+    <lib-main-menu class="flex-1 overflow-hidden" [collapsed]="collapsed" [menuList]="menuList"
+        (panelClick)="handleMenuItemClick($event.menu, $event.parent)"></lib-main-menu>
+    <div class="shrink-0 border-t border-gray-100 p-3">
+        <a routerLink="/dashboard" class="flex cursor-pointer items-center overflow-hidden rounded-lg px-2 py-2.5 text-gray-600 hover:bg-gray-50"
+            [class.gap-3]="!collapsed" [class.justify-center]="collapsed"
+            [pTooltip]="collapsed ? ('labels.backToAgents' | translate) : ''" tooltipPosition="right"
+            [attr.aria-label]="'labels.backToAgents' | translate">
+            <svg class="w-5 shrink-0" viewBox="0 0 256 256" fill="none">
+                <path
+                    d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"
+                    fill="currentColor" />
+            </svg>
+            @if (!collapsed) {
+            <span class="min-w-0 flex-1 truncate font-medium whitespace-nowrap">{{ 'labels.backToAgents' | translate }}</span>
+            }
+        </a>
+    </div>
+</aside>
+<div class="min-w-0 flex-1 overflow-auto">
+    <router-outlet></router-outlet>
+</div>

@@ -1,0 +1,41 @@
+<p-drawer [(visible)]="visible" position="right" styleClass="p-drawer-md" appendTo="body" [baseZIndex]="1200" (onHide)="visibleChange.emit(false)">
+    <ng-template #header>
+        <div class="flex flex-col">
+            <!-- <span class="text-xs font-bold uppercase tracking-wide text-primary-600">{{ 'emailComposeAgent.writingProfile.eyebrow' | translate }}</span> -->
+            <span class="text-lg font-bold text-gray-800">{{ 'emailComposeAgent.writingProfile.title' | translate }}</span>
+        </div>
+    </ng-template>
+
+    <div class="flex flex-col gap-4 pt-5">
+        <div>
+            <label class="p-control-label" for="wp-sender-name">{{ 'emailComposeAgent.writingProfile.senderName' | translate }}</label>
+            <input id="wp-sender-name" pInputText type="text" class="w-full" [(ngModel)]="senderName" [placeholder]="'emailComposeAgent.writingProfile.senderNamePlaceholder' | translate" />
+        </div>
+        <div>
+            <label class="p-control-label" for="wp-sender-title">{{ 'emailComposeAgent.writingProfile.senderTitle' | translate }}</label>
+            <input id="wp-sender-title" pInputText type="text" class="w-full" [(ngModel)]="senderTitle" [placeholder]="'emailComposeAgent.writingProfile.senderTitlePlaceholder' | translate" />
+        </div>
+        <div>
+            <label class="p-control-label" for="wp-sender-company">{{ 'emailComposeAgent.writingProfile.senderCompany' | translate }}</label>
+            <input id="wp-sender-company" pInputText type="text" class="w-full" [(ngModel)]="senderCompany" [placeholder]="'emailComposeAgent.writingProfile.senderCompanyPlaceholder' | translate" />
+        </div>
+        <div>
+            <label class="p-control-label" for="wp-signature-block">{{ 'emailComposeAgent.writingProfile.signatureBlock' | translate }}</label>
+            <textarea id="wp-signature-block" class="w-full rounded-lg border border-gray-300 p-2 text-sm" rows="4" [(ngModel)]="signatureBlock"
+                [placeholder]="'emailComposeAgent.writingProfile.signatureBlockPlaceholder' | translate"></textarea>
+        </div>
+        <lib-email-compose-tone-selector [label]="'emailComposeAgent.writingProfile.defaultTone' | translate" [value]="defaultTone" (valueChange)="defaultTone = $event" />
+        <div>
+            <label class="p-control-label" for="wp-notes">{{ 'emailComposeAgent.writingProfile.notes' | translate }}</label>
+            <textarea id="wp-notes" class="w-full rounded-lg border border-gray-300 p-2 text-sm" rows="3" [(ngModel)]="notes"
+                [placeholder]="'emailComposeAgent.writingProfile.notesPlaceholder' | translate"></textarea>
+        </div>
+    </div>
+
+    <ng-template #footer>
+        <div class="flex justify-end gap-2">
+            <button type="button" pButton severity="secondary" [outlined]="true" (click)="close()"><span>{{ 'emailComposeAgent.writingProfile.cancel' | translate }}</span></button>
+            <button type="button" pButton [loading]="saving" (click)="submit()"><span>{{ 'emailComposeAgent.writingProfile.save' | translate }}</span></button>
+        </div>
+    </ng-template>
+</p-drawer>

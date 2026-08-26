@@ -1,0 +1,280 @@
+<p-drawer [visible]="!!case" position="right" styleClass="p-drawer-lg" appendTo="body" [baseZIndex]="1200" (onHide)="closed.emit()">
+    <ng-template #header>
+        <div class="flex-1 flex justify-between gap-4 items-center pe-4">
+            <div>
+                <div class="text-xs font-bold uppercase tracking-wide text-primary-600">{{
+                    "digitalAttestation.drawer.eyebrow" | translate }}</div>
+                <div class="text-lg font-bold text-gray-800">{{ "digitalAttestation.drawer.title" | translate }}</div>
+                @if (case) {
+                <div class="font-mono text-xs text-gray-400">{{ case.simId || case.id }}</div>
+                }
+            </div>
+            @if (case) {
+            <div class="flex justify-end">
+                <div class="rounded-lg border px-5 py-2.5 text-center"
+                    [class]="toneBadgeClass(confidenceTone(case.overallConfidence))">
+                    <div class="text-xs font-bold uppercase tracking-wide">{{
+                        "digitalAttestation.drawer.overallConfidence"
+                        | translate }}</div>
+                    <div class="text-xl font-extrabold">{{ case.overallConfidence }}%</div>
+                </div>
+            </div>
+            }
+        </div>
+    </ng-template>
+
+    @if (case) {
+
+    <p-tabs [value]="activeTab" (valueChange)="onTabChange($event)">
+        <p-tablist>
+            <p-tab value="overview"><i class="pi pi-info-circle"></i> {{ "digitalAttestation.drawer.tabs.overview" |
+                translate }}</p-tab>
+            <p-tab value="agents">
+                <i class="pi pi-microchip"></i> {{ "digitalAttestation.drawer.tabs.agents" | translate }}
+                <span class="ms-1 rounded-full bg-gray-100 px-1.5 py-0.5 text-xs font-bold text-gray-600">{{
+                    case.pipeline.length }}</span>
+            </p-tab>
+            <p-tab value="files"><i class="pi pi-folder"></i> {{ "digitalAttestation.drawer.tabs.files" | translate
+                }}</p-tab>
+        </p-tablist>
+        <p-tabpanels>
+            <p-tabpanel value="overview">
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="rounded-lg border border-gray-200 bg-white p-3">
+                        <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{
+                            "digitalAttestation.drawer.documentType" | translate }}</div>
+                        <div class="text-sm font-semibold text-gray-800">{{ docTypeLabel(case.docType) }}</div>
+                    </div>
+                    <div class="rounded-lg border border-gray-200 bg-white p-3">
+                        <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{
+                            "digitalAttestation.drawer.country" | translate }}</div>
+                        <div class="text-sm font-semibold text-gray-800">{{ case.country }}@if (case.countryCode) { ({{
+                            case.countryCode }}) }
+                        </div>
+                    </div>
+                    <div class="rounded-lg border border-gray-200 bg-white p-3">
+                        <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{
+                            "digitalAttestation.drawer.risk" | translate }}</div>
+                        <div class="text-sm font-semibold text-gray-800">{{ case.risk }}</div>
+                    </div>
+                    <div class="rounded-lg border border-gray-200 bg-white p-3">
+                        <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{
+                            "digitalAttestation.drawer.confidence" | translate }}</div>
+                        <div class="text-sm font-semibold" [class]="toneTextClass(confidenceTone(case.confidence))">{{
+                            case.confidence }}%</div>
+                    </div>
+                    <div class="rounded-lg border border-gray-200 bg-white p-3">
+                        <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{
+                            "digitalAttestation.drawer.mode" | translate }}</div>
+                        <div class="text-xs font-semibold text-gray-800">{{ case.mode }} · {{ case.subMode }}</div>
+                    </div>
+                    <div class="rounded-lg border border-gray-200 bg-white p-3">
+                        <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{
+                            "digitalAttestation.drawer.status" | translate }}</div>
+                        <p-tag [value]="'digitalAttestation.status.' + case.status | translate"
+                            [severity]="statusSeverity(case.status)" />
+                    </div>
+                </div>
+
+                <div class="mt-5">
+                    <div
+                        class="mb-2 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-gray-400">
+                        <i class="pi pi-exclamation-triangle"></i>
+                        {{ (case.status === 'FAILED' ? 'digitalAttestation.drawer.failureDetected' :
+                        'digitalAttestation.drawer.mismatchDetected') | translate }}
+                    </div>
+                    <div class="rounded-lg border border-amber-200 bg-amber-50 p-4">
+                        <div class="mb-2 flex items-center gap-2 text-sm font-semibold text-amber-800">
+                            <i class="pi pi-exclamation-triangle"></i>
+                            @if (case.status === 'FAILED') {
+                            <span>{{ "digitalAttestation.drawer.stepsFailed" | translate: { count: failedStepCount }
+                                }}</span>
+                            } @else {
+                            <span>{{ "digitalAttestation.drawer.itemsFlagged" | translate: { count: case.mismatch.length
+                                } }}</span>
+                            }
+                        </div>
+                        <ul class="ms-4 list-disc space-y-1 text-sm text-amber-900">
+                            @for (m of case.mismatch; track m) {
+                            <li>{{ m }}</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+
+                @if (case.reviewedAt) {
+                <div class="mt-5">
+                    <div
+                        class="mb-2 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-gray-400">
+                        <i class="pi pi-history"></i> {{ "digitalAttestation.drawer.decisionDetails" | translate }}
+                    </div>
+                    <div class="overflow-hidden rounded-lg border border-gray-200">
+                        <div class="flex items-center justify-between border-b border-gray-100 px-4 py-2.5 text-sm">
+                            <span class="text-gray-400">{{ "digitalAttestation.drawer.actionTaken" | translate }}</span>
+                            <span class="font-semibold" [class.text-green-600]="case.status === 'APPROVED'"
+                                [class.text-red-600]="case.status === 'REJECTED'">
+                                {{ 'digitalAttestation.status.' + case.status | translate }}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between border-b border-gray-100 px-4 py-2.5 text-sm">
+                            <span class="text-gray-400">{{ "digitalAttestation.drawer.reviewedAt" | translate }}</span>
+                            <span class="font-semibold text-gray-800">{{ formatDateTime(case.reviewedAt) }}</span>
+                        </div>
+                        <div class="flex items-center justify-between px-4 py-2.5 text-sm">
+                            <span class="text-gray-400">{{ "digitalAttestation.drawer.reviewer" | translate }}</span>
+                            <span class="font-semibold text-gray-800">{{ case.reviewer }}</span>
+                        </div>
+                    </div>
+                </div>
+                } @else {
+                <div class="mt-5">
+                    <div
+                        class="mb-2 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-gray-400">
+                        <i class="pi pi-pencil"></i> {{ "digitalAttestation.drawer.reviewerNotes" | translate }}
+                    </div>
+                    <textarea
+                        class="w-full rounded-lg border border-gray-300 p-3 text-sm outline-none focus:border-primary-500"
+                        rows="3" [placeholder]="'digitalAttestation.drawer.notesPlaceholder' | translate"
+                        [(ngModel)]="notes"></textarea>
+                </div>
+                }
+            </p-tabpanel>
+
+            <p-tabpanel value="agents">
+                @if (agentsLoading) {
+                <div class="flex items-center justify-center gap-2 py-10 text-sm text-gray-400">
+                    <i class="pi pi-spin pi-spinner"></i> {{ "digitalAttestation.drawer.agents.loading" | translate }}
+                </div>
+                } @else if (agentsError) {
+                <p class="py-6 text-center text-sm text-red-600">{{ "digitalAttestation.drawer.agents.loadFailed" | translate }}</p>
+                } @else if (!case.pipeline.length) {
+                <p class="py-6 text-center text-sm text-gray-400">{{ "digitalAttestation.drawer.agents.empty" | translate }}</p>
+                } @else {
+                <div class="flex flex-col gap-3">
+                    @for (step of case.pipeline; track step.key) {
+                    <article class="rounded-lg border border-gray-200 bg-white p-4">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <h4 class="truncate text-sm font-bold text-gray-900">{{ step.name }}</h4>
+                                <p class="mt-0.5 font-mono text-xs text-gray-400">{{ step.agent }}</p>
+                            </div>
+                            <p-tag [value]="step.status"
+                                [severity]="step.status === 'COMPLETED' ? 'success' : step.status === 'FAILED' ? 'danger' : 'secondary'" />
+                        </div>
+
+                        @if (step.detail) {
+                        <div class="mt-2 text-xs leading-relaxed"
+                            [class.text-red-700]="step.status === 'FAILED'" [class.bg-red-50]="step.status === 'FAILED'"
+                            [class.rounded-lg]="step.status === 'FAILED'" [class.p-2]="step.status === 'FAILED'"
+                            [class.text-gray-500]="step.status !== 'FAILED'">{{ step.detail }}</div>
+                        }
+
+                        @if (step.confidence !== null && step.confidence !== undefined) {
+                        <div class="mt-3 space-y-1.5">
+                            <div class="flex items-center justify-between text-xs text-gray-500">
+                                <span>{{ "digitalAttestation.drawer.agents.confidence" | translate }}</span>
+                                <strong [class]="toneTextClass(confidenceTone(step.confidence))">{{ step.confidence
+                                    }}%</strong>
+                            </div>
+                            <div class="h-1.5 overflow-hidden rounded-full bg-gray-100">
+                                <div class="h-full rounded-full transition-all" [class]="toneBarClass(confidenceTone(step.confidence))"
+                                    [style.width.%]="step.confidence"></div>
+                            </div>
+                        </div>
+                        }
+
+                        @if (step.durationLabel) {
+                        <div class="mt-2 text-xs text-gray-400">
+                            {{ "digitalAttestation.drawer.agents.duration" | translate }}: {{ step.durationLabel }}
+                        </div>
+                        }
+                    </article>
+                    }
+                </div>
+                }
+            </p-tabpanel>
+
+            <p-tabpanel value="files">
+                <div class="mb-2 text-xs font-bold uppercase tracking-wide text-gray-400">{{
+                    "digitalAttestation.drawer.files.title" | translate }}</div>
+                <div class="grid gap-2">
+                    @for (f of fileList; track f.id) {
+                    <div role="button" tabindex="0"
+                        class="flex w-full cursor-pointer items-center gap-3 rounded-lg border p-3 text-start transition-colors"
+                        [class.border-primary-400]="activeFile === f.id" [class.bg-primary-50]="activeFile === f.id"
+                        [class.border-gray-200]="activeFile !== f.id" [class.opacity-70]="fileViews[f.id].unavailable"
+                        (click)="selectFile(f.id)" (keydown.enter)="selectFile(f.id)">
+                        <span
+                            class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary-100 text-primary-700"><i
+                                class="pi pi-file-pdf"></i></span>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-sm font-semibold text-gray-800">{{ f.titleKey | translate }}</div>
+                            @if (f.id === 'uploaded' && case.file) {
+                            <div class="truncate font-mono text-xs text-gray-400">{{ case.file }}</div>
+                            }
+                        </div>
+                        @if (fileViews[f.id].loading) {
+                        <i class="pi pi-spin pi-spinner text-gray-400"></i>
+                        } @else if (fileViews[f.id].unavailable) {
+                        <span class="shrink-0 rounded-md bg-gray-100 px-2 py-1 text-xs font-bold uppercase tracking-wide text-gray-500">
+                            {{ "digitalAttestation.drawer.files.unavailableBadge" | translate }}
+                        </span>
+                        } @else if (fileViews[f.id].previewUrl) {
+                        <span class="shrink-0 rounded-md bg-green-50 px-2 py-1 text-xs font-bold uppercase tracking-wide text-green-700">
+                            {{ "digitalAttestation.drawer.files.availableBadge" | translate }}
+                        </span>
+                        }
+                    </div>
+                    }
+                </div>
+
+                @let activeView = fileViews[activeFile];
+                <div class="mt-5 flex items-start justify-between gap-2">
+                    <div class="min-w-0">
+                        <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{ activeFileTitleKey |
+                            translate }}</div>
+                        <div class="truncate text-sm font-semibold text-gray-800">
+                            {{ (activeFile === 'uploaded' && case.file) ? case.file : ('digitalAttestation.drawer.files.selectFile' | translate) }}
+                        </div>
+                    </div>
+                    <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="activeView.loading || activeView.unavailable" (click)="downloadFile(activeFile)"><i class="pi pi-download"></i><span>{{ 'digitalAttestation.drawer.files.download' | translate }}</span></button>
+                </div>
+
+                @if (activeView.loading) {
+                <div
+                    class="mt-2 flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-gray-300 bg-gray-50 p-10 text-center">
+                    <i class="pi pi-spin pi-spinner text-2xl text-gray-300"></i>
+                    <p class="text-xs text-gray-400">{{ "digitalAttestation.drawer.files.loading" | translate }}</p>
+                </div>
+                } @else if (activeView.previewUrl) {
+                <iframe [src]="activeView.previewUrl" class="mt-2 h-96 w-full rounded-lg border border-gray-200"></iframe>
+                } @else {
+                <div
+                    class="mt-2 flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-gray-300 bg-gray-50 p-10 text-center">
+                    <i class="pi pi-image text-2xl text-gray-300"></i>
+                    <p class="text-xs text-gray-400">{{ (activeView.unavailable
+                        ? "digitalAttestation.drawer.files.previewUnavailable"
+                        : "digitalAttestation.drawer.files.loadFailed") | translate }}</p>
+                </div>
+                }
+            </p-tabpanel>
+        </p-tabpanels>
+    </p-tabs>
+
+    @if(case.status === "PENDING" || reviewedBySummary) {
+
+    <ng-template #footer>
+        @if (case.status === 'PENDING') {
+        <div class="flex items-center gap-2">
+            <button type="button" pButton severity="danger" [outlined]="true" [loading]="submitting" (click)="submitDecision('REJECTED')"><i class="pi pi-times"></i><span>{{ 'digitalAttestation.drawer.reject' | translate }}</span></button>
+            <button type="button" pButton class="ms-auto" [loading]="submitting" (click)="submitDecision('APPROVED')"><i class="pi pi-check"></i><span>{{ 'digitalAttestation.drawer.approve' | translate }}</span></button>
+        </div>
+        } @else {
+        <p class="text-xs text-gray-400">{{ reviewedBySummary }}</p>
+        }
+    </ng-template>
+
+    }
+
+    }
+</p-drawer>

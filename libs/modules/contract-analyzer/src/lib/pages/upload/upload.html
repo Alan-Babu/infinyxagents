@@ -1,0 +1,29 @@
+<div class="flex h-full min-h-0 flex-col">
+    <lib-page-header titleKey="contractAnalyzer.upload.title" subtitleKey="contractAnalyzer.upload.subtitle" [showBack]="false">
+        <lib-contract-analyzer-toolbar />
+    </lib-page-header>
+
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+        <div class="mx-auto flex max-w-2xl flex-col gap-4">
+            @if (step === 'upload') {
+            <lib-contract-analyzer-dropzone [doc]="doc" [uploadProgress]="uploadProgress ?? undefined" (fileSelected)="onFileSelected($event)"
+                (dropped)="onDropped($event)" (clearDoc)="clearDoc()" (cancelUpload)="cancelUpload()" />
+
+            @if (doc && !uploadProgress) {
+            <div class="flex justify-center">
+                <button type="button" pButton [loading]="detecting" (click)="detectContract()"><i class="pi pi-sparkles"></i><span>{{ 'contractAnalyzer.upload.continue' | translate }}</span></button>
+            </div>
+            }
+            }
+
+            @if (step === 'party') {
+            <lib-contract-analyzer-party-form [model]="partyModel" [detection]="detection" [loading]="fetchingQuestions" (back)="backToUpload()" (continue)="fetchQuestions()" />
+            }
+
+            @if (step === 'questions') {
+            <lib-contract-analyzer-questions-form [questionsResult]="questionsResult" [model]="questionsModel" [submitting]="analyzing"
+                (back)="backToParty()" (formSubmit)="analyzeContract()" />
+            }
+        </div>
+    </div>
+</div>

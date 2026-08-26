@@ -1,0 +1,82 @@
+<p-drawer [visible]="visible" position="right" appendTo="body" [baseZIndex]="1200"
+    (visibleChange)="!$event && closed.emit()">
+    <ng-template #header>
+        <div class="text-lg font-bold tracking-wide text-gray-800">
+            {{ (stage === 'task' ? 'executiveSummary.insights.task' : 'executiveSummary.insights.share') | translate }}
+        </div>
+    </ng-template>
+
+    <div class="pt-5 space-y-3">
+
+        @if (stage === 'share') {
+        <div class="grid grid-cols-1 gap-4">
+            <div>
+                <label class="mb-1.5 block text-sm font-semibold text-gray-600" for="emailTarget">{{
+                    "executiveSummary.insights.email" | translate }}</label>
+                <input pInputText type="email" id="emailTarget" class="w-full" [(ngModel)]="model.emailTarget"
+                    placeholder="name@company.com" />
+            </div>
+            <div>
+                <label class="mb-1.5 block text-sm font-semibold text-gray-600" for="whatsappTarget">{{
+                    "executiveSummary.insights.whatsapp" | translate }}</label>
+                <input pInputText id="whatsappTarget" class="w-full" [(ngModel)]="model.whatsappTarget"
+                    placeholder="+9715xxxxxxxx" />
+                @if (whatsappLink) {
+                <p class="mt-2 text-sm"><a [href]="whatsappLink" target="_blank" rel="noopener"
+                        class="text-primary-600 underline">{{ whatsappLink }}</a></p>
+                }
+            </div>
+        </div>
+        }
+
+        @if (stage === 'task') {
+        <div>
+            <label class="mb-1.5 block text-sm font-semibold text-gray-600" for="taskAssigneesInput">{{
+                "executiveSummary.insights.assignees" | translate }}</label>
+            <input pInputText id="taskAssigneesInput" class="w-full" [(ngModel)]="model.taskAssigneesInput"
+                [placeholder]="'executiveSummary.insights.assigneesPlaceholder' | translate" />
+        </div>
+        <div>
+            <label class="mb-1.5 block text-sm font-semibold text-gray-600" for="taskDueDate">{{
+                "executiveSummary.insights.dueDate" | translate }}</label>
+            <input pInputText type="date" id="taskDueDate" class="w-full" [(ngModel)]="model.taskDueDate" />
+        </div>
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div>
+                <label class="mb-1.5 block text-sm font-semibold text-gray-600" for="taskPriority">{{
+                    "executiveSummary.guardrails.priority" | translate }}</label>
+                <p-select class="w-full" [options]="priorityOptions" [(ngModel)]="model.taskPriority"
+                    optionLabel="label" optionValue="label" styleClass="w-full" appendTo="body" />
+            </div>
+            <div>
+                <label class="mb-1.5 block text-sm font-semibold text-gray-600" for="taskImportance">{{
+                    "executiveSummary.insights.importance" | translate }}</label>
+                <p-select class="w-full" [options]="importanceOptions" [(ngModel)]="model.taskImportance"
+                    optionLabel="label" optionValue="label" styleClass="w-full" appendTo="body" />
+            </div>
+        </div>
+        }
+
+    </div>
+
+    <ng-template #footer>
+        @if (stage === 'share') {
+        <div class="flex flex-wrap items-center gap-2 justify-between">
+            <button type="button" class="cursor-pointer text-sm font-semibold text-primary-600 hover:underline"
+                (click)="switchStage('task')">{{ "executiveSummary.insights.alsoCreateTask" | translate }}
+                &rarr;</button>
+            <div class="flex items-center gap-2">
+                <button type="button" pButton severity="secondary" [outlined]="true" (click)="getWhatsappLink.emit()"><span>{{ 'executiveSummary.insights.getLink' | translate }}</span></button>
+                <button type="button" pButton (click)="sendEmail.emit()"><span>{{ 'executiveSummary.insights.send' | translate }}</span></button>
+            </div>
+        </div>
+        }
+        @if (stage === 'task') {
+        <div class="flex flex-wrap items-center gap-2 justify-between">
+            <button type="button" class="cursor-pointer text-sm font-semibold text-primary-600 hover:underline"
+                (click)="switchStage('share')">{{ "executiveSummary.insights.alsoShare" | translate }} &rarr;</button>
+            <button type="button" pButton (click)="createTask.emit()"><span>{{ 'executiveSummary.insights.createTask' | translate }}</span></button>
+        </div>
+        }
+    </ng-template>
+</p-drawer>

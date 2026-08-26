@@ -1,0 +1,85 @@
+<p-drawer [(visible)]="visible" position="right" appendTo="body" [baseZIndex]="1200" (onHide)="visibleChange.emit(false)">
+    <ng-template pTemplate="header">
+        <span class="text-lg font-semibold text-gray-800">{{ "docCompare.historyDrawer.title" | translate }}</span>
+    </ng-template>
+
+    <div class="mb-4 flex gap-2 border-b border-gray-200">
+        <button type="button" class="cursor-pointer border-b-2 px-3 py-2 text-sm font-semibold transition-colors"
+            [class.border-primary-500]="tab === 'versions'" [class.text-primary-600]="tab === 'versions'"
+            [class.border-transparent]="tab !== 'versions'" [class.text-gray-500]="tab !== 'versions'"
+            (click)="tabChange.emit('versions')">
+            {{ "docCompare.historyDrawer.savedVersions" | translate }}
+        </button>
+        <button type="button" class="cursor-pointer border-b-2 px-3 py-2 text-sm font-semibold transition-colors"
+            [class.border-primary-500]="tab === 'log'" [class.text-primary-600]="tab === 'log'"
+            [class.border-transparent]="tab !== 'log'" [class.text-gray-500]="tab !== 'log'"
+            (click)="tabChange.emit('log')">
+            {{ "docCompare.historyDrawer.comparisonLog" | translate }}
+        </button>
+    </div>
+
+    @if (tab === 'versions') {
+    <div class="flex flex-col gap-3">
+        @if (versions.length === 0) {
+        <p class="text-sm text-gray-500">{{ "docCompare.historyDrawer.noVersions" | translate }}</p>
+        }
+        @for (v of versions; track v.id) {
+        <div class="flex flex-col gap-2 rounded-lg border border-gray-200 p-3" [class.border-primary-400]="v.is_master">
+            <div class="flex items-center justify-between">
+                <span class="text-sm font-semibold text-gray-800">
+                    {{ v.label }}
+                    @if (v.is_master) {
+                    <span class="ms-1 rounded bg-primary-100 px-1.5 py-0.5 text-xs font-bold uppercase text-primary-700">{{ "docCompare.dropzone.master" | translate }}</span>
+                    }
+                </span>
+                <span class="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600">{{ v.tag }}</span>
+            </div>
+            <div class="flex gap-3 text-xs text-gray-500">
+                <span>{{ v.page_count }} {{ "docCompare.dropzone.pages" | translate }}</span>
+                <span>{{ v.created_at | date: 'medium' }}</span>
+            </div>
+            @if (v.notes) {
+            <p class="text-xs text-gray-600">{{ v.notes }}</p>
+            }
+            <div class="flex flex-wrap gap-2">
+                <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="useAsVersion.emit({ version: v, slot: 'A' })"><span>{{ 'docCompare.historyDrawer.useAsA' | translate }}</span></button>
+                <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="useAsVersion.emit({ version: v, slot: 'B' })"><span>{{ 'docCompare.historyDrawer.useAsB' | translate }}</span></button>
+                @if (!v.is_master) {
+                <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="setMaster.emit(v)"><span>{{ 'docCompare.historyDrawer.setAsMaster' | translate }}</span></button>
+                }
+                <button type="button" pButton size="small" severity="danger" [outlined]="true" (click)="deleteVersion.emit(v)"><span>{{ 'docCompare.actions.delete' | translate }}</span></button>
+            </div>
+        </div>
+        }
+    </div>
+    } @else {
+    <div class="flex flex-col gap-3">
+        @if (log.length === 0) {
+        <p class="text-sm text-gray-500">{{ "docCompare.historyDrawer.noLog" | translate }}</p>
+        }
+        @for (l of log; track l.id) {
+        <div class="flex flex-col gap-2 rounded-lg border border-gray-200 p-3">
+            <div class="text-sm font-semibold text-gray-800">{{ l.base_label }} <i class="pi pi-arrow-right mx-1 text-xs text-gray-400"></i> {{ l.compare_label }}</div>
+            <div class="text-xs text-gray-500">{{ l.created_at | date: 'medium' }}</div>
+            <div class="flex flex-wrap gap-3 text-xs text-gray-600">
+                <span>{{ "docCompare.statStrip.similarity" | translate }} <b>{{ l.similarity }}%</b></span>
+                <span class="text-green-600">+<b>{{ l.additions }}</b></span>
+                <span class="text-red-600">&minus;<b>{{ l.deletions }}</b></span>
+                <span>{{ l.pages_changed }}/{{ l.total_pages }} {{ "docCompare.historyDrawer.pagesChanged" | translate }}</span>
+            </div>
+            @if (l.agent_summary) {
+            <p class="text-xs text-gray-600">{{ l.agent_summary }}</p>
+            }
+            <button type="button" pButton size="small" severity="danger" [outlined]="true" (click)="deleteLogEntry.emit(l)"><span>{{ 'docCompare.historyDrawer.removeFromLog' | translate }}</span></button>
+        </div>
+        }
+    </div>
+    }
+
+    <ng-template pTemplate="footer">
+        <div class="flex items-center justify-between">
+            <!-- <button type="button" pButton severity="secondary" [outlined]="true" (click)="close()"><span>{{ 'docCompare.actions.close' | translate }}</span></button> -->
+            <span class="text-xs text-gray-400">{{ "docCompare.historyDrawer.storageNote" | translate }}</span>
+        </div>
+    </ng-template>
+</p-drawer>

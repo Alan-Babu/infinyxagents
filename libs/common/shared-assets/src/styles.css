@@ -1,0 +1,338 @@
+@import "primeicons/primeicons.css";
+@import "tailwindcss";
+@plugin "tailwindcss-primeui";
+@plugin "@tailwindcss/typography";
+
+@source 'apps/**/*.{html,ts}';
+@source 'libs/**/*.{html,ts}';
+
+@theme {
+    --font-sans: 'Inter', sans-serif;
+    --font-arabic: 'Noto Kufi Arabic', sans-serif;
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 300;
+  src: url('./assets/fonts/inter-300.woff2') format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  src: url('./assets/fonts/inter-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  src: url('./assets/fonts/inter-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  src: url('./assets/fonts/inter-600.woff2') format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  src: url('./assets/fonts/inter-700.woff2') format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  src: url('./assets/fonts/inter-800.woff2') format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Noto Kufi Arabic';
+  font-style: normal;
+  font-weight: 300;
+  src: url('./assets/fonts/noto-kufi-arabic-300.woff2') format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Noto Kufi Arabic';
+  font-style: normal;
+  font-weight: 400;
+  src: url('./assets/fonts/noto-kufi-arabic-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Noto Kufi Arabic';
+  font-style: normal;
+  font-weight: 500;
+  src: url('./assets/fonts/noto-kufi-arabic-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Noto Kufi Arabic';
+  font-style: normal;
+  font-weight: 600;
+  src: url('./assets/fonts/noto-kufi-arabic-600.woff2') format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Noto Kufi Arabic';
+  font-style: normal;
+  font-weight: 700;
+  src: url('./assets/fonts/noto-kufi-arabic-700.woff2') format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Noto Kufi Arabic';
+  font-style: normal;
+  font-weight: 800;
+  src: url('./assets/fonts/noto-kufi-arabic-800.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: "world-currency";
+    src: url("./assets/fonts/world-currency.ttf");
+}
+
+.currency-symbol {
+    font-family: "world-currency";
+    line-height: 1;
+    font-size: 0.8em;
+}
+
+.currency-aed:before {
+    content: "\e900";
+}
+
+:root {
+    @apply md:text-[1vw] 2xl:text-[14px];
+}
+
+lib-auth-layout,
+lib-shared-layout {
+    @apply flex h-screen flex-col overflow-auto;
+}
+
+/* Runtime color-override themes, layered on top of each app's fixed brand
+   preset (AppTheme/MofaTheme) via CommonService.setThemes()/switchTheme.
+   Overrides PrimeNG's semantic --p-primary-N scale, which every
+   bg-primary-N, text-primary-N, and border-primary-N Tailwind utility
+   already reads through (tailwindcss-primeui bridges them at runtime, not
+   compile time), so this repaints the whole app without a rebuild. */
+html.theme-red {
+    --p-primary-50: #fef2f2;
+    --p-primary-100: #fee2e2;
+    --p-primary-200: #fecaca;
+    --p-primary-300: #fca5a5;
+    --p-primary-400: #f87171;
+    --p-primary-500: #ef4444;
+    --p-primary-600: #dc2626;
+    --p-primary-700: #b91c1c;
+    --p-primary-800: #991b1b;
+    --p-primary-900: #7f1d1d;
+    --p-primary-950: #450a0a;
+}
+
+html.theme-green {
+    --p-primary-50: #f0fdf4;
+    --p-primary-100: #dcfce7;
+    --p-primary-200: #bbf7d0;
+    --p-primary-300: #86efac;
+    --p-primary-400: #4ade80;
+    --p-primary-500: #22c55e;
+    --p-primary-600: #16a34a;
+    --p-primary-700: #15803d;
+    --p-primary-800: #166534;
+    --p-primary-900: #14532d;
+    --p-primary-950: #052e16;
+}
+
+html.theme-grey {
+    --p-primary-50: #f9fafb;
+    --p-primary-100: #f3f4f6;
+    --p-primary-200: #e5e7eb;
+    --p-primary-300: #d1d5db;
+    --p-primary-400: #9ca3af;
+    --p-primary-500: #6b7280;
+    --p-primary-600: #4b5563;
+    --p-primary-700: #374151;
+    --p-primary-800: #1f2937;
+    --p-primary-900: #111827;
+    --p-primary-950: #030712;
+}
+
+html.theme-pink {
+    --p-primary-50: #fdf2f8;
+    --p-primary-100: #fce7f3;
+    --p-primary-200: #fbcfe8;
+    --p-primary-300: #f9a8d4;
+    --p-primary-400: #f472b6;
+    --p-primary-500: #ec4899;
+    --p-primary-600: #db2777;
+    --p-primary-700: #be185d;
+    --p-primary-800: #9d174d;
+    --p-primary-900: #831843;
+    --p-primary-950: #500724;
+}
+
+/* Fixed-color swatch previews for the theme picker — deliberately not tied
+   to --p-primary-*, since that variable reflects whichever theme is
+   currently active and would make every swatch look the same color. */
+.theme-swatch-red {
+    background-color: #ef4444;
+}
+
+.theme-swatch-green {
+    background-color: #22c55e;
+}
+
+.theme-swatch-grey {
+    background-color: #6b7280;
+}
+
+.theme-swatch-pink {
+    background-color: #ec4899;
+}
+
+/* Reactive-forms label conventions — mirrors the existing hand-written
+   `mb-1.5 block text-sm font-semibold text-gray-600` label markup already
+   used across drawer forms (share-task-drawer, schedule-drawer, save-profile-drawer). */
+.p-control-label {
+    @apply mb-1.5 block text-sm font-semibold text-gray-600;
+}
+
+.p-control-label-required::after {
+    content: '*';
+    color: var(--p-red-500);
+    margin-inline-start: 0.25rem;
+}
+
+/* Standard drawer widths — imported from the MOFA V2 sizing scale. Apply via
+   styleClass="p-drawer-{sm|md|lg|xl|2xl|full}" instead of an inline
+   `max-w-*!` Tailwind override. */
+.p-drawer-sm {
+    width: 400px !important;
+}
+
+.p-drawer-md {
+    width: 800px !important;
+}
+
+.p-drawer-lg {
+    width: 1000px !important;
+}
+
+.p-drawer-xl {
+    width: 1400px !important;
+}
+
+.p-drawer-2xl {
+    width: 1700px !important;
+}
+
+.p-drawer-full {
+    width: 100vw !important;
+}
+
+@media (max-width: 768px) {
+    .p-drawer-sm,
+    .p-drawer-md,
+    .p-drawer-lg,
+    .p-drawer-xl,
+    .p-drawer-2xl {
+        width: 100vw !important;
+    }
+}
+
+.p-drawer-header {
+    @apply border-b;
+}
+
+.p-drawer-footer {
+    @apply border-t;
+}
+
+.p-drawer-header,
+.p-drawer-footer {
+    @apply border-gray-200;
+}
+
+.p-drawer-content:has(.p-tabs) {
+    @apply p-0;
+}
+
+.p-drawer-content .p-tabs {
+    @apply h-full overflow-hidden;
+}
+
+.p-drawer-content .p-tabs .p-tabpanels {
+    @apply flex-1 overflow-y-auto;
+}
+
+app-dashboard {
+    @apply block w-full overflow-y-auto;
+}
+
+/* PrimeNG popover utility classes mirrored from SAMPLE_UI */
+.user-account-dropdown .p-popover-content {
+    @apply p-0;
+}
+
+/* AG Grid (Quartz theme + layout) */
+ag-grid-angular {
+    --ag-spacing: 0.6rem;
+    --ag-inherited-font-size: 1rem;
+    --ag-accent-color: var(--p-primary-600);
+    --ag-checkbox-checked-background-color: var(--p-primary-600);
+    --ag-checkbox-checked-border-color: var(--p-primary-600);
+    --ag-column-hover-color: transparent;
+}
+
+.ag-center-cols-container .ag-row:last-child {
+    border-bottom: 1px solid #ccc;
+}
+
+.ag-paging-panel {
+    @apply -order-1 my-2;
+    border-top: 0 !important;
+}
+
+.ag-paging-page-size {
+    @apply max-md:me-auto;
+}
+
+.ag-root-wrapper {
+    --ag-wrapper-border: none;
+    --ag-wrapper-border-radius: var(--radius-lg);
+}
+
+.ag-root-wrapper-body {
+    border-top: var(--ag-footer-row-border);
+}
+
+.ag-cell-wrapper {
+    @apply h-full;
+}
+
+.ag-header-cell {
+    --ag-checkbox-indeterminate-background-color: var(--p-primary-500);
+    --ag-checkbox-indeterminate-border-color: var(--p-primary-500);
+}

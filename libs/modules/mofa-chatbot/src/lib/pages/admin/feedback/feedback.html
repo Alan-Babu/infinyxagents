@@ -1,0 +1,23 @@
+<div class="flex flex-col gap-5 p-6">
+    @if (loading) {
+        <div class="flex items-center justify-center py-16">
+            <i class="pi pi-spin pi-spinner text-2xl text-primary-500"></i>
+        </div>
+    } @else {
+        <div>
+            <h1 class="mb-3 text-xl font-bold text-gray-800">{{ 'mofaChatbot.admin.feedback.unansweredTitle' | translate }}</h1>
+            <lib-data-table
+                [rowData]="unanswered"
+                [colDefs]="unansweredColDefs"
+                [showSearch]="false"
+                [paginator]="true"
+                [noRowsMessage]="'mofaChatbot.admin.feedback.noUnanswered' | translate"
+            />
+        </div>
+
+        <div>
+            <h1 class="mb-3 text-xl font-bold text-gray-800">{{ 'mofaChatbot.admin.feedback.recentFeedbackTitle' | translate }}</h1>
+            <lib-data-table [rowData]="feedback" [colDefs]="feedbackColDefs" [showSearch]="false" [paginator]="true" [noRowsMessage]="'mofaChatbot.admin.feedback.noFeedback' | translate" />
+        </div>
+    }
+</div>

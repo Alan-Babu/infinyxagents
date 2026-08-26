@@ -1,0 +1,41 @@
+<div class="flex flex-wrap gap-2">
+    <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="openFeedback()"><i class="pi pi-star"></i><span>{{ 'emailComposeAgent.toolbar.rateAgent' | translate }}</span></button>
+    <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="openProfile()"><i class="pi pi-id-card"></i><span>{{ 'emailComposeAgent.toolbar.writingProfile' | translate }}</span></button>
+    <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="openStats()"><i class="pi pi-chart-bar"></i><span>{{ 'emailComposeAgent.toolbar.stats' | translate }}</span></button>
+    <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="openPerformance()"><i class="pi pi-chart-line"></i><span>{{ 'emailComposeAgent.toolbar.performance' | translate }}</span></button>
+    <span class="relative">
+        <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="openReviewQueue()"><i class="pi pi-check-square"></i><span>{{ 'emailComposeAgent.toolbar.reviewQueue' | translate }}</span></button>
+        @if (reviewQueueCount > 0) {
+        <span
+            class="absolute -end-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-xs font-bold text-white">
+            {{ reviewQueueCount }}
+        </span>
+        }
+    </span>
+</div>
+
+<lib-review-queue-drawer [visible]="drawer === 'reviewQueue'" (visibleChange)="closeDrawer()"
+    [title]="'emailComposeAgent.reviewQueue.title' | translate" [items]="reviewQueueItems"
+    [pagination]="reviewQueuePagination" [emptyMessage]="'emailComposeAgent.reviewQueue.empty' | translate"
+    [footerNote]="'emailComposeAgent.reviewQueue.footerNote' | translate" (open)="openEmailFromQueue($event)"
+    (decide)="onReviewDecide($event)" (page)="onReviewQueuePage($event)" />
+
+<lib-performance-drawer [visible]="drawer === 'performance'" (visibleChange)="closeDrawer()"
+    [title]="'emailComposeAgent.performance.title' | translate" [tab]="performanceTab" [report]="performanceReport"
+    [callTypeLabels]="callTypeLabels" [callTypeOptions]="callTypeOptions" [logs]="logs"
+    [logsPagination]="logsPagination" [filters]="logFilters"
+    [footerNote]="'emailComposeAgent.performance.footerNote' | translate" (tabChange)="onPerformanceTabChange($event)"
+    (filtersChange)="onLogFiltersChange($event)" (logsPage)="onLogsPage($event)" />
+
+<lib-feedback-drawer [visible]="drawer === 'feedback'" (visibleChange)="closeDrawer()"
+    [title]="'emailComposeAgent.feedback.title' | translate"
+    [scopeLabels]="emailId ? { forDocument: ('emailComposeAgent.feedback.forEmail' | translate), overall: ('emailComposeAgent.feedback.overall' | translate) } : null"
+    [commentPlaceholder]="'emailComposeAgent.feedback.commentPlaceholder' | translate"
+    (submitFeedback)="onSubmitFeedback($event)" />
+
+<lib-email-compose-stats-drawer [visible]="drawer === 'stats'" (visibleChange)="closeDrawer()" [stats]="stats"
+    [searchHistory]="searchHistory" [searchHistoryPagination]="searchHistoryPagination"
+    (page)="onSearchHistoryPage($event)" />
+
+<lib-email-compose-writing-profile-drawer [visible]="drawer === 'profile'" (visibleChange)="closeDrawer()"
+    [profile]="profile" [saving]="savingProfile" (save)="onSaveProfile($event)" />

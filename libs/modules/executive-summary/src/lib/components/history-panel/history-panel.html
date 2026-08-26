@@ -1,0 +1,113 @@
+<aside
+    class="flex shrink-0 flex-col overflow-hidden border-s min-h-full border-gray-200 transition-[width] duration-200"
+    [class.w-11]="collapsed" [class.w-96]="!collapsed">
+    <div class="flex items-center px-3 py-4" [class.justify-center]="collapsed" [class.justify-between]="!collapsed">
+        @if (!collapsed) {
+        <h2 class="text-base font-semibold text-gray-800">{{ "executiveSummary.history.title" | translate }}</h2>
+        }
+        <div class="flex items-center gap-1">
+            @if (!collapsed) {
+            <button type="button"
+                class="cursor-pointer rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                (click)="refresh()" [attr.aria-label]="'executiveSummary.history.refresh' | translate">
+                <i class="pi pi-refresh text-sm"></i>
+            </button>
+            }
+            <button type="button"
+                class="cursor-pointer rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                [attr.aria-label]="(collapsed ? 'executiveSummary.history.expand' : 'executiveSummary.history.collapse') | translate"
+                (click)="collapsedChange.emit(!collapsed)">
+                <i class="pi text-sm" [class.pi-angle-left]="collapsed" [class.pi-angle-right]="!collapsed"></i>
+            </button>
+        </div>
+    </div>
+
+    @if (!collapsed) {
+    <div class="min-h-0 flex-1 overflow-y-auto px-3 pb-3">
+        @if (entries.length) {
+        @for (h of entries; track h.session_id) {
+        <div class="mb-2.5 overflow-hidden rounded-lg border border-gray-200 bg-white hover:border-primary-300">
+            <button type="button" class="block w-full px-3 pt-3 pb-2 text-start cursor-pointer"
+                (click)="open.emit(h.session_id)">
+                <div class="mb-2.5 flex items-start justify-between gap-2">
+                    <span class="line-clamp-2 min-w-0 flex-1 text-sm font-bold text-gray-800"
+                        [title]="h.description || h.name">{{ h.name }}</span>
+                </div>
+                <div class="mb-2.5 flex text-xs flex-wrap items-center gap-2">
+                    <span
+                        class="rounded bg-primary-50 px-2 py-0.5 font-bold uppercase text-primary-700">{{
+                        h.framework }}</span>
+                    <span class="rounded bg-gray-100 px-2 py-0.5 font-bold text-gray-500">{{
+                        h.word_count }} {{ "executiveSummary.history.words" | translate }}</span>
+                    <span class="shrink-0 rounded px-2 py-0.5 font-bold uppercase"
+                        [class.bg-primary-100]="h.visibility === 'shared'"
+                        [class.text-primary-700]="h.visibility === 'shared'"
+                        [class.bg-gray-100]="h.visibility !== 'shared'"
+                        [class.text-gray-500]="h.visibility !== 'shared'">
+                        {{ h.visibility === 'shared' ? ("executiveSummary.history.shared" | translate) :
+                        ("executiveSummary.history.private" | translate) }}
+                    </span>
+                </div>
+                <div class="flex items-center gap-2.5">
+                    <span class="text-xs text-gray-400">{{ h.created_at | date: 'mediumDate' }}</span>
+                    @if (h.rating) {
+                    <span class="inline-flex items-center gap-0.5 text-xs font-bold text-primary-600"><i
+                            class="pi pi-star-fill text-xs"></i>{{ h.rating }}/5</span>
+                    }
+                </div>
+            </button>
+            <div class="flex items-center gap-0.5 border-t border-gray-100 px-2 py-1.5">
+                <button type="button"
+                    class="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-40"
+                    [disabled]="actingId === h.session_id" (click)="openShareDialog(h); $event.stopPropagation()"
+                    [attr.aria-label]="'Share ' + h.name">
+                    <i class="pi pi-share-alt text-xs"></i>
+                </button>
+                <button type="button"
+                    class="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-40"
+                    [disabled]="actingId === h.session_id"
+                    (click)="exportItem.emit(h.session_id); $event.stopPropagation()"
+                    [attr.aria-label]="'Export ' + h.name">
+                    <i class="pi pi-download text-xs"></i>
+                </button>
+                <button type="button"
+                    class="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-40"
+                    [disabled]="actingId === h.session_id" (click)="openRenameDialog(h); $event.stopPropagation()"
+                    [attr.aria-label]="'Rename ' + h.name">
+                    <i class="pi pi-pencil text-xs"></i>
+                </button>
+                <button type="button"
+                    class="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-gray-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-40"
+                    [disabled]="actingId === h.session_id" (click)="confirmDelete(h); $event.stopPropagation()"
+                    [attr.aria-label]="'Delete ' + h.name">
+                    <i class="pi pi-trash text-xs"></i>
+                </button>
+            </div>
+        </div>
+        }
+        } @else {
+        <p class="px-1 pt-3 text-xs leading-relaxed text-gray-500">{{ "executiveSummary.history.empty" | translate }}
+        </p>
+        }
+    </div>
+    }
+</aside>
+
+<p-dialog [(visible)]="renameDialogVisible" [modal]="true" [style]="{ width: '360px' }"
+    [header]="'executiveSummary.history.renameTitle' | translate">
+    <input pInputText class="w-full" [(ngModel)]="renameValue" (keydown.enter)="confirmRename()" />
+    <ng-template pTemplate="footer">
+        <button type="button" pButton severity="secondary" [outlined]="true" (click)="renameDialogVisible = false"><span>{{ 'executiveSummary.actions.cancel' | translate }}</span></button>
+        <button type="button" pButton (click)="confirmRename()"><span>{{ 'executiveSummary.actions.save' | translate }}</span></button>
+    </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="shareDialogVisible" [modal]="true" [style]="{ width: '360px' }"
+    [header]="'executiveSummary.history.shareTitle' | translate">
+    <input pInputText type="email" class="w-full" [(ngModel)]="shareEmail"
+        [placeholder]="'executiveSummary.history.sharePlaceholder' | translate" (keydown.enter)="confirmShare()" />
+    <ng-template pTemplate="footer">
+        <button type="button" pButton severity="secondary" [outlined]="true" (click)="shareDialogVisible = false"><span>{{ 'executiveSummary.actions.cancel' | translate }}</span></button>
+        <button type="button" pButton (click)="confirmShare()"><span>{{ 'executiveSummary.history.send' | translate }}</span></button>
+    </ng-template>
+</p-dialog>

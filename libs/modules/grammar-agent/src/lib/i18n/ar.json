@@ -1,0 +1,174 @@
+{
+    "grammarAgent": {
+        "nav": {
+            "check": "فحص",
+            "myDocuments": "مستنداتي"
+        },
+        "common": {
+            "unknownLanguage": "لغة غير معروفة",
+            "words": "كلمة"
+        },
+        "classification": {
+            "Confidential": "سري",
+            "Internal": "داخلي",
+            "Public": "عام"
+        },
+        "severity": {
+            "critical": "حرجة",
+            "major": "رئيسية",
+            "minor": "طفيفة"
+        },
+        "callTypes": {
+            "grammarCheck": "فحص القواعد اللغوية",
+            "qa": "سؤال عن المستند (سؤال وجواب)"
+        },
+        "toolbar": {
+            "eyebrow": "وكيل فحص القواعد اللغوية",
+            "rateAgent": "تقييم الوكيل",
+            "performance": "الأداء",
+            "reviewQueue": "قائمة المراجعة"
+        },
+        "reviewQueue": {
+            "title": "قائمة المراجعة",
+            "empty": "لا توجد مستندات بحاجة إلى مراجعة الآن — استوفت جميع المستندات معايير الدرجة والثقة تلقائيًا.",
+            "footerNote": "تُدرج المستندات هنا عند انخفاض درجة القواعد اللغوية أو نسبة الثقة"
+        },
+        "performance": {
+            "title": "تقرير أداء الوكيل",
+            "footerNote": "بيانات القياس مخزّنة في قاعدة بيانات Postgres (infinyx_grammar_check)"
+        },
+        "feedback": {
+            "title": "تقييم الوكيل",
+            "forDocument": "فحص هذا المستند",
+            "overall": "الوكيل بشكل عام",
+            "commentPlaceholder": "ما الذي أعجبك، وما الذي يمكن تحسينه…"
+        },
+        "dropzone": {
+            "dropTitle": "أفلت مستندًا هنا أو انقر للتصفح",
+            "dropSubtitle": "PDF أو DOCX أو TXT أو JPG أو PNG — يُرفع على دفعات",
+            "cancel": "إلغاء",
+            "chunks": "أجزاء",
+            "pages": "صفحة/صفحات"
+        },
+        "upload": {
+            "title": "افحص كتابتك",
+            "subtitle": "الصق النص مباشرة، أو ارفع مستندًا (PDF أو DOCX أو TXT أو JPG أو PNG). يرصد الوكيل مشاكل القواعد اللغوية والإملاء وعلامات الترقيم والأسلوب والوضوح، ويقيّم الجودة الإجمالية وسهولة القراءة، وينتج نسخة مصححة.",
+            "modeUpload": "رفع مستند",
+            "modePaste": "لصق نص",
+            "readDocument": "قراءة المستند",
+            "checkGrammar": "فحص القواعد اللغوية",
+            "detectedLanguage": "اللغة المكتشفة",
+            "unknownLanguage": "غير معروفة",
+            "wordCount": "عدد الكلمات",
+            "exceedsLength": "هذا المستند أطول مما يفحصه الوكيل في مرة واحدة. يرجى تقصيره أو تقسيمه إلى أجزاء.",
+            "pastePlaceholder": "الصق أو اكتب النص الذي تريد فحصه…",
+            "noTextYet": "لا يوجد نص بعد",
+            "words": "كلمة/كلمات"
+        },
+        "myDocuments": {
+            "title": "مستنداتي",
+            "subtitle": "ابحث وصفِّ وأدر كل مستند قام الوكيل بفحصه.",
+            "searchPlaceholder": "ابحث بالاسم أو النص…",
+            "search": "بحث",
+            "resultCount": "{{ count }} مستند(ات)",
+            "delete": "حذف",
+            "table": {
+                "filename": "اسم الملف",
+                "score": "الدرجة",
+                "readability": "سهولة القراءة",
+                "wordCount": "عدد الكلمات",
+                "issues": "المشاكل",
+                "classification": "التصنيف",
+                "reviewStatus": "حالة المراجعة",
+                "created": "تاريخ الإنشاء"
+            }
+        },
+        "filters": {
+            "anyClassification": "أي تصنيف",
+            "anyReviewStatus": "أي حالة مراجعة",
+            "from": "من",
+            "to": "إلى"
+        },
+        "pagination": {
+            "prev": "→ السابق",
+            "next": "التالي ←",
+            "pageOf": "صفحة {{ page }} من {{ total }}"
+        },
+        "confirm": {
+            "header": "يرجى التأكيد",
+            "deleteDocument": "هل تريد إزالة \"{{ filename }}\" من مكتبة مستنداتك؟"
+        },
+        "tabs": {
+            "overview": "نظرة عامة",
+            "issues": "المشاكل",
+            "ask": "اسأل عن المستند"
+        },
+        "reviewStatus": {
+            "auto_approved": "معتمد تلقائيًا",
+            "needs_review": "بحاجة إلى مراجعة",
+            "approved": "معتمد",
+            "rejected": "مرفوض"
+        },
+        "detail": {
+            "title": "المستند",
+            "loading": "جارٍ تحميل المستند…",
+            "newDocument": "مستند جديد",
+            "flaggedForReview": "تم تصنيف هذا المستند بحاجة إلى مراجعة بشرية",
+            "criticalIssues": "مشكلة/مشاكل حرجة",
+            "reviewNow": "مراجعة الآن",
+            "recordDecision": "تسجيل قرار المراجعة",
+            "reviewerNamePlaceholder": "اسمك (اختياري)",
+            "reviewerNotesPlaceholder": "ملاحظات حول هذا القرار (اختياري)…",
+            "cancel": "إلغاء",
+            "reject": "رفض",
+            "approve": "اعتماد",
+            "score": "الدرجة",
+            "grammarScore": "درجة القواعد اللغوية",
+            "readability": "سهولة القراءة",
+            "gradeLevel": "المستوى الدراسي",
+            "fleschKincaidGrade": "مستوى فليش-كينكيد",
+            "wordCount": "عدد الكلمات",
+            "issuesFound": "المشاكل المكتشفة",
+            "noIssuesFound": "لم يتم رصد أي مشاكل",
+            "original": "النص الأصلي",
+            "clickHint": "انقر على عبارة مظللة لرؤية التصحيح",
+            "noOriginalText": "لم يتم التقاط النص الأصلي.",
+            "corrected": "النص المصحح",
+            "noCorrectedText": "لا تتوفر نسخة مصححة.",
+            "confidence": "الثقة",
+            "confidenceLower": "ثقة",
+            "sourceLanguage": "لغة المصدر",
+            "dataClassification": "تصنيف البيانات",
+            "file": "الملف",
+            "pages": "عدد الصفحات",
+            "note": "ملاحظة",
+            "noIssues": "لم يتم رصد أي مشاكل في هذا النص.",
+            "suggested": "المقترح",
+            "suggestedQuestions": "أسئلة مقترحة — انقر للاختيار",
+            "you": "أ",
+            "agentInitials": "IX",
+            "thinking": "جارٍ التفكير…",
+            "askEmpty": "انقر على أحد الاقتراحات أعلاه، أو اكتب سؤالك الخاص أدناه.",
+            "askPlaceholder": "اطرح سؤالاً حول هذا النص أو مشاكله…",
+            "send": "إرسال"
+        },
+        "toast": {
+            "dropAcceptedOnly": "يرجى إفلات ملف بصيغة PDF أو DOCX أو TXT أو JPG أو PNG",
+            "uploadCancelled": "تم إلغاء الرفع",
+            "uploadFailed": "فشل الرفع. يرجى المحاولة مرة أخرى.",
+            "detectFailed": "تعذّرت قراءة المستند. يرجى المحاولة مرة أخرى.",
+            "checkFailed": "فشل فحص القواعد اللغوية. يرجى المحاولة مرة أخرى.",
+            "pasteTextFirst": "الصق نصًا أولاً",
+            "loadDocumentsFailed": "تعذّر تحميل المستندات. يرجى المحاولة مرة أخرى.",
+            "loadDocumentFailed": "تعذّر فتح هذا المستند.",
+            "documentDeleted": "تمت إزالة المستند",
+            "deleteFailed": "تعذّرت إزالة هذا المستند.",
+            "askFailed": "تعذّر الحصول على إجابة. يرجى المحاولة مرة أخرى.",
+            "reviewApproved": "تم اعتماد المستند",
+            "reviewRejected": "تم رفض المستند",
+            "reviewFailed": "تعذّر تسجيل قرار المراجعة.",
+            "feedbackSubmitted": "شكرًا لتقييمك للوكيل!",
+            "feedbackFailed": "تعذّر إرسال التقييم. يرجى المحاولة مرة أخرى."
+        }
+    }
+}

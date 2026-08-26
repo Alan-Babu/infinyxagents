@@ -1,0 +1,45 @@
+<div class="flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-6">
+    <div>
+        <h2 class="text-lg font-semibold text-gray-800">{{ 'contractAnalyzer.questions.title' | translate }}</h2>
+        <p class="text-sm text-gray-500">{{ 'contractAnalyzer.questions.subtitle' | translate }}</p>
+    </div>
+
+    @if (questionsResult?.contract_summary) {
+    <div class="rounded-lg bg-gray-50 p-3 text-sm text-gray-700">
+        <div class="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-400">{{ 'contractAnalyzer.questions.contractSummary' | translate }}</div>
+        {{ questionsResult?.contract_summary }}
+    </div>
+    }
+
+    @if (questionsResult?.questions?.length) {
+    <div class="flex flex-col gap-3">
+        @for (q of questionsResult?.questions; track $index) {
+        <div class="flex flex-col gap-1.5">
+            <label class="p-control-label" [for]="'answer-' + $index">{{ 'contractAnalyzer.questions.questionLabel' | translate: { index: $index + 1 } }} &mdash; {{ q }}</label>
+            <textarea [id]="'answer-' + $index" class="w-full rounded-lg border border-gray-300 p-2" rows="2" [(ngModel)]="model.answers[$index]"
+                [placeholder]="'contractAnalyzer.questions.answerPlaceholder' | translate"></textarea>
+        </div>
+        }
+    </div>
+    }
+
+    <div class="flex flex-col gap-1.5">
+        <label class="p-control-label p-control-label-required" for="cashFlowContext">{{ 'contractAnalyzer.questions.cashFlowLabel' | translate }}</label>
+        <textarea id="cashFlowContext" class="w-full rounded-lg border border-gray-300 p-2" rows="3" [(ngModel)]="model.cashFlowContext"
+            [placeholder]="'contractAnalyzer.questions.cashFlowPlaceholder' | translate"></textarea>
+        @if (!model.cashFlowContext.trim()) {
+        <span class="text-xs text-amber-600">{{ 'contractAnalyzer.questions.cashFlowRequired' | translate }}</span>
+        }
+    </div>
+
+    <div class="flex flex-col gap-1.5">
+        <label class="p-control-label" for="previousContractNotes">{{ 'contractAnalyzer.questions.previousNotesLabel' | translate }}</label>
+        <textarea id="previousContractNotes" class="w-full rounded-lg border border-gray-300 p-2" rows="2" [(ngModel)]="model.previousContractNotes"
+            [placeholder]="'contractAnalyzer.questions.previousNotesPlaceholder' | translate"></textarea>
+    </div>
+
+    <div class="flex justify-between gap-2">
+        <button type="button" pButton severity="secondary" [outlined]="true" [disabled]="submitting" (click)="back.emit()"><i class="pi pi-arrow-left"></i><span>{{ 'contractAnalyzer.questions.back' | translate }}</span></button>
+        <button type="button" pButton [loading]="submitting" [disabled]="!model.cashFlowContext.trim()" (click)="formSubmit.emit()"><i class="pi pi-sparkles"></i><span>{{ 'contractAnalyzer.questions.submit' | translate }}</span></button>
+    </div>
+</div>

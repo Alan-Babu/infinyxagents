@@ -1,0 +1,60 @@
+<p-drawer [(visible)]="visible" position="right" styleClass="p-drawer-sm" appendTo="body" [baseZIndex]="1200" (onHide)="visibleChange.emit(false)">
+    <ng-template pTemplate="header">
+        <div class="flex flex-col">
+            @if (eyebrow) {
+            <span class="text-sm font-semibold uppercase tracking-wide text-gray-400">{{ eyebrow }}</span>
+            }
+            <span class="text-lg font-semibold text-gray-800">{{ title }}</span>
+        </div>
+    </ng-template>
+
+    <div class="flex flex-col gap-4 pt-5">
+        @if (scopeLabels) {
+        <div class="flex flex-col gap-1.5">
+            <span class="text-sm font-semibold text-gray-600">Scope</span>
+            <div class="flex flex-wrap gap-2">
+                <button type="button"
+                    class="cursor-pointer rounded-md border px-3 py-1.5 text-sm font-medium transition-colors"
+                    [class.bg-primary-500]="forDocument" [class.text-white]="forDocument" [class.border-primary-500]="forDocument"
+                    [class.border-gray-200]="!forDocument" [class.text-gray-600]="!forDocument"
+                    (click)="forDocument = true">
+                    {{ scopeLabels.forDocument }}
+                </button>
+                <button type="button"
+                    class="cursor-pointer rounded-md border px-3 py-1.5 text-sm font-medium transition-colors"
+                    [class.bg-primary-500]="!forDocument" [class.text-white]="!forDocument" [class.border-primary-500]="!forDocument"
+                    [class.border-gray-200]="forDocument" [class.text-gray-600]="forDocument"
+                    (click)="forDocument = false">
+                    {{ scopeLabels.overall }}
+                </button>
+            </div>
+        </div>
+        }
+
+        <div class="flex flex-col gap-1.5">
+            <span class="text-sm font-semibold text-gray-600">Your rating</span>
+            <div class="flex gap-1">
+                @for (s of stars; track s) {
+                <i class="pi cursor-pointer text-xl" role="button" tabindex="0" [attr.aria-label]="'Rate ' + s + ' star'"
+                    [class.pi-star-fill]="s <= rating" [class.pi-star]="s > rating"
+                    [class.text-amber-400]="s <= rating" [class.text-gray-300]="s > rating"
+                    (click)="setRating(s)" (keydown.enter)="setRating(s)" (keydown.space)="setRating(s)"></i>
+                }
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+            <label for="feedbackComment" class="text-sm font-semibold text-gray-600">
+                Comments <span class="font-normal text-gray-400">(optional)</span>
+            </label>
+            <textarea id="feedbackComment" class="w-full rounded-lg border border-gray-300 p-2 text-sm" rows="3" [(ngModel)]="comment" [placeholder]="commentPlaceholder"></textarea>
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <div class="flex justify-between items-center gap-2">
+            <button type="button" pButton severity="secondary" [outlined]="true" (click)="close()"><span>Cancel</span></button>
+            <button type="button" pButton [disabled]="!rating" (click)="submit()"><span>Submit rating</span></button>
+        </div>
+    </ng-template>
+</p-drawer>

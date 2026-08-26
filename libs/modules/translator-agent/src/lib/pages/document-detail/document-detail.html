@@ -1,0 +1,503 @@
+<div class="flex h-full min-h-0 flex-col">
+    <lib-page-header titleKey="translatorAgent.detail.title" [showBack]="true" (back)="backToDocuments()">
+        <ng-template #titleContent>
+            @if (doc) {
+            <div class="flex flex-col gap-2">
+                <span class="text-base font-semibold text-gray-800">{{ doc.filename }}</span>
+                <div class="flex flex-wrap gap-1.5">
+                    @if (doc.document_type) {
+                    <span class="rounded bg-primary-50 px-2 py-0.5 text-sm font-semibold text-primary-700">{{
+                        doc.document_type }}</span>
+                    }
+                    @if (doc.detected_language) {
+                    <span class="rounded bg-sky-50 px-2 py-0.5 text-sm font-semibold text-sky-700">
+                        {{ doc.detected_language }}
+                        @if (doc.detected_language_confidence !== null) { ({{ doc.detected_language_confidence }}%) }
+                    </span>
+                    }
+                    <span class="rounded border px-2 py-0.5 text-sm font-semibold"
+                        [ngClass]="statusBadgeClass(doc.status)">{{ doc.status }}</span>
+                    <span class="rounded border px-2 py-0.5 text-sm font-semibold"
+                        [ngClass]="riskClass(doc.risk_level)">{{ doc.risk_level }} {{ "translatorAgent.detail.risk" |
+                        translate }}</span>
+                    <span class="rounded bg-gray-100 px-2 py-0.5 text-sm font-semibold text-gray-600">{{
+                        doc.document_category }}</span>
+                    <span class="rounded bg-gray-100 px-2 py-0.5 text-sm font-semibold text-gray-600">{{
+                        doc.document_classification }}</span>
+                    @if (doc.review_status !== 'auto_approved') {
+                    <span class="rounded px-2 py-0.5 text-sm font-semibold"
+                        [class.bg-amber-100]="doc.review_status === 'needs_review'"
+                        [class.text-amber-700]="doc.review_status === 'needs_review'"
+                        [class.bg-green-100]="doc.review_status === 'approved'"
+                        [class.text-green-700]="doc.review_status === 'approved'"
+                        [class.bg-red-100]="doc.review_status === 'rejected'"
+                        [class.text-red-700]="doc.review_status === 'rejected'">
+                        {{ "translatorAgent.reviewStatus." + doc.review_status | translate }}
+                    </span>
+                    }
+                </div>
+            </div>
+            } @else {
+            <h1 class="text-xl font-semibold text-gray-800">{{ "translatorAgent.detail.title" | translate }}</h1>
+            }
+        </ng-template>
+
+        <div class="flex flex-wrap items-center gap-2">
+            @if (doc) {
+            <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="openVerifySource()"><i class="pi pi-eye"></i><span>{{ 'translatorAgent.detail.verifySource' | translate }}</span></button>
+            <button type="button" pButton size="small" severity="secondary" [outlined]="true" routerLink="/translator-agent"><i class="pi pi-plus"></i><span>{{ 'translatorAgent.detail.newDocument' | translate }}</span></button>
+            }
+            <lib-translator-toolbar [documentId]="doc?.id ?? null" />
+        </div>
+    </lib-page-header>
+
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+        @if (loading) {
+        <p class="text-sm text-gray-500">{{ "translatorAgent.detail.loading" | translate }}</p>
+        }
+
+        @if (doc) {
+        <div class="flex flex-col gap-5">
+            <!-- Needs-review banner -->
+            @if (doc.review_status === 'needs_review' && !reviewing) {
+            <div
+                class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3.5 text-sm text-amber-800">
+                <span class="flex items-center gap-2">
+                    <i class="pi pi-exclamation-triangle"></i>
+                    {{ "translatorAgent.detail.flaggedForReview" | translate }}
+                    @if (doc.confidence_score !== null) { <span>&mdash; {{ fmtConfidence(doc.confidence_score) }} {{
+                        "translatorAgent.detail.confidence" | translate }}</span> }
+                    @if (doc.risk_level === 'high') { <span>&mdash; {{ "translatorAgent.detail.highRisk" | translate
+                        }}</span> }
+                </span>
+                <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="startReview()"><span>{{ 'translatorAgent.detail.reviewNow' | translate }}</span></button>
+            </div>
+            }
+
+            <!-- Inline review form -->
+            @if (reviewing) {
+            <div class="flex flex-col gap-2.5 rounded-lg border border-gray-200 bg-white p-4">
+                <div class="text-sm font-semibold text-gray-800">{{ "translatorAgent.detail.recordDecision" | translate
+                    }}</div>
+                <input pInputText type="text" class="w-full" [(ngModel)]="reviewerName"
+                    [placeholder]="'translatorAgent.detail.reviewerNamePlaceholder' | translate" />
+                <textarea class="w-full rounded-lg border border-gray-300 p-2 text-sm" rows="2"
+                    [(ngModel)]="reviewerNotes"
+                    [placeholder]="'translatorAgent.detail.reviewerNotesPlaceholder' | translate"></textarea>
+                <div class="flex justify-end gap-2">
+                    <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="cancelReview()"><span>{{ 'translatorAgent.detail.cancel' | translate }}</span></button>
+                    <button type="button" pButton size="small" severity="danger" [outlined]="true" (click)="submitReviewDecision('reject')"><span>{{ 'translatorAgent.detail.reject' | translate }}</span></button>
+                    <button type="button" pButton size="small" (click)="submitReviewDecision('approve')"><span>{{ 'translatorAgent.detail.approve' | translate }}</span></button>
+                </div>
+            </div>
+            }
+
+            <!-- Tabs -->
+            <div>
+                <nav class="inline-flex flex-wrap rounded-lg border border-gray-200 bg-white p-1" role="tablist">
+                    <button type="button"
+                        class="cursor-pointer whitespace-nowrap rounded-md px-6 py-2.5 text-center text-sm transition-colors"
+                        [ngClass]="activeTab === 'overview' ? 'bg-primary-500 text-white font-bold' : 'text-gray-500 font-semibold'"
+                        (click)="activeTab = 'overview'">
+                        {{ "translatorAgent.tabs.overview" | translate }}
+                    </button>
+                    <button type="button"
+                        class="cursor-pointer whitespace-nowrap rounded-md px-6 py-2.5 text-center text-sm transition-colors"
+                        [ngClass]="activeTab === 'risk' ? 'bg-primary-500 text-white font-bold' : 'text-gray-500 font-semibold'"
+                        (click)="activeTab = 'risk'">
+                        {{ "translatorAgent.tabs.risk" | translate }}
+                    </button>
+                    <button type="button"
+                        class="cursor-pointer whitespace-nowrap rounded-md px-6 py-2.5 text-center text-sm transition-colors"
+                        [ngClass]="activeTab === 'compliance' ? 'bg-primary-500 text-white font-bold' : 'text-gray-500 font-semibold'"
+                        (click)="activeTab = 'compliance'">
+                        {{ "translatorAgent.tabs.compliance" | translate }}
+                    </button>
+                    <button type="button"
+                        class="cursor-pointer whitespace-nowrap rounded-md px-6 py-2.5 text-center text-sm transition-colors"
+                        [ngClass]="activeTab === 'stamps' ? 'bg-primary-500 text-white font-bold' : 'text-gray-500 font-semibold'"
+                        (click)="activeTab = 'stamps'">
+                        {{ "translatorAgent.tabs.stamps" | translate }}
+                        @if (doc.stamps_and_signatures.length) {
+                        <span class="ms-1.5 rounded-full px-2 py-0.5 text-xs"
+                            [ngClass]="activeTab === 'stamps' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'">{{
+                            doc.stamps_and_signatures.length }}</span>
+                        }
+                    </button>
+                    <button type="button"
+                        class="cursor-pointer whitespace-nowrap rounded-md px-6 py-2.5 text-center text-sm transition-colors"
+                        [ngClass]="activeTab === 'translation' ? 'bg-primary-500 text-white font-bold' : 'text-gray-500 font-semibold'"
+                        (click)="activeTab = 'translation'">
+                        {{ "translatorAgent.tabs.translation" | translate }}
+                        @if (doc.pages_translated.length) {
+                        <span class="ms-1.5 rounded-full px-2 py-0.5 text-xs"
+                            [ngClass]="activeTab === 'translation' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'">{{
+                            doc.pages_translated.length }}</span>
+                        }
+                    </button>
+                    <button type="button"
+                        class="cursor-pointer whitespace-nowrap rounded-md px-6 py-2.5 text-center text-sm transition-colors"
+                        [ngClass]="activeTab === 'ask' ? 'bg-primary-500 text-white font-bold' : 'text-gray-500 font-semibold'"
+                        (click)="activeTab = 'ask'">
+                        {{ "translatorAgent.tabs.ask" | translate }}
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Overview tab -->
+            @if (activeTab === 'overview') {
+            <div class="flex flex-col gap-4">
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+                    <div class="rounded-lg border border-gray-200 bg-white p-3">
+                        <div class="text-xs font-semibold text-gray-500">{{ "translatorAgent.fields.issued_by_name" |
+                            translate }}</div>
+                        <div class="text-sm font-medium text-gray-800">{{ doc.issued_by_name || '—' }}</div>
+                        @if (doc.issued_by_type) { <div class="text-xs text-gray-400">{{ doc.issued_by_type }}</div> }
+                    </div>
+                    <div class="rounded-lg border border-gray-200 bg-white p-3">
+                        <div class="text-xs font-semibold text-gray-500">{{ "translatorAgent.fields.issued_to_name" |
+                            translate }}</div>
+                        <div class="text-sm font-medium text-gray-800">{{ doc.issued_to_name || '—' }}</div>
+                        @if (doc.issued_to_type) { <div class="text-xs text-gray-400">{{ doc.issued_to_type }}</div> }
+                    </div>
+                    <div class="rounded-lg border border-gray-200 bg-white p-3">
+                        <div class="text-xs font-semibold text-gray-500">{{ "translatorAgent.fields.document_type" |
+                            translate }}</div>
+                        <div class="text-sm font-medium text-gray-800">{{ doc.document_type || '—' }}</div>
+                    </div>
+                    <div class="rounded-lg border border-gray-200 bg-white p-3">
+                        <div class="text-xs font-semibold text-gray-500">{{ "translatorAgent.fields.issued_on" |
+                            translate }}</div>
+                        <div class="text-sm font-medium text-gray-800">{{ fmtDate(doc.issued_on) }}</div>
+                    </div>
+                    <div class="rounded-lg border border-gray-200 bg-white p-3">
+                        <div class="text-xs font-semibold text-gray-500">{{ "translatorAgent.fields.valid_through" |
+                            translate }}</div>
+                        <div class="text-sm font-medium text-gray-800">{{ doc.has_expiry ? fmtDate(doc.valid_through) :
+                            ("translatorAgent.detail.noExpiry" | translate) }}</div>
+                    </div>
+                    <div class="rounded-lg border border-gray-200 bg-white p-3">
+                        <div class="text-xs font-semibold text-gray-500">{{ "translatorAgent.detail.status" | translate
+                            }}</div>
+                        <div class="text-sm font-medium text-gray-800">{{ doc.status }}</div>
+                    </div>
+                    <div class="rounded-lg border border-gray-200 bg-white p-3">
+                        <div class="text-xs font-semibold text-gray-500">{{ "translatorAgent.detail.pages" | translate
+                            }}</div>
+                        <div class="text-sm font-medium text-gray-800">{{ doc.page_count }}</div>
+                    </div>
+                    <div class="rounded-lg border border-gray-200 bg-white p-3">
+                        <div class="text-xs font-semibold text-gray-500">{{ "translatorAgent.detail.category" |
+                            translate }}</div>
+                        <div class="text-sm font-medium text-gray-800">{{ doc.document_category }}</div>
+                    </div>
+                    <div class="rounded-lg border border-gray-200 bg-white p-3">
+                        <div class="text-xs font-semibold text-gray-500">{{ "translatorAgent.detail.classification" |
+                            translate }}</div>
+                        <div class="text-sm font-medium text-gray-800">{{ doc.document_classification }}</div>
+                    </div>
+                    <div class="rounded-lg border border-gray-200 bg-white p-3">
+                        <div class="text-xs font-semibold text-gray-500">{{ "translatorAgent.detail.file" | translate }}
+                        </div>
+                        <div class="text-sm font-medium text-gray-800">{{ doc.file_type.toUpperCase() }} &middot; {{
+                            fmtBytes(doc.file_size_bytes) }}</div>
+                    </div>
+                    <div class="rounded-lg border border-gray-200 bg-white p-3">
+                        <div class="text-xs font-semibold text-gray-500">{{ "translatorAgent.detail.detectedLanguage" |
+                            translate }}</div>
+                        <div class="text-sm font-medium text-gray-800">
+                            {{ doc.detected_language || ("translatorAgent.detail.unknown" | translate) }}
+                            @if (doc.detected_language_confidence !== null) { <span class="text-xs text-gray-400">({{
+                                doc.detected_language_confidence }}%)</span> }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-lg border border-gray-200 bg-white p-4">
+                    <div
+                        class="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-primary-600">
+                        <i class="pi pi-lightbulb"></i>{{ "translatorAgent.detail.insights" | translate }}
+                    </div>
+                    <p class="text-sm text-gray-700">{{ doc.insights || ("translatorAgent.detail.noInsights" |
+                        translate) }}</p>
+                    @if (doc.extraction_error) {
+                    <p class="mt-2 text-xs text-gray-500">{{ "translatorAgent.detail.note" | translate }}: {{
+                        doc.extraction_error }}</p>
+                    }
+                    @if (doc.confidence_score !== null && doc.confidence_score < 50) { <div
+                        class="mt-2 flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-xs font-medium text-amber-700">
+                        <i class="pi pi-exclamation-triangle"></i>
+                        {{ "translatorAgent.detail.lowConfidence" | translate: { score: doc.confidence_score } }}
+                </div>
+                }
+                @if (doc.confidence_score !== null) {
+                <div class="mt-3">
+                    <span class="rounded-full px-2.5 py-1 text-xs font-semibold"
+                        [ngClass]="confidenceClass(doc.confidence_score)">
+                        {{ fmtConfidence(doc.confidence_score) }} {{ "translatorAgent.detail.confidence" | translate }}
+                    </span>
+                </div>
+                }
+            </div>
+        </div>
+        }
+
+        <!-- Risk tab -->
+        @if (activeTab === 'risk') {
+        <div class="flex flex-col gap-3">
+            <div class="rounded-lg border p-4 text-center" [ngClass]="riskClass(doc.risk_level)">
+                <div class="text-xs font-semibold uppercase tracking-wide">{{ "translatorAgent.detail.overallRisk" |
+                    translate }}</div>
+                <div class="text-lg font-bold capitalize">{{ doc.risk_level }}</div>
+            </div>
+            @if (doc.risk_factors.length) {
+            <div class="flex flex-col gap-2">
+                @for (f of doc.risk_factors; track f) {
+                <div
+                    class="flex items-start gap-2 rounded-lg border border-gray-200 bg-white p-3 text-sm text-gray-700">
+                    <i class="pi pi-exclamation-triangle mt-0.5 text-amber-500"></i>
+                    <span>{{ f }}</span>
+                </div>
+                }
+            </div>
+            } @else {
+            <p class="text-sm text-gray-500">{{ "translatorAgent.detail.noRiskFactors" | translate }}</p>
+            }
+        </div>
+        }
+
+        <!-- Approval & Attestation tab -->
+        @if (activeTab === 'compliance') {
+        <div class="flex flex-col gap-3">
+            <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3 text-xs text-gray-500">
+                <i class="pi pi-info-circle mt-0.5"></i>
+                <span>{{ "translatorAgent.detail.complianceDisclaimer" | translate }}</span>
+            </div>
+
+            @if (doc.compliance_recommendations; as cr) {
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div class="rounded-lg border border-gray-200 bg-white p-4">
+                    <div class="mb-1.5 flex items-center justify-between">
+                        <span class="text-sm font-semibold text-gray-800">{{ "translatorAgent.detail.canBeApproved" |
+                            translate }}</span>
+                        <span class="rounded border px-2 py-0.5 text-xs font-semibold"
+                            [ngClass]="complianceClass(cr.can_be_approved)">{{ cr.can_be_approved ||
+                            ("translatorAgent.detail.unknown" | translate) }}</span>
+                    </div>
+                    <p class="text-sm text-gray-600">{{ cr.approval_reason || ("translatorAgent.detail.noAssessment" |
+                        translate) }}</p>
+                </div>
+                <div class="rounded-lg border border-gray-200 bg-white p-4">
+                    <div class="mb-1.5 flex items-center justify-between">
+                        <span class="text-sm font-semibold text-gray-800">{{ "translatorAgent.detail.canBeAuthorized" |
+                            translate }}</span>
+                        <span class="rounded border px-2 py-0.5 text-xs font-semibold"
+                            [ngClass]="complianceClass(cr.can_be_authorized)">{{ cr.can_be_authorized ||
+                            ("translatorAgent.detail.unknown" | translate) }}</span>
+                    </div>
+                    <p class="text-sm text-gray-600">{{ cr.authorization_reason ||
+                        ("translatorAgent.detail.noAssessment" | translate) }}</p>
+                </div>
+                <div class="rounded-lg border border-gray-200 bg-white p-4 sm:col-span-2">
+                    <div class="mb-1.5 flex items-center justify-between">
+                        <span class="text-sm font-semibold text-gray-800">{{ "translatorAgent.detail.uaeEligible" |
+                            translate }}</span>
+                        <span class="rounded border px-2 py-0.5 text-xs font-semibold"
+                            [ngClass]="complianceClass(cr.uae_attestation_eligible)">{{ cr.uae_attestation_eligible ||
+                            ("translatorAgent.detail.unknown" | translate) }}</span>
+                    </div>
+                    <p class="text-sm text-gray-600">{{ cr.uae_attestation_reason ||
+                        ("translatorAgent.detail.noAssessment" | translate) }}</p>
+                    @if (cr.uae_attestation_next_step) {
+                    <div class="mt-2 rounded-lg bg-primary-50 p-2.5 text-xs text-primary-700">
+                        <span class="font-semibold">{{ "translatorAgent.detail.suggestedNextStep" | translate }}:</span>
+                        {{ cr.uae_attestation_next_step }}
+                    </div>
+                    }
+                </div>
+            </div>
+            } @else {
+            <p class="text-sm text-gray-500">{{ "translatorAgent.detail.noComplianceAssessment" | translate }}</p>
+            }
+        </div>
+        }
+
+        <!-- Stamps & Signatures tab -->
+        @if (activeTab === 'stamps') {
+        <div class="flex flex-col gap-3">
+            @if (doc.stamps_and_signatures.length === 0) {
+            <p class="text-sm text-gray-500">{{ "translatorAgent.detail.noStamps" | translate }}</p>
+            }
+            @for (s of doc.stamps_and_signatures; track $index) {
+            <div class="flex flex-col gap-2 rounded-lg border border-gray-200 bg-white p-4">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="rounded bg-violet-50 px-2 py-0.5 text-xs font-semibold text-violet-700">{{ s.type
+                        }}</span>
+                    @if (s.accredited_entity_name) { <span class="text-sm font-medium text-gray-700">{{
+                        s.accredited_entity_name }}</span> }
+                    @if (s.location) {
+                    <button type="button" pButton class="ms-auto" size="small" severity="secondary" [outlined]="true" (click)="openVerifySource()"><span>{{ 'translatorAgent.detail.viewOnPage' | translate }}</span></button>
+                    }
+                </div>
+                <div class="grid grid-cols-1 gap-2 text-xs sm:grid-cols-2">
+                    @if (s.ministry_of_foreign_affairs_name) {
+                    <div><span class="font-semibold text-gray-500">{{ "translatorAgent.detail.mofa" | translate
+                            }}:</span> <span class="text-gray-700">{{ s.ministry_of_foreign_affairs_name }}</span></div>
+                    }
+                    @if (s.country) {
+                    <div><span class="font-semibold text-gray-500">{{ "translatorAgent.detail.country" | translate
+                            }}:</span> <span class="text-gray-700">{{ s.country }}</span></div>
+                    }
+                    @if (s.date) {
+                    <div><span class="font-semibold text-gray-500">{{ "translatorAgent.detail.date" | translate
+                            }}:</span> <span class="text-gray-700">{{ s.date }}</span></div>
+                    }
+                    @if (s.signed_by) {
+                    <div><span class="font-semibold text-gray-500">{{ "translatorAgent.detail.signedBy" | translate
+                            }}:</span> <span class="text-gray-700">{{ s.signed_by }}</span></div>
+                    }
+                    @if (s.reference_number) {
+                    <div><span class="font-semibold text-gray-500">{{ "translatorAgent.detail.referenceNo" | translate
+                            }}:</span> <span class="text-gray-700">{{ s.reference_number }}</span></div>
+                    }
+                </div>
+                @if (s.description) {
+                <p class="text-sm text-gray-600">{{ s.description }}</p>
+                }
+                @if (!s.location) {
+                <p class="text-xs text-gray-400">{{ "translatorAgent.detail.locationUnavailable" | translate }}</p>
+                }
+            </div>
+            }
+        </div>
+        }
+
+        <!-- Translation split-view tab -->
+        @if (activeTab === 'translation') {
+        <div class="flex flex-col gap-3">
+            @if (doc.pages_translated.length === 0) {
+            <p class="text-sm text-gray-500">{{ "translatorAgent.detail.noTranslatedPages" | translate }}</p>
+            } @else {
+            <div class="flex flex-wrap gap-2">
+                @for (p of doc.pages_translated; track p) {
+                <button type="button"
+                    class="cursor-pointer rounded-md border px-3 py-1 text-xs font-medium transition-colors"
+                    [class.bg-primary-500]="p === activePageTab" [class.text-white]="p === activePageTab"
+                    [class.border-primary-500]="p === activePageTab" [class.border-gray-200]="p !== activePageTab"
+                    [class.text-gray-600]="p !== activePageTab" (click)="activePageTab = p">
+                    {{ "translatorAgent.detail.page" | translate }} {{ p }}
+                </button>
+                }
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <div class="flex flex-col gap-2">
+                    <div class="text-xs font-semibold uppercase tracking-wide text-gray-400">{{
+                        "translatorAgent.detail.original" | translate }}</div>
+                    <div class="overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
+                        @if (originalImageForPage(activePageTab); as page) {
+                        <img [src]="'data:' + page.mime + ';base64,' + page.image_base64" class="w-full"
+                            alt="Original document page" />
+                        } @else {
+                        <p class="p-6 text-sm text-gray-500">{{ pagesLoading ? ("translatorAgent.detail.loadingPages" |
+                            translate) : ("translatorAgent.detail.noImage" | translate) }}</p>
+                        }
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <div class="text-xs font-semibold uppercase tracking-wide text-gray-400">{{
+                        "translatorAgent.detail.translated" | translate }}</div>
+                    <div class="h-full rounded-lg border border-gray-200 bg-white p-4">
+                        @if (isPageTranslated(activePageTab)) {
+                        <p class="whitespace-pre-wrap text-sm text-gray-700">{{ translatedTextForPage(activePageTab) }}
+                        </p>
+                        } @else {
+                        <p class="text-sm text-gray-500">{{ "translatorAgent.detail.pageNotTranslated" | translate }}
+                        </p>
+                        }
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+        }
+
+        <!-- Ask Document tab -->
+        @if (activeTab === 'ask') {
+        <div class="flex flex-col gap-3">
+            @if (doc.prompt_suggestions.length) {
+            <div class="flex flex-col gap-1.5">
+                <span class="text-xs font-semibold text-gray-500">{{ "translatorAgent.detail.suggestedQuestions" |
+                    translate }}</span>
+                <div class="flex flex-wrap gap-2">
+                    @for (s of doc.prompt_suggestions; track s) {
+                    <button type="button"
+                        class="cursor-pointer rounded-md border px-3 py-1.5 text-xs font-medium transition-colors"
+                        [class.bg-primary-500]="selectedSuggestion === s" [class.text-white]="selectedSuggestion === s"
+                        [class.border-primary-500]="selectedSuggestion === s"
+                        [class.border-gray-200]="selectedSuggestion !== s"
+                        [class.text-gray-600]="selectedSuggestion !== s" (click)="selectPromptSuggestion(s)">
+                        {{ s }}
+                    </button>
+                    }
+                </div>
+            </div>
+            }
+
+            <div class="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4">
+                @for (ex of qaHistory; track ex.id) {
+                <div class="flex flex-col gap-2">
+                    <div class="flex items-start gap-2">
+                        <span
+                            class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600">{{
+                            "translatorAgent.detail.you" | translate }}</span>
+                        <span class="text-sm text-gray-800">{{ ex.question }}</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <span
+                            class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700">{{
+                            "translatorAgent.detail.agentInitials" | translate }}</span>
+                        <span class="text-sm text-gray-700">
+                            {{ ex.answer }}
+                            @if (ex.confidence_score !== null) {
+                            <span class="ms-2 rounded-full px-2 py-0.5 text-xs font-semibold"
+                                [ngClass]="confidenceClass(ex.confidence_score)">{{ fmtConfidence(ex.confidence_score)
+                                }}</span>
+                            }
+                        </span>
+                    </div>
+                </div>
+                }
+                @if (asking) {
+                <div class="flex items-start gap-2">
+                    <span
+                        class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700">{{
+                        "translatorAgent.detail.agentInitials" | translate }}</span>
+                    <span class="text-sm italic text-gray-400">{{ "translatorAgent.detail.thinking" | translate
+                        }}</span>
+                </div>
+                }
+                <div id="qa-scroll-anchor"></div>
+                @if (qaHistory.length === 0 && !asking) {
+                <p class="text-sm text-gray-500">{{ "translatorAgent.detail.askEmpty" | translate }}</p>
+                }
+            </div>
+
+            <div class="flex gap-2">
+                <input id="qa-question-input" pInputText type="text" class="w-full" [(ngModel)]="questionInput"
+                    [placeholder]="'translatorAgent.detail.askPlaceholder' | translate" [disabled]="asking"
+                    (keydown.enter)="sendQuestion()" />
+                <button type="button" pButton [disabled]="asking || !questionInput.trim()" (click)="sendQuestion()"><i class="pi pi-send"></i><span>{{ 'translatorAgent.detail.send' | translate }}</span></button>
+            </div>
+        </div>
+        }
+    </div>
+    }
+</div>
+</div>
+
+<lib-verify-source-drawer [visible]="verifySourceVisible" (visibleChange)="verifySourceVisible = $event"
+    [title]="'translatorAgent.verifySource.title' | translate" [pages]="sourcePages" [fields]="verifySourceFields()"
+    [stamps]="verifySourceStamps()" [noImageMessage]="'translatorAgent.verifySource.noImage' | translate"
+    [noLocationMessage]="'translatorAgent.verifySource.noLocation' | translate"
+    [footerNote]="'translatorAgent.verifySource.footerNote' | translate" [loading]="pagesLoading" />
