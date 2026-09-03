@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { AuthService } from '@nfinyx/services';
 import { ToastrService } from 'ngx-toastr';
 import { DataTable, DataTableStatusEntry, StatusCellComponent } from '@nfinyx/data-table';
 import { StatCardComponent } from '@nfinyx/stat-card';
@@ -10,7 +11,7 @@ import { Subscription } from 'rxjs';
 
 import { GuardrailDrawerComponent } from '../../components/guardrail-drawer/guardrail-drawer';
 import { ExecSummaryApiService } from '../../services/exec-summary-api.service';
-import { ModerationFlagEntry } from '../../models/executive-summary.models';
+import { AuditLogEntry, ModerationFlagEntry } from '../../models/executive-summary.models';
 import { formatMediumDate } from '../../utils/format';
 import { categoryLabel, guardrailPriority, guardrailStatusLabel, initials } from '../../utils/guardrail-display';
 
@@ -24,12 +25,18 @@ export class GuardrailsReportPage implements OnInit, OnDestroy {
     private readonly api = inject(ExecSummaryApiService);
     private readonly toastr = inject(ToastrService);
     private readonly translate = inject(TranslateService);
+    private readonly auth = inject(AuthService);
 
     flags: ModerationFlagEntry[] = [];
     loading = false;
     selectedFlag: ModerationFlagEntry | null = null;
     updatingId: number | null = null;
     colDefs: ColDef[] = [];
+    activeTab: 'blocked' | 'activity' = 'blocked';
+    auditEntries: AuditLogEntry[] = [];
+    auditLoading = false;
+    auditLoaded = false;
+    auditColDefs: ColDef[] = [];
 
     private readonly langSub: Subscription;
 
@@ -39,11 +46,16 @@ export class GuardrailsReportPage implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.refresh();
+        if (this.isAdmin) this.refresh();
     }
 
     ngOnDestroy(): void {
         this.langSub.unsubscribe();
+    }
+
+    /** Moderation flags and the audit log both live on the exec-agent admin router. */
+    get isAdmin(): boolean {
+        return this.auth.isAdmin();
     }
 
     async refresh(): Promise<void> {
@@ -52,6 +64,23 @@ export class GuardrailsReportPage implements OnInit, OnDestroy {
             this.flags = await this.api.listModerationFlags();
         } finally {
             this.loading = false;
+        }
+    }
+
+    async selectTab(tab: 'blocked' | 'activity'): Promise<void> {
+        this.activeTab = tab;
+        if (tab === 'activity' && this.isAdmin && !this.auditLoaded) {
+            this.auditLoading = true;
+            try {
+                this.auditEntries = await this.api.getAuditLog();
+                this.auditLoaded = true;
+            } catch {
+                this.auditEntries = [];
+                this.auditLoaded = false;
+                this.toastr.warning(this.translate.instant('executiveSummary.guardrails.auditUnavailable'));
+            } finally {
+                this.auditLoading = false;
+            }
         }
     }
 
@@ -142,6 +171,18 @@ export class GuardrailsReportPage implements OnInit, OnDestroy {
                 headerName: t('executiveSummary.guardrails.status'),
                 cellRenderer: StatusCellComponent,
                 cellRendererParams: { statusMap },
+            },
+        ];
+        this.auditColDefs = [
+            { field: 'action', headerName: t('executiveSummary.guardrails.action'), flex: 1 },
+            { field: 'resource_type', headerName: t('executiveSummary.guardrails.resource'), flex: 1 },
+            { field: 'resource_id', headerName: t('executiveSummary.guardrails.resourceId'), flex: 1 },
+            { field: 'user_id', headerName: t('executiveSummary.guardrails.user'), flex: 1 },
+            {
+                field: 'created_at',
+                headerName: t('executiveSummary.guardrails.when'),
+                valueFormatter: params => formatMediumDate(params.value),
+                flex: 1,
             },
         ];
     }

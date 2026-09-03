@@ -8,17 +8,35 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { DrawerModule } from 'primeng/drawer';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
+import { AuthService } from '@nfinyx/services';
 
 import { ExecSummaryApiService } from '../../services/exec-summary-api.service';
 import {
     ALL_FILE_TYPES,
     ALL_FRAMEWORKS,
+    ALL_PROVIDERS,
     AdminSettingsResponse,
     AgentInstructionEntry,
+    CreateMcpServerRequest,
     ErrorLogEntry,
+    McpServerEntry,
+    Provider,
+    TrustedSourceEntry,
 } from '../../models/executive-summary.models';
 
-type MenuView = 'menu' | 'guardrails' | 'external-models' | 'skills' | 'general' | 'logs';
+type MenuView =
+    | 'menu'
+    | 'guardrails'
+    | 'external-models'
+    | 'skills'
+    | 'general'
+    | 'logs'
+    | 'retention'
+    | 'moderation-model'
+    | 'fallback-providers'
+    | 'mcp-servers'
+    | 'presenton'
+    | 'web-search';
 
 @Component({
     selector: 'lib-admin-settings-drawer',
@@ -30,6 +48,7 @@ export class AdminSettingsDrawerComponent implements OnChanges {
     private readonly api = inject(ExecSummaryApiService);
     private readonly toastr = inject(ToastrService);
     private readonly translate = inject(TranslateService);
+    readonly auth = inject(AuthService);
 
     @Input() visible = false;
     @Output() visibleChange = new EventEmitter<boolean>();
@@ -57,9 +76,42 @@ export class AdminSettingsDrawerComponent implements OnChanges {
     enabledFrameworks: string[] = [...ALL_FRAMEWORKS];
     readonly allFileTypes = ALL_FILE_TYPES;
     readonly allFrameworks = ALL_FRAMEWORKS;
+    readonly allProviders = ALL_PROVIDERS;
     saveStatus = '';
 
-    instructionsUserId = 'anonymous';
+    errorLogRetentionDays: number | null = null;
+    telemetryRetentionDays: number | null = null;
+    moderationFlagRetentionDays: number | null = null;
+    auditLogRetentionDays: number | null = null;
+    deleteUserDataStatus = '';
+    deletingUserData = false;
+
+    modelModerationEnabled = true;
+    modelModerationThreshold = 0.5;
+    fallbackProviderOrder: Provider[] = [];
+
+    presentonEnabled = false;
+    presentonBaseUrl = '';
+    presentonTemplateName = '';
+    presentonApiKeyInput = '';
+
+    webSearchEnabled = false;
+    tavilyApiKeyInput = '';
+    trustedSources: TrustedSourceEntry[] = [];
+    trustedSourcesLoading = false;
+    newSourceCategory = '';
+    newSourceName = '';
+    newSourceUrl = '';
+    bulkImportText = '';
+    bulkImporting = false;
+    bulkImportStatus = '';
+
+    mcpServers: McpServerEntry[] = [];
+    mcpServersLoading = false;
+    mcpServerStatus = '';
+    newMcpServer: CreateMcpServerRequest = this.emptyMcpServer();
+
+    instructionsUserId = '';
     instructions: AgentInstructionEntry[] = [];
     newName = '';
     newDescription = '';
@@ -70,9 +122,15 @@ export class AdminSettingsDrawerComponent implements OnChanges {
 
     ngOnChanges(): void {
         if (this.visible) {
+            this.instructionsUserId ||= this.auth.user()?.id || '';
             this.view = 'menu';
-            this.loadSettings();
+            if (this.isAdmin) this.loadSettings();
         }
+    }
+
+    /** Every endpoint behind this drawer sits on the exec-agent admin router. */
+    get isAdmin(): boolean {
+        return this.auth.isAdmin();
     }
 
     get drawerTitle(): string {
@@ -83,6 +141,12 @@ export class AdminSettingsDrawerComponent implements OnChanges {
             skills: this.translate.instant('executiveSummary.adminSettings.skills'),
             general: this.translate.instant('executiveSummary.adminSettings.general'),
             logs: this.translate.instant('executiveSummary.adminSettings.logs'),
+            retention: this.translate.instant('executiveSummary.adminSettings.retention'),
+            'moderation-model': this.translate.instant('executiveSummary.adminSettings.modelModeration'),
+            'fallback-providers': this.translate.instant('executiveSummary.adminSettings.fallbackProviders'),
+            'mcp-servers': this.translate.instant('executiveSummary.adminSettings.mcpServers'),
+            presenton: this.translate.instant('executiveSummary.adminSettings.presenton'),
+            'web-search': this.translate.instant('executiveSummary.adminSettings.webSearch'),
         };
         return titles[this.view];
     }
@@ -107,6 +171,17 @@ export class AdminSettingsDrawerComponent implements OnChanges {
                 name,
                 termsText: terms.join(', '),
             }));
+            this.errorLogRetentionDays = res.error_log_retention_days ?? null;
+            this.telemetryRetentionDays = res.telemetry_retention_days ?? null;
+            this.moderationFlagRetentionDays = res.moderation_flag_retention_days ?? null;
+            this.auditLogRetentionDays = res.audit_log_retention_days ?? null;
+            this.modelModerationEnabled = res.model_moderation_enabled;
+            this.modelModerationThreshold = res.model_moderation_threshold;
+            this.fallbackProviderOrder = (res.fallback_provider_order || []) as Provider[];
+            this.presentonEnabled = res.presenton_enabled;
+            this.presentonBaseUrl = res.presenton_base_url || '';
+            this.presentonTemplateName = res.presenton_template_name || '';
+            this.webSearchEnabled = res.web_search_enabled;
         } finally {
             this.loading = false;
         }
@@ -152,10 +227,25 @@ export class AdminSettingsDrawerComponent implements OnChanges {
                 arabic_enabled: this.arabicEnabled,
                 allowed_file_types: this.allowedFileTypes,
                 enabled_frameworks: this.enabledFrameworks,
+                model_moderation_enabled: this.modelModerationEnabled,
+                model_moderation_threshold: this.modelModerationThreshold,
+                error_log_retention_days: this.errorLogRetentionDays,
+                telemetry_retention_days: this.telemetryRetentionDays,
+                moderation_flag_retention_days: this.moderationFlagRetentionDays,
+                audit_log_retention_days: this.auditLogRetentionDays,
+                fallback_provider_order: this.fallbackProviderOrder,
+                presenton_enabled: this.presentonEnabled,
+                presenton_base_url: this.presentonBaseUrl || null,
+                presenton_api_key: this.presentonApiKeyInput || null,
+                presenton_template_name: this.presentonTemplateName || null,
+                web_search_enabled: this.webSearchEnabled,
+                tavily_api_key: this.tavilyApiKeyInput || null,
             });
             this.openaiKeyInput = '';
             this.anthropicKeyInput = '';
             this.qwenKeyInput = '';
+            this.presentonApiKeyInput = '';
+            this.tavilyApiKeyInput = '';
             this.saveStatus = this.translate.instant('executiveSummary.adminSettings.saved');
             setTimeout(() => (this.saveStatus = ''), 3000);
         } catch {
@@ -222,5 +312,143 @@ export class AdminSettingsDrawerComponent implements OnChanges {
     async removeInstruction(id: number): Promise<void> {
         await this.api.deleteInstruction(id);
         this.instructions = this.instructions.filter(i => i.id !== id);
+    }
+
+    providerLabel(provider: Provider): string {
+        return provider === 'qwen' ? 'Qwen' : provider === 'openai' ? 'OpenAI' : 'Claude';
+    }
+
+    setFallbackProvider(index: number, value: string): void {
+        const next = [...this.fallbackProviderOrder];
+        if (!value) next.splice(index, 1);
+        else next[index] = value as Provider;
+        this.fallbackProviderOrder = next.filter(Boolean);
+    }
+
+    async deleteCurrentUserData(): Promise<void> {
+        const userId = this.auth.user()?.id;
+        if (!userId || !confirm(this.translate.instant('executiveSummary.adminSettings.deleteDataConfirm'))) return;
+        this.deletingUserData = true;
+        this.deleteUserDataStatus = '';
+        try {
+            const response = await this.api.deleteUserData(userId);
+            const total = Object.values(response.deleted_counts).reduce((sum, value) => sum + value, 0);
+            this.deleteUserDataStatus = this.translate.instant('executiveSummary.adminSettings.deleteDataSuccess', { total });
+        } catch {
+            this.deleteUserDataStatus = this.translate.instant('executiveSummary.adminSettings.deleteDataFailed');
+        } finally {
+            this.deletingUserData = false;
+        }
+    }
+
+    get trustedSourceCategories(): string[] {
+        return [...new Set(this.trustedSources.map(source => source.category))];
+    }
+
+    trustedSourcesFor(category: string): TrustedSourceEntry[] {
+        return this.trustedSources.filter(source => source.category === category);
+    }
+
+    async loadTrustedSources(): Promise<void> {
+        this.trustedSourcesLoading = true;
+        try {
+            this.trustedSources = await this.api.listTrustedSources();
+        } catch {
+            this.trustedSources = [];
+        } finally {
+            this.trustedSourcesLoading = false;
+        }
+    }
+
+    async addTrustedSource(): Promise<void> {
+        if (!this.newSourceCategory.trim() || !this.newSourceName.trim() || !this.newSourceUrl.trim()) return;
+        try {
+            const source = await this.api.createTrustedSource({
+                category: this.newSourceCategory.trim(),
+                name: this.newSourceName.trim(),
+                url: this.newSourceUrl.trim(),
+            });
+            this.trustedSources = [...this.trustedSources, source];
+            this.newSourceCategory = '';
+            this.newSourceName = '';
+            this.newSourceUrl = '';
+        } catch {
+            this.toastr.error(this.translate.instant('executiveSummary.adminSettings.integrationUnavailable'));
+        }
+    }
+
+    async deleteTrustedSource(id: number): Promise<void> {
+        try {
+            await this.api.deleteTrustedSource(id);
+            this.trustedSources = this.trustedSources.filter(source => source.id !== id);
+        } catch {
+            this.toastr.error(this.translate.instant('executiveSummary.adminSettings.integrationUnavailable'));
+        }
+    }
+
+    async bulkImport(): Promise<void> {
+        if (!this.bulkImportText.trim()) return;
+        this.bulkImporting = true;
+        this.bulkImportStatus = '';
+        try {
+            const response = await this.api.bulkImportTrustedSources(this.bulkImportText);
+            this.trustedSources = [...this.trustedSources, ...response.imported];
+            this.bulkImportText = '';
+            this.bulkImportStatus = this.translate.instant('executiveSummary.adminSettings.importSuccess', {
+                count: response.count,
+            });
+        } catch {
+            this.bulkImportStatus = this.translate.instant('executiveSummary.adminSettings.importFailed');
+        } finally {
+            this.bulkImporting = false;
+        }
+    }
+
+    async loadMcpServers(): Promise<void> {
+        this.mcpServersLoading = true;
+        this.mcpServerStatus = '';
+        try {
+            this.mcpServers = await this.api.adminListMcpServers();
+        } catch {
+            this.mcpServers = [];
+            this.mcpServerStatus = this.translate.instant('executiveSummary.adminSettings.integrationUnavailable');
+        } finally {
+            this.mcpServersLoading = false;
+        }
+    }
+
+    async addMcpServer(): Promise<void> {
+        if (!this.newMcpServer.name.trim() || !this.newMcpServer.base_url.trim()) return;
+        try {
+            const server = await this.api.adminCreateMcpServer(this.newMcpServer);
+            this.mcpServers = [...this.mcpServers, server];
+            this.newMcpServer = this.emptyMcpServer();
+        } catch {
+            this.mcpServerStatus = this.translate.instant('executiveSummary.adminSettings.integrationUnavailable');
+        }
+    }
+
+    async deleteMcpServer(id: string): Promise<void> {
+        try {
+            await this.api.adminDeleteMcpServer(id);
+            this.mcpServers = this.mcpServers.filter(server => server.id !== id);
+        } catch {
+            this.mcpServerStatus = this.translate.instant('executiveSummary.adminSettings.integrationUnavailable');
+        }
+    }
+
+    private emptyMcpServer(): CreateMcpServerRequest {
+        return {
+            name: '',
+            description: '',
+            base_url: '',
+            auth_type: 'oauth',
+            oauth_authorize_url: '',
+            oauth_token_url: '',
+            oauth_client_id: '',
+            oauth_client_secret: '',
+            oauth_scopes: '',
+            static_api_key: '',
+        };
     }
 }
