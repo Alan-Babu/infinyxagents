@@ -9,6 +9,7 @@ import {
     BulkImportTrustedSourcesResponse,
     ConversationDetail,
     ConversationSearchParams,
+    CountryDashboardData,
     CreateMcpServerRequest,
     CreateTrustedSourceRequest,
     ErrorLogEntry,
@@ -172,6 +173,7 @@ export class ExecSummaryApiService extends ExecSummaryApiBase {
         sources?: SourceHit[],
         exportEngine?: 'local' | 'gamma' | 'presenton' | 'pptgenx',
         classification?: string,
+        dashboardData?: CountryDashboardData | null,
     ): Promise<ExportResponse> {
         return this.post<ExportResponse>(`${ExecSummaryApiPaths.session}/${encodeURIComponent(sessionId)}/export`, {
             format,
@@ -182,6 +184,9 @@ export class ExecSummaryApiService extends ExecSummaryApiBase {
             sources: sources?.length ? sources : null,
             export_engine: exportEngine ?? null,
             classification: classification || null,
+            // Only meaningful for export_engine "pptgenx" — see
+            // ExportRequest.dashboard_data's docstring on the backend.
+            dashboard_data: dashboardData || null,
         });
     }
 

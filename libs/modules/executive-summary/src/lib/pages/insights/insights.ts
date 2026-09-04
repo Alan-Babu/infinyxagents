@@ -799,6 +799,8 @@ export class InsightsPage implements OnInit {
                 this.exportCreatedBy,
                 this.briefSources,
                 this.exportEngineKey(),
+                undefined,
+                this.dashboardData,
             );
             this.exporting = false;
             window.open(this.api.downloadUrl(res.file_name), '_blank');
@@ -929,6 +931,8 @@ export class InsightsPage implements OnInit {
                 this.exportCreatedBy,
                 this.briefSources,
                 this.exportEngineKey(),
+                undefined,
+                this.dashboardData,
             );
             this.translatedExportBusy = false;
             window.open(this.api.downloadUrl(res.file_name), '_blank');
@@ -953,6 +957,8 @@ export class InsightsPage implements OnInit {
                 this.exportCreatedBy,
                 [],
                 this.exportEngineKey(),
+                undefined,
+                detail.dashboard_data,
             );
             this.downloadingRecentId = null;
             window.open(this.api.downloadUrl(res.file_name), '_blank');
