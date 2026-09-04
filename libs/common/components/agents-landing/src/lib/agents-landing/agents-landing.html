@@ -9,6 +9,16 @@
             <span class="text-xs font-bold" [class.text-primary-600]="selectedFilter === 'all'"
                 [class.text-gray-400]="selectedFilter !== 'all'">{{ tiles.length }}</span>
         </button>
+        
+        <button type="button" (click)="selectFilter('pinned')"
+            class="flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg px-3 py-2 text-start text-sm font-semibold transition"
+            [class.bg-primary-50]="selectedFilter === 'pinned'" [class.text-primary-700]="selectedFilter === 'pinned'"
+            [class.text-gray-600]="selectedFilter !== 'pinned'" [class.hover:bg-gray-50]="selectedFilter !== 'pinned'">
+            <span class="flex items-center gap-2"><i class="pi pi-star text-sm"></i> {{ 'agentsLanding.pinned' |
+                translate }}</span>
+            <span class="text-xs font-bold" [class.text-primary-600]="selectedFilter === 'pinned'"
+                [class.text-gray-400]="selectedFilter !== 'pinned'">{{ pinnedCount }}</span>
+        </button>
 
         <div class="mb-2 mt-6 px-3 text-xs font-bold uppercase tracking-wide text-gray-400">{{
             'agentsLanding.categoriesLabel' | translate }}</div>
@@ -27,21 +37,9 @@
             </button>
             }
         </div>
-
-        <div class="mb-2 mt-6 px-3 text-xs font-bold uppercase tracking-wide text-gray-400">{{
-            'agentsLanding.quickAccess' | translate }}</div>
-        <button type="button" (click)="selectFilter('pinned')"
-            class="flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg px-3 py-2 text-start text-sm font-semibold transition"
-            [class.bg-primary-50]="selectedFilter === 'pinned'" [class.text-primary-700]="selectedFilter === 'pinned'"
-            [class.text-gray-600]="selectedFilter !== 'pinned'" [class.hover:bg-gray-50]="selectedFilter !== 'pinned'">
-            <span class="flex items-center gap-2"><i class="pi pi-star text-sm"></i> {{ 'agentsLanding.pinned' |
-                translate }}</span>
-            <span class="text-xs font-bold" [class.text-primary-600]="selectedFilter === 'pinned'"
-                [class.text-gray-400]="selectedFilter !== 'pinned'">{{ pinnedCount }}</span>
-        </button>
     </aside>
 
-    <div class="min-w-0 flex-1 overflow-auto">
+    <div #contentScroll class="min-w-0 flex-1 overflow-auto" (scroll)="onContentScroll()">
         <div class="px-6 py-10 sm:px-8">
             <div class="relative mb-8 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 px-6 py-8 sm:px-8">
                 <h1 class="relative text-2xl font-bold text-gray-800">{{ "agentsLanding.greeting" | translate: { name:
@@ -72,13 +70,11 @@
             </div>
 
             @if (categories.length === 0 && pinnedTiles.length === 0) {
-            <lib-no-data
-                [message]="(selectedFilter === 'pinned' ? 'agentsLanding.noPinned' : 'agentsLanding.noResults') | translate"
-                icon="pi pi-search" />
+            <lib-no-data [message]="'agentsLanding.noResults' | translate" icon="pi pi-search" />
             }
 
-            @if (selectedFilter === 'all' && pinnedTiles.length > 0) {
-            <div
+            @if (pinnedTiles.length > 0) {
+            <div id="section-pinned"
                 class="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-gray-400">
                 <i class="pi pi-star"></i>
                 <span>{{ 'agentsLanding.pinned' | translate }}</span>
@@ -93,7 +89,7 @@
             }
 
             @for (category of categories; track category.key) {
-            <div
+            <div [id]="'section-' + category.key"
                 class="mb-4 mt-8 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-gray-400 first:mt-0">
                 <i [class]="category.icon"></i>
                 <span>{{ category.key | translate }}</span>

@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, Input, inject, signal } from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import { Component, ElementRef, Input, ViewChild, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -155,11 +155,13 @@ export class AgentsLanding {
     private readonly router = inject(Router);
     private readonly common = inject(CommonService);
     private readonly storage = inject(StorageService);
+    private readonly document = inject(DOCUMENT);
 
     @Input() tiles: AgentTile[] = [];
+    @ViewChild('contentScroll') private contentScroll?: ElementRef<HTMLElement>;
 
     search = '';
-    /** `all` = "All agents", `'pinned'` = the Quick Access filter, otherwise a `categoryKey`. */
+    /** `all` = "All agents", `'pinned'` = the Quick Access section, otherwise a `categoryKey` — tracks which nav item was last clicked, purely for highlighting; it no longer filters what's shown. */
     selectedFilter = "all";
 
     private readonly pinnedIds = signal<string[]>(this.storage.getItem(LocalStorage.PinnedAgents) ?? []);
@@ -191,7 +193,7 @@ export class AgentsLanding {
         return this.pinnedIds().includes(tile.id);
     }
 
-    /** Pinned tiles, search-filtered — shown as their own row above the categories, only for the "All agents" filter. */
+    /** Pinned tiles, search-filtered — shown as their own row above the categories. */
     get pinnedTiles(): AgentTile[] {
         const q = this.search.trim().toLowerCase();
         let filtered = this.tiles.filter(t => this.isPinned(t));
@@ -210,19 +212,51 @@ export class AgentsLanding {
         this.storage.setItem(LocalStorage.PinnedAgents, next);
     }
 
+    /** Jumps to the clicked nav item's section instead of filtering the page down to it — every group stays rendered. */
     selectFilter(key: string): void {
         this.selectedFilter = key;
+
+        if (key === 'all') {
+            this.contentScroll?.nativeElement.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+        }
+
+        const id = key === 'pinned' ? 'section-pinned' : `section-${key}`;
+        this.document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    private scrollSpyTicking = false;
+
+    /** Keeps the sidebar/pill highlight in sync while the user scrolls the content pane by hand. */
+    onContentScroll(): void {
+        if (this.scrollSpyTicking) return;
+        this.scrollSpyTicking = true;
+        requestAnimationFrame(() => {
+            this.updateActiveSectionFromScroll();
+            this.scrollSpyTicking = false;
+        });
+    }
+
+    private updateActiveSectionFromScroll(): void {
+        const container = this.contentScroll?.nativeElement;
+        if (!container) return;
+
+        const sections = Array.from(container.querySelectorAll<HTMLElement>('[id^="section-"]'));
+        const containerTop = container.getBoundingClientRect().top;
+        const offset = 32; // treat a section as active once its heading nears the top of the pane
+
+        let active: string | null = null;
+        for (const el of sections) {
+            if (el.getBoundingClientRect().top - containerTop <= offset) {
+                active = el.id;
+            }
+        }
+        this.selectedFilter = active ? active.slice('section-'.length) : 'all';
     }
 
     get categories(): TileCategory[] {
         const q = this.search.trim().toLowerCase();
         let filtered = this.tiles;
-
-        if (this.selectedFilter === 'pinned') {
-            filtered = filtered.filter(t => this.isPinned(t));
-        } else if (this.selectedFilter != 'all') {
-            filtered = filtered.filter(t => t.categoryKey === this.selectedFilter);
-        }
 
         if (q) {
             filtered = filtered.filter(t => this.translate.instant(t.nameKey).toLowerCase().includes(q));
