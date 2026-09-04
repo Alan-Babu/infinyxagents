@@ -1,8 +1,16 @@
 import { inject, Inject, Injectable } from '@angular/core';
 import { ApiError, ApiErrorBody, AppConfig } from '@nfinyx/types';
 import { APP_CONFIG } from './app-config';
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpEventType, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+
+/** One line of a newline-delimited JSON stream from a `postStream` endpoint. */
+export interface StreamEvent {
+    type: 'delta' | 'done' | 'error';
+    text?: string;
+    message?: string;
+    [key: string]: unknown;
+}
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -47,6 +55,80 @@ export class ApiService {
     post<T>(path: string, body: unknown): Promise<T> {
         return firstValueFrom(this.http.post<T>(this.url(path), body)).catch(err => {
             throw this.toApiError(err);
+        });
+    }
+
+    /**
+     * Posts to a newline-delimited-JSON streaming endpoint (each line one
+     * `StreamEvent`) and resolves with the `"done"` event's payload once
+     * the stream ends, calling `onDelta` for every `"delta"` event along
+     * the way so the caller can render partial content as it arrives
+     * instead of waiting for the whole response.
+     *
+     * Built on HttpClient's DownloadProgress events (`responseType: 'text'`,
+     * `reportProgress: true`) rather than the native EventSource API —
+     * EventSource is GET-only and can't carry the Authorization header
+     * AuthInterceptor attaches to every request, while this stays on the
+     * same HttpClient/interceptor pipeline as every other call here.
+     * `partialText` on each progress event is the FULL response text
+     * received so far (not just the new bytes), so only the newly-arrived
+     * suffix is parsed each time; a trailing incomplete line is held back
+     * until the next event (or the final Response event) completes it.
+     */
+    postStream<TDone extends Record<string, unknown>>(
+        path: string,
+        body: unknown,
+        onDelta: (text: string) => void,
+    ): Promise<TDone> {
+        return new Promise<TDone>((resolve, reject) => {
+            let seenLength = 0;
+            let carry = '';
+            let settled = false;
+
+            const consume = (fullTextSoFar: string, isFinal: boolean) => {
+                const newText = fullTextSoFar.slice(seenLength);
+                seenLength = fullTextSoFar.length;
+                carry += newText;
+                const lines = carry.split('\n');
+                carry = isFinal ? '' : (lines.pop() ?? '');
+                for (const line of lines) {
+                    const trimmed = line.trim();
+                    if (!trimmed || settled) continue;
+                    let evt: StreamEvent;
+                    try {
+                        evt = JSON.parse(trimmed);
+                    } catch {
+                        continue; // an incomplete/malformed line - ignore rather than fail the whole stream
+                    }
+                    if (evt.type === 'delta') {
+                        if (evt.text) onDelta(evt.text);
+                    } else if (evt.type === 'done') {
+                        settled = true;
+                        resolve(evt as unknown as TDone);
+                    } else if (evt.type === 'error') {
+                        settled = true;
+                        reject(new ApiError(evt.message || 'Stream failed', 0, null));
+                    }
+                }
+            };
+
+            this.http
+                .post(this.url(path), body, { observe: 'events', responseType: 'text', reportProgress: true })
+                .subscribe({
+                    next: event => {
+                        if (event.type === HttpEventType.DownloadProgress) {
+                            consume(event.partialText ?? '', false);
+                        } else if (event.type === HttpEventType.Response) {
+                            consume((event.body as string) ?? '', true);
+                            if (!settled) {
+                                reject(new ApiError('Stream ended without a result', 0, null));
+                            }
+                        }
+                    },
+                    error: err => {
+                        if (!settled) reject(this.toApiError(err));
+                    },
+                });
         });
     }
 

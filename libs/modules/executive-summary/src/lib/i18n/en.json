@@ -355,6 +355,7 @@
             "countryDashboardCheckboxHint": "Trade volume trend, UAE investment by sector, embassy presence, risk overview, last meetings, consular/shared services. Best-available public knowledge, not live data.",
             "generateBrief": "Generate brief",
             "preparingBrief": "Preparing your brief…",
+            "generatingLive": "Generating…",
             "previousResearch": "Previous research",
             "nextResearch": "Next research",
             "researchXOfY": "Research {{ current }} of {{ total }}",

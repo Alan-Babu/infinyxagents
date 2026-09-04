@@ -39,7 +39,7 @@ import {
     SourceHit,
 } from '../../models/executive-summary.models';
 
-type Stage = 'idle' | 'clarifying' | 'params' | 'loading' | 'result';
+type Stage = 'idle' | 'clarifying' | 'params' | 'loading' | 'streaming' | 'result';
 type SaveStage = 'prompt' | 'form' | 'saved' | 'skipped';
 type ActionStage = 'prompt' | 'share' | 'task' | 'dismissed';
 type ScheduleStage = 'prompt' | 'form' | 'saved' | 'skipped';
@@ -337,6 +337,15 @@ export class InsightsPage implements OnInit {
     dashboardData: CountryDashboardData | null = null;
     telemetry: ResponseTelemetry | null = null;
 
+    // stage 'streaming' — live-updating preview while generate/stream is
+    // still arriving; replaced wholesale by the real sections-based view
+    // (see applyBrief) once the stream finishes, so this only ever needs
+    // to render as one continuous block, not the full framework-badge/
+    // section-pagination treatment the final result gets.
+    streamingHtml = '';
+    private streamingMarkdown = '';
+    private streamingLastRenderAt = 0;
+
     sections: BriefSection[] = [];
     readMode: 'full' | 'sections' = 'full';
     currentSectionIndex = 0;
@@ -572,7 +581,7 @@ export class InsightsPage implements OnInit {
             this.refineBrief();
             return;
         }
-        if (!this.topic.trim() || this.stage === 'loading') return;
+        if (!this.topic.trim() || this.stage === 'loading' || this.stage === 'streaming') return;
         this.startResearch();
     }
 
@@ -720,24 +729,31 @@ export class InsightsPage implements OnInit {
     }
 
     async generateBrief(errorStage: Stage = 'params'): Promise<void> {
-        this.stage = 'loading';
+        this.stage = 'streaming';
+        this.streamingMarkdown = '';
+        this.streamingHtml = '';
+        this.streamingLastRenderAt = 0;
         this.errorMessage = '';
         this.moderationBlocked = false;
         this.quotaExceeded = false;
         try {
-            const res = await this.api.generate(this.sessionId, {
-                length: this.lengthKey(this.length),
-                custom_word_count: this.length === 'Custom' ? this.customWordCount : null,
-                framework: this.framework as Framework,
-                audience: this.audience || null,
-                output_format: 'html',
-                provider: this.providerKey(this.provider),
-                personnel_profile: this.personnelProfile,
-                country_dashboard: this.countryDashboard,
-                source: this.source,
-                mcp_connection_id: this.mcpConnectionId,
-                user_id: this.backendUserId,
-            });
+            const res = await this.api.generateStream(
+                this.sessionId,
+                {
+                    length: this.lengthKey(this.length),
+                    custom_word_count: this.length === 'Custom' ? this.customWordCount : null,
+                    framework: this.framework as Framework,
+                    audience: this.audience || null,
+                    output_format: 'html',
+                    provider: this.providerKey(this.provider),
+                    personnel_profile: this.personnelProfile,
+                    country_dashboard: this.countryDashboard,
+                    source: this.source,
+                    mcp_connection_id: this.mcpConnectionId,
+                    user_id: this.backendUserId,
+                },
+                delta => this.onBriefStreamDelta(delta),
+            );
             this.applyBrief(res.title, res.content_markdown, res.sources ?? []);
             this.wordCount = res.word_count;
             this.dashboardData = res.dashboard_data || null;
@@ -1119,6 +1135,24 @@ export class InsightsPage implements OnInit {
         this.translatedExportAccepted = false;
         this.translatedExportFormat = 'Word (.docx)';
         this.resultComposerMode = 'refine';
+    }
+
+    /**
+     * Appends one streamed chunk and re-renders the live preview - throttled
+     * to roughly every 120ms rather than on every chunk (a full brief can
+     * arrive as 1000+ small deltas; re-running marked.parse on the whole
+     * accumulated markdown that often would be wasted work for a UI update
+     * nobody can actually perceive at that rate). The throttled view is
+     * discarded once generateBrief() finishes and applyBrief() takes over
+     * with the real sections-based rendering, so there's no need to force
+     * one last full render here.
+     */
+    private onBriefStreamDelta(delta: string): void {
+        this.streamingMarkdown += delta;
+        const now = Date.now();
+        if (now - this.streamingLastRenderAt < 120) return;
+        this.streamingLastRenderAt = now;
+        this.streamingHtml = marked.parse(this.streamingMarkdown) as string;
     }
 
     private applyBrief(title: string, markdown: string, sources: SourceHit[]): void {
