@@ -288,7 +288,11 @@ html.theme-pink {
 }
 
 app-dashboard {
-    @apply block w-full overflow-y-auto;
+    @apply flex w-full overflow-y-auto;
+}
+
+app-dashboard:has(lib-agents-landing) {
+    @apply overflow-hidden;
 }
 
 /* PrimeNG popover utility classes mirrored from SAMPLE_UI */

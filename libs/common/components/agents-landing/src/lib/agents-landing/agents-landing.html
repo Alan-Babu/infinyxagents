@@ -1,40 +1,172 @@
-<div class="mx-auto max-w-5xl px-6 py-10 sm:px-8">
-    <div class="mb-8">
-        <h1 class="text-2xl font-bold text-gray-800">{{ "agentsLanding.greeting" | translate: { name: userName } }}</h1>
-        <p class="mt-1.5 text-sm text-gray-500">{{ "agentsLanding.subtitle" | translate }}</p>
-    </div>
+<div class="flex h-full min-h-0">
+    <aside class="hidden w-72 shrink-0 overflow-y-auto border-e border-gray-200 bg-white px-4 py-6 md:block">
+        <button type="button" (click)="selectFilter('all')"
+            class="flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg px-3 py-2 text-start font-semibold transition"
+            [class.bg-primary-50]="selectedFilter === 'all'" [class.text-primary-700]="selectedFilter === 'all'"
+            [class.text-gray-600]="selectedFilter !== 'all'" [class.hover:bg-gray-50]="selectedFilter !== 'all'">
+            <span class="flex items-center gap-2"><i class="pi pi-th-large text-sm"></i> {{ 'agentsLanding.allAgents' |
+                translate }}</span>
+            <span class="text-xs font-bold" [class.text-primary-600]="selectedFilter === 'all'"
+                [class.text-gray-400]="selectedFilter !== 'all'">{{ tiles.length }}</span>
+        </button>
+        
+        <button type="button" (click)="selectFilter('pinned')"
+            class="flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg px-3 py-2 text-start text-sm font-semibold transition"
+            [class.bg-primary-50]="selectedFilter === 'pinned'" [class.text-primary-700]="selectedFilter === 'pinned'"
+            [class.text-gray-600]="selectedFilter !== 'pinned'" [class.hover:bg-gray-50]="selectedFilter !== 'pinned'">
+            <span class="flex items-center gap-2"><i class="pi pi-star text-sm"></i> {{ 'agentsLanding.pinned' |
+                translate }}</span>
+            <span class="text-xs font-bold" [class.text-primary-600]="selectedFilter === 'pinned'"
+                [class.text-gray-400]="selectedFilter !== 'pinned'">{{ pinnedCount }}</span>
+        </button>
 
-    <span class="relative mb-8 flex">
-        <i class="pi pi-search absolute start-4 top-1/2 -translate-y-1/2 text-sm text-gray-400"></i>
-        <input pInputText type="text" class="w-full rounded-lg! py-3! ps-11!" [placeholder]="'agentsLanding.searchPlaceholder' | translate" [(ngModel)]="search" />
-    </span>
+        <div class="mb-2 mt-6 px-3 text-xs font-bold uppercase tracking-wide text-gray-400">{{
+            'agentsLanding.categoriesLabel' | translate }}</div>
+        <div class="flex flex-col gap-0.5">
+            @for (category of allCategories; track category.key) {
+            <button type="button" (click)="selectFilter(category.key)"
+                class="flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg px-3 py-2 text-start font-semibold transition"
+                [class.bg-primary-50]="selectedFilter === category.key"
+                [class.text-primary-700]="selectedFilter === category.key"
+                [class.text-gray-600]="selectedFilter !== category.key"
+                [class.hover:bg-gray-50]="selectedFilter !== category.key">
+                <span class="flex items-center gap-2"><i [class]="category.icon" class="text-sm shrink-0"></i> {{
+                    category.key | translate }}</span>
+                <span class="text-xs font-bold" [class.text-primary-600]="selectedFilter === category.key"
+                    [class.text-gray-400]="selectedFilter !== category.key">{{ category.tiles.length }}</span>
+            </button>
+            }
+        </div>
+    </aside>
 
-    @for (category of categories; track category.key) {
-    <div class="mb-3 mt-7 text-xs font-bold uppercase tracking-wide text-gray-400 first:mt-0">{{ category.key | translate }}</div>
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-        @for (tile of category.tiles; track tile.id) {
-        <a [routerLink]="tile.link" (click)="onTileClick($event, tile)"
-            class="flex cursor-pointer items-start gap-3 rounded-lg border border-gray-200 bg-white p-4 text-start transition hover:border-primary-300">
-            <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
-                [class.bg-primary-50]="(tile.accent || 'primary') === 'primary'" [class.text-primary-600]="(tile.accent || 'primary') === 'primary'"
-                [class.bg-sky-50]="tile.accent === 'sky'" [class.text-sky-600]="tile.accent === 'sky'"
-                [class.bg-violet-50]="tile.accent === 'violet'" [class.text-violet-600]="tile.accent === 'violet'"
-                [class.bg-amber-50]="tile.accent === 'amber'" [class.text-amber-600]="tile.accent === 'amber'">
-                <i [class]="tile.icon"></i>
-            </span>
-            <span class="min-w-0 flex-1">
-                <span class="flex items-center gap-2 justify-between">
-                    <span class="font-semibold text-gray-900">{{ tile.nameKey | translate }}</span>
+    <div #contentScroll class="min-w-0 flex-1 overflow-auto" (scroll)="onContentScroll()">
+        <div class="px-6 py-10 sm:px-8">
+            <div class="relative mb-8 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 px-6 py-8 sm:px-8">
+                <h1 class="relative text-2xl font-bold text-gray-800">{{ "agentsLanding.greeting" | translate: { name:
+                    userName } }}</h1>
+                <p class="relative mt-1.5 mb-5 text-sm text-gray-500">{{ "agentsLanding.subtitle" | translate }}</p>
+
+                <span class="relative mb-5 flex">
+                    <i class="pi pi-search absolute start-4 top-1/2 -translate-y-1/2 text-sm text-gray-400"></i>
+                    <input pInputText type="text" class="w-full rounded-lg! py-3! ps-11!"
+                        [placeholder]="'agentsLanding.searchPlaceholder' | translate" [(ngModel)]="search" />
+                </span>
+
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" pButton size="small" [outlined]="selectedFilter !== 'all' ? true : null"
+                        [severity]="selectedFilter === 'all' ? 'primary' : 'secondary'"
+                        class="cursor-pointer! rounded-lg!" (click)="selectFilter('all')">
+                        <span>{{ 'agentsLanding.allAgents' | translate }}</span>
+                    </button>
+                    @for (category of allCategories; track category.key) {
+                    <button type="button" pButton size="small" [outlined]="selectedFilter !== category.key ? true : null"
+                        [severity]="selectedFilter === category.key ? 'primary' : 'secondary'"
+                        class="cursor-pointer! rounded-lg!" (click)="selectFilter(category.key)">
+                        <span>{{ category.key | translate }}</span>
+                    </button>
+                    }
+                </div>
+
+            </div>
+
+            @if (categories.length === 0 && pinnedTiles.length === 0) {
+            <lib-no-data [message]="'agentsLanding.noResults' | translate" icon="pi pi-search" />
+            }
+
+            @if (pinnedTiles.length > 0) {
+            <div id="section-pinned"
+                class="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-gray-400">
+                <i class="pi pi-star"></i>
+                <span>{{ 'agentsLanding.pinned' | translate }}</span>
+                <span class="normal-case tracking-normal text-gray-300">{{ pinnedTiles.length }} {{
+                    (pinnedTiles.length === 1 ? 'agentsLanding.agent' : 'agentsLanding.agents') | translate }}</span>
+            </div>
+            <div class="mb-8 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-6">
+                @for (tile of pinnedTiles; track tile.id) {
+                <ng-container [ngTemplateOutlet]="tileCard" [ngTemplateOutletContext]="{ tile, compact: true }" />
+                }
+            </div>
+            }
+
+            @for (category of categories; track category.key) {
+            <div [id]="'section-' + category.key"
+                class="mb-4 mt-8 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-gray-400 first:mt-0">
+                <i [class]="category.icon"></i>
+                <span>{{ category.key | translate }}</span>
+                <span class="normal-case tracking-normal text-gray-300">{{ category.tiles.length }} {{
+                    (category.tiles.length === 1 ? 'agentsLanding.agent' : 'agentsLanding.agents') | translate }}</span>
+            </div>
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                @for (tile of category.tiles; track tile.id) {
+                <ng-container [ngTemplateOutlet]="tileCard" [ngTemplateOutletContext]="{ tile }" />
+                }
+            </div>
+            }
+        </div>
+
+        <ng-template #tileCard let-tile="tile" let-compact="compact">
+            @if (compact) {
+            <a [routerLink]="tile.link" (click)="onTileClick($event, tile)"
+                class="group relative flex cursor-pointer flex-col items-start gap-3 rounded-lg border border-gray-200 bg-white p-4 text-start transition hover:border-primary-300">
+                <button type="button" (click)="togglePin($event, tile)"
+                    class="absolute end-2 top-2 cursor-pointer text-gray-300 transition" [class.text-primary-500]="isPinned(tile)"
+                    [attr.aria-label]="(isPinned(tile) ? 'agentsLanding.unpin' : 'agentsLanding.pin') | translate">
+                    <i class="pi text-sm" [class.pi-star-fill]="isPinned(tile)" [class.pi-star]="!isPinned(tile)"></i>
+                </button>
+                <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+                    [class.bg-primary-50]="(tile.accent || 'primary') === 'primary'"
+                    [class.text-primary-600]="(tile.accent || 'primary') === 'primary'"
+                    [class.bg-sky-50]="tile.accent === 'sky'" [class.text-sky-600]="tile.accent === 'sky'"
+                    [class.bg-violet-50]="tile.accent === 'violet'"
+                    [class.text-violet-600]="tile.accent === 'violet'" [class.bg-amber-50]="tile.accent === 'amber'"
+                    [class.text-amber-600]="tile.accent === 'amber'">
+                    <i class="text-lg" [class]="tile.icon"></i>
+                </span>
+                <span class="min-w-0">
+                    <span class="block truncate font-semibold text-gray-900">{{ tile.nameKey | translate }}</span>
                     @if (tile.badge) {
-                    <span class="inline-flex shrink-0 items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-green-700">
-                        <span class="h-1.5 w-1.5 rounded-full bg-current"></span> {{ tile.badge }}
+                    <span class="mt-0.5 inline-flex items-center gap-1 text-xs font-semibold text-green-600">
+                        <span class="h-1.5 w-1.5 rounded-full bg-current"></span> {{ 'agentsLanding.live' | translate }}
                     </span>
                     }
                 </span>
-                <span class="mt-0.5 block text-sm leading-snug text-gray-500">{{ tile.descriptionKey | translate }}</span>
-            </span>
-        </a>
-        }
+            </a>
+            } @else {
+            <a [routerLink]="tile.link" (click)="onTileClick($event, tile)"
+                class="group flex cursor-pointer items-start gap-4 rounded-lg border border-gray-200 bg-white p-5 text-start transition hover:border-primary-300">
+                <span class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg"
+                    [class.bg-primary-50]="(tile.accent || 'primary') === 'primary'"
+                    [class.text-primary-600]="(tile.accent || 'primary') === 'primary'"
+                    [class.bg-sky-50]="tile.accent === 'sky'" [class.text-sky-600]="tile.accent === 'sky'"
+                    [class.bg-violet-50]="tile.accent === 'violet'"
+                    [class.text-violet-600]="tile.accent === 'violet'" [class.bg-amber-50]="tile.accent === 'amber'"
+                    [class.text-amber-600]="tile.accent === 'amber'">
+                    <i class="text-xl" [class]="tile.icon"></i>
+                </span>
+                <span class="min-w-0 flex-1">
+                    <span class="flex items-center gap-2 justify-between">
+                        <span class="font-semibold text-lg text-gray-900">{{ tile.nameKey | translate }}</span>
+                        <span class="flex shrink-0 items-center gap-2">
+                            @if (tile.badge) {
+                            <span
+                                class="inline-flex items-center gap-1 text-sm font-semibold text-green-600 bg-green-100 rounded-lg px-2 py-0.5">
+                                <span class="h-1.5 w-1.5 rounded-full bg-current"></span> {{ 'agentsLanding.live' |
+                                translate }}
+                            </span>
+                            }
+                            <button type="button" (click)="togglePin($event, tile)"
+                                class="cursor-pointer text-gray-300 transition"
+                                [class.text-primary-500]="isPinned(tile)"
+                                [attr.aria-label]="(isPinned(tile) ? 'agentsLanding.unpin' : 'agentsLanding.pin') | translate">
+                                <i class="pi" [class.pi-star-fill]="isPinned(tile)"
+                                    [class.pi-star]="!isPinned(tile)"></i>
+                            </button>
+                        </span>
+                    </span>
+                    <span class="mt-1 block leading-snug text-gray-500">{{ tile.descriptionKey | translate }}</span>
+                </span>
+            </a>
+            }
+        </ng-template>
     </div>
-    }
 </div>
