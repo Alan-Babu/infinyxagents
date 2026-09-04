@@ -376,6 +376,9 @@
         <label for="presenton-key" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.apiKey" | translate }} {{ settings?.presenton_api_key_set ? ("executiveSummary.adminSettings.set" | translate) : ("executiveSummary.adminSettings.notSet" | translate) }}</label>
         <input id="presenton-key" type="password" class="mb-3 w-full rounded-lg border border-gray-300 p-2" [(ngModel)]="presentonApiKeyInput" autocomplete="off" />
         <button type="button" pButton styleClass="w-full!" (click)="save()"><span>{{ "executiveSummary.adminSettings.savePresenton" | translate }}</span></button>
+        @if (saveStatus) {
+        <p class="mt-2 text-xs font-semibold text-green-600">{{ saveStatus }}</p>
+        }
     </div>
     }
 
@@ -389,6 +392,9 @@
         <label for="pptgenx-key" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.apiKey" | translate }} {{ settings?.pptgenx_api_key_set ? ("executiveSummary.adminSettings.set" | translate) : ("executiveSummary.adminSettings.notSet" | translate) }}</label>
         <input id="pptgenx-key" type="password" class="mb-3 w-full rounded-lg border border-gray-300 p-2" [(ngModel)]="pptgenxApiKeyInput" autocomplete="off" />
         <button type="button" pButton styleClass="w-full!" (click)="save()"><span>{{ "executiveSummary.adminSettings.savePptgenx" | translate }}</span></button>
+        @if (saveStatus) {
+        <p class="mt-2 text-xs font-semibold text-green-600">{{ saveStatus }}</p>
+        }
     </div>
     }
 
@@ -400,6 +406,9 @@
         <label for="tavily-key" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.tavilyKey" | translate }} {{ settings?.tavily_api_key_set ? ("executiveSummary.adminSettings.set" | translate) : ("executiveSummary.adminSettings.notSet" | translate) }}</label>
         <input id="tavily-key" type="password" class="mb-3 w-full rounded-lg border border-gray-300 p-2" [(ngModel)]="tavilyApiKeyInput" autocomplete="off" />
         <button type="button" pButton styleClass="w-full!" (click)="save()"><span>{{ "executiveSummary.adminSettings.saveWebSearch" | translate }}</span></button>
+        @if (saveStatus) {
+        <p class="mt-2 text-xs font-semibold text-green-600">{{ saveStatus }}</p>
+        }
 
         <h3 class="mb-1 mt-6 text-sm font-bold text-gray-800">{{ "executiveSummary.adminSettings.trustedSources" | translate }}</h3>
         @if (trustedSourcesLoading) { <p class="text-xs text-gray-500">{{ "executiveSummary.loading" | translate }}</p> }
