@@ -77,6 +77,15 @@
 
                 <!-- ============ STAGE: idle / loading (composer greeting) ============ -->
                 @if (stage === 'idle' || stage === 'loading') {
+                <!-- Greeting header + quick-action cards: only for a genuinely empty
+                     conversation. A turn or a just-sent pendingUserMessage bubble both
+                     render earlier in this same scrolling list, so without this check
+                     the greeting reappeared (stage returns to 'idle' after every turn)
+                     and got pushed further down the page after every message instead
+                     of disappearing once the conversation starts. The moderation/quota/
+                     error alerts below are NOT gated on this — they can legitimately
+                     fire on a later message too, after turns already exist. -->
+                @if (historyTurns.length === 0 && !pendingUserMessage) {
                 <div class="mb-6 flex flex-col items-center gap-2 text-center">
                     <span class="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-primary-500 text-white">
                         <i class="pi pi-chart-line text-xl"></i>
@@ -107,6 +116,7 @@
                         </span>
                     </button>
                 </div>
+                }
 
                 @if (moderationBlocked) {
                 <div class="mb-4 flex items-start gap-2.5 rounded-lg border border-red-200 bg-red-50 p-3.5">
@@ -567,7 +577,7 @@
         }
     </div>
 
-    <lib-history-panel [collapsed]="historyCollapsed" (collapsedChange)="historyCollapsed = $event"
+    <lib-history-panel #historyPanel [collapsed]="historyCollapsed" (collapsedChange)="historyCollapsed = $event"
         (open)="loadFromHistory($event)" (openConversation)="loadConversation($event)"
         (exportItem)="exportRecentReport($event)" />
 </div>

@@ -36,6 +36,7 @@ type MenuView =
     | 'fallback-providers'
     | 'mcp-servers'
     | 'presenton'
+    | 'pptgenx'
     | 'web-search';
 
 @Component({
@@ -95,6 +96,10 @@ export class AdminSettingsDrawerComponent implements OnChanges {
     presentonTemplateName = '';
     presentonApiKeyInput = '';
 
+    pptgenxEnabled = false;
+    pptgenxBaseUrl = '';
+    pptgenxApiKeyInput = '';
+
     webSearchEnabled = false;
     tavilyApiKeyInput = '';
     trustedSources: TrustedSourceEntry[] = [];
@@ -146,6 +151,7 @@ export class AdminSettingsDrawerComponent implements OnChanges {
             'fallback-providers': this.translate.instant('executiveSummary.adminSettings.fallbackProviders'),
             'mcp-servers': this.translate.instant('executiveSummary.adminSettings.mcpServers'),
             presenton: this.translate.instant('executiveSummary.adminSettings.presenton'),
+            pptgenx: this.translate.instant('executiveSummary.adminSettings.pptgenx'),
             'web-search': this.translate.instant('executiveSummary.adminSettings.webSearch'),
         };
         return titles[this.view];
@@ -181,6 +187,8 @@ export class AdminSettingsDrawerComponent implements OnChanges {
             this.presentonEnabled = res.presenton_enabled;
             this.presentonBaseUrl = res.presenton_base_url || '';
             this.presentonTemplateName = res.presenton_template_name || '';
+            this.pptgenxEnabled = res.pptgenx_enabled;
+            this.pptgenxBaseUrl = res.pptgenx_base_url || '';
             this.webSearchEnabled = res.web_search_enabled;
         } finally {
             this.loading = false;
@@ -238,6 +246,9 @@ export class AdminSettingsDrawerComponent implements OnChanges {
                 presenton_base_url: this.presentonBaseUrl || null,
                 presenton_api_key: this.presentonApiKeyInput || null,
                 presenton_template_name: this.presentonTemplateName || null,
+                pptgenx_enabled: this.pptgenxEnabled,
+                pptgenx_base_url: this.pptgenxBaseUrl || null,
+                pptgenx_api_key: this.pptgenxApiKeyInput || null,
                 web_search_enabled: this.webSearchEnabled,
                 tavily_api_key: this.tavilyApiKeyInput || null,
             });
@@ -245,6 +256,7 @@ export class AdminSettingsDrawerComponent implements OnChanges {
             this.anthropicKeyInput = '';
             this.qwenKeyInput = '';
             this.presentonApiKeyInput = '';
+            this.pptgenxApiKeyInput = '';
             this.tavilyApiKeyInput = '';
             this.saveStatus = this.translate.instant('executiveSummary.adminSettings.saved');
             setTimeout(() => (this.saveStatus = ''), 3000);

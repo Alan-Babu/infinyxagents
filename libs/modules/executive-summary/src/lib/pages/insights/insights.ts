@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, inject, OnInit } from '@angular/core';
+import { Component, HostListener, inject, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService, CommonService } from '@nfinyx/services';
@@ -231,6 +231,14 @@ export class InsightsPage implements OnInit {
     private readonly translate = inject(TranslateService);
     private readonly auth = inject(AuthService);
 
+    // The history panel loads its own "My Research"/"Chat History" lists
+    // once in its own ngOnInit and never refetches on its own — it's kept
+    // permanently in the DOM (just visually collapsed/expanded), so saving
+    // a report here left its list stale until a full page reload. Calling
+    // its public refresh() right after a successful save (see confirmSave
+    // below) keeps it in sync without needing to reload the page.
+    @ViewChild('historyPanel') historyPanel?: HistoryPanelComponent;
+
     readonly templateOptions = [...TEMPLATE_OPTIONS, { label: 'MoFA', description: 'UAE Ministry of Foreign Affairs' }];
     frameworkOptions = [...FRAMEWORK_OPTIONS];
     readonly lengthOptions = LENGTH_OPTIONS;
@@ -380,8 +388,8 @@ export class InsightsPage implements OnInit {
     readingAloudTurnId: string | null = null;
     forkingTurnId: string | null = null;
     expandedTurnId: string | null = null;
-    generationMode: 'Local' | 'Gamma AI' | 'Presenton' = 'Local';
-    readonly generationOptions = ['Local', 'Gamma AI', 'Presenton'];
+    generationMode: 'Local' | 'Gamma AI' | 'Presenton' | 'PptGenX' = 'Local';
+    readonly generationOptions = ['Local', 'Gamma AI', 'Presenton', 'PptGenX'];
     preparedBy = '';
 
     async ngOnInit(): Promise<void> {
@@ -975,6 +983,7 @@ export class InsightsPage implements OnInit {
             });
             this.saveStage = 'saved';
             this.historyEntries = (await this.api.listHistory()).items;
+            void this.historyPanel?.refresh();
             this.common.showSuccessMessage(this.translate.instant('executiveSummary.insights.savedAs', { visibility: form.visibility.toLowerCase() }));
         } catch (err) {
             this.common.showApiError(err);
@@ -1244,9 +1253,10 @@ export class InsightsPage implements OnInit {
         return 'pptx';
     }
 
-    private exportEngineKey(): 'local' | 'gamma' | 'presenton' {
+    private exportEngineKey(): 'local' | 'gamma' | 'presenton' | 'pptgenx' {
         if (this.generationMode === 'Gamma AI') return 'gamma';
         if (this.generationMode === 'Presenton') return 'presenton';
+        if (this.generationMode === 'PptGenX') return 'pptgenx';
         return 'local';
     }
 

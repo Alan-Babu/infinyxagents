@@ -191,7 +191,7 @@ export interface GenerateResponse {
 export interface ExportResponse {
     file_path: string;
     file_name: string;
-    generated_via: 'gamma' | 'presenton' | 'local';
+    generated_via: 'gamma' | 'presenton' | 'pptgenx' | 'local';
 }
 
 export interface ShareResult {
@@ -348,6 +348,9 @@ export interface AdminSettingsResponse {
     presenton_base_url?: string | null;
     presenton_api_key_set: boolean;
     presenton_template_name?: string | null;
+    pptgenx_enabled: boolean;
+    pptgenx_base_url?: string | null;
+    pptgenx_api_key_set: boolean;
     web_search_enabled: boolean;
     tavily_api_key_set: boolean;
     updated_at: string;
@@ -376,6 +379,9 @@ export interface AdminSettingsPayload {
     presenton_base_url?: string | null;
     presenton_api_key?: string | null;
     presenton_template_name?: string | null;
+    pptgenx_enabled: boolean;
+    pptgenx_base_url?: string | null;
+    pptgenx_api_key?: string | null;
     web_search_enabled: boolean;
     tavily_api_key?: string | null;
 }

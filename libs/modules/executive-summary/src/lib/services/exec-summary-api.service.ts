@@ -170,7 +170,7 @@ export class ExecSummaryApiService extends ExecSummaryApiBase {
         title?: string,
         createdBy?: string,
         sources?: SourceHit[],
-        exportEngine?: 'local' | 'gamma' | 'presenton',
+        exportEngine?: 'local' | 'gamma' | 'presenton' | 'pptgenx',
         classification?: string,
     ): Promise<ExportResponse> {
         return this.post<ExportResponse>(`${ExecSummaryApiPaths.session}/${encodeURIComponent(sessionId)}/export`, {
