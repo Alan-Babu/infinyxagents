@@ -1,9 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { AuthService, CommonService } from '@nfinyx/services';
+import { NoData } from '@nfinyx/no-data';
+import { AuthService, CommonService, StorageService } from '@nfinyx/services';
+import { LocalStorage } from '@nfinyx/types';
+import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 
 /** Tailwind accent used for the tile's icon square — kept to the existing palette, no new brand colors. */
@@ -23,8 +26,17 @@ export interface AgentTile {
 
 interface TileCategory {
     key: string;
+    icon: string;
     tiles: AgentTile[];
 }
+
+/** Icon shown next to a category's name in the sidebar and section headings — keyed by `categoryKey`. */
+const CATEGORY_ICONS: Record<string, string> = {
+    'agentsLanding.category.documents': 'pi pi-copy',
+    'agentsLanding.category.compliance': 'pi pi-shield',
+    'agentsLanding.category.general': 'pi pi-th-large',
+};
+const DEFAULT_CATEGORY_ICON = 'pi pi-folder';
 
 /** Central registry of agent modules — shared by the dashboard grid and the header's agent switcher. */
 export const AGENT_TILES: AgentTile[] = [
@@ -133,7 +145,7 @@ export const AGENT_TILES: AgentTile[] = [
 @Component({
     selector: 'lib-agents-landing',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterLink, TranslateModule, InputTextModule],
+    imports: [CommonModule, FormsModule, RouterLink, TranslateModule, InputTextModule, ButtonModule, NoData],
     templateUrl: './agents-landing.html',
     host: { class: 'block flex-1 min-h-0 overflow-auto' },
 })
@@ -142,20 +154,79 @@ export class AgentsLanding {
     private readonly translate = inject(TranslateService);
     private readonly router = inject(Router);
     private readonly common = inject(CommonService);
+    private readonly storage = inject(StorageService);
 
     @Input() tiles: AgentTile[] = [];
 
     search = '';
+    /** `all` = "All agents", `'pinned'` = the Quick Access filter, otherwise a `categoryKey`. */
+    selectedFilter = "all";
+
+    private readonly pinnedIds = signal<string[]>(this.storage.getItem(LocalStorage.PinnedAgents) ?? []);
 
     get userName(): string {
         return this.auth.user()?.displayName || '';
     }
 
+    /** Distinct categories across all tiles, in first-occurrence order — drives both the sidebar and the filter pills. */
+    get allCategories(): TileCategory[] {
+        const byKey = new Map<string, AgentTile[]>();
+        for (const tile of this.tiles) {
+            const list = byKey.get(tile.categoryKey) ?? [];
+            list.push(tile);
+            byKey.set(tile.categoryKey, list);
+        }
+        return [...byKey.entries()].map(([key, tiles]) => ({
+            key,
+            icon: CATEGORY_ICONS[key] ?? DEFAULT_CATEGORY_ICON,
+            tiles,
+        }));
+    }
+
+    get pinnedCount(): number {
+        return this.pinnedIds().length;
+    }
+
+    isPinned(tile: AgentTile): boolean {
+        return this.pinnedIds().includes(tile.id);
+    }
+
+    /** Pinned tiles, search-filtered — shown as their own row above the categories, only for the "All agents" filter. */
+    get pinnedTiles(): AgentTile[] {
+        const q = this.search.trim().toLowerCase();
+        let filtered = this.tiles.filter(t => this.isPinned(t));
+        if (q) {
+            filtered = filtered.filter(t => this.translate.instant(t.nameKey).toLowerCase().includes(q));
+        }
+        return filtered;
+    }
+
+    togglePin(event: MouseEvent, tile: AgentTile): void {
+        event.stopPropagation();
+        event.preventDefault();
+        const current = this.pinnedIds();
+        const next = current.includes(tile.id) ? current.filter(id => id !== tile.id) : [...current, tile.id];
+        this.pinnedIds.set(next);
+        this.storage.setItem(LocalStorage.PinnedAgents, next);
+    }
+
+    selectFilter(key: string): void {
+        this.selectedFilter = key;
+    }
+
     get categories(): TileCategory[] {
         const q = this.search.trim().toLowerCase();
-        const filtered = q
-            ? this.tiles.filter(t => this.translate.instant(t.nameKey).toLowerCase().includes(q))
-            : this.tiles;
+        let filtered = this.tiles;
+
+        if (this.selectedFilter === 'pinned') {
+            filtered = filtered.filter(t => this.isPinned(t));
+        } else if (this.selectedFilter != 'all') {
+            filtered = filtered.filter(t => t.categoryKey === this.selectedFilter);
+        }
+
+        if (q) {
+            filtered = filtered.filter(t => this.translate.instant(t.nameKey).toLowerCase().includes(q));
+        }
 
         const byKey = new Map<string, AgentTile[]>();
         for (const tile of filtered) {
@@ -163,7 +234,11 @@ export class AgentsLanding {
             list.push(tile);
             byKey.set(tile.categoryKey, list);
         }
-        return [...byKey.entries()].map(([key, tiles]) => ({ key, tiles }));
+        return [...byKey.entries()].map(([key, tiles]) => ({
+            key,
+            icon: CATEGORY_ICONS[key] ?? DEFAULT_CATEGORY_ICON,
+            tiles,
+        }));
     }
 
     /**
