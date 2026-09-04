@@ -23,73 +23,97 @@
     </div>
 
     @if (!collapsed) {
+    <div class="mx-3 mb-3 grid grid-cols-2 rounded-lg bg-gray-100 p-1 text-xs font-semibold">
+        <button type="button" class="cursor-pointer rounded-md px-2 py-1.5" [class.bg-white]="activeTab === 'research'"
+            [class.shadow-sm]="activeTab === 'research'" (click)="switchTab('research')">{{ 'executiveSummary.history.researchTab' | translate }}</button>
+        <button type="button" class="cursor-pointer rounded-md px-2 py-1.5" [class.bg-white]="activeTab === 'chats'"
+            [class.shadow-sm]="activeTab === 'chats'" (click)="switchTab('chats')">{{ 'executiveSummary.history.chatsTab' | translate }}</button>
+    </div>
+
+    @if (activeTab === 'research') {
+    <div class="px-3 pb-3">
+        <input pInputText class="mb-2 w-full text-xs" [ngModel]="researchQuery"
+            (ngModelChange)="onResearchSearch($event)" [placeholder]="'executiveSummary.history.searchResearch' | translate" />
+        <div class="grid grid-cols-2 gap-2">
+            <p-select class="w-full" styleClass="w-full" [options]="categoryOptions" [(ngModel)]="researchCategory"
+                (ngModelChange)="loadResearch(1)" appendTo="body" [placeholder]="'executiveSummary.history.category' | translate" />
+            <p-select class="w-full" styleClass="w-full" [options]="researchTypeOptions" [(ngModel)]="researchType"
+                (ngModelChange)="loadResearch(1)" appendTo="body" [placeholder]="'executiveSummary.history.type' | translate" />
+            <p-select class="w-full" styleClass="w-full" [options]="frameworkOptions" [(ngModel)]="researchFramework"
+                (ngModelChange)="loadResearch(1)" appendTo="body" [placeholder]="'executiveSummary.insights.framework' | translate" />
+            <p-select class="w-full" styleClass="w-full" [options]="visibilityOptions" [(ngModel)]="researchVisibility"
+                (ngModelChange)="loadResearch(1)" appendTo="body" [placeholder]="'executiveSummary.insights.visibility' | translate" />
+        </div>
+    </div>
+    } @else {
+    <div class="px-3 pb-3">
+        <input pInputText class="w-full text-xs" [ngModel]="chatsQuery" (ngModelChange)="onChatSearch($event)"
+            [placeholder]="'executiveSummary.history.searchChats' | translate" />
+    </div>
+    }
+
     <div class="min-h-0 flex-1 overflow-y-auto px-3 pb-3">
-        @if (entries.length) {
-        @for (h of entries; track h.session_id) {
-        <div class="mb-2.5 overflow-hidden rounded-lg border border-gray-200 bg-white hover:border-primary-300">
-            <button type="button" class="block w-full px-3 pt-3 pb-2 text-start cursor-pointer"
-                (click)="open.emit(h.session_id)">
-                <div class="mb-2.5 flex items-start justify-between gap-2">
-                    <span class="line-clamp-2 min-w-0 flex-1 text-sm font-bold text-gray-800"
-                        [title]="h.description || h.name">{{ h.name }}</span>
-                </div>
-                <div class="mb-2.5 flex text-xs flex-wrap items-center gap-2">
-                    <span
-                        class="rounded bg-primary-50 px-2 py-0.5 font-bold uppercase text-primary-700">{{
-                        h.framework }}</span>
-                    <span class="rounded bg-gray-100 px-2 py-0.5 font-bold text-gray-500">{{
-                        h.word_count }} {{ "executiveSummary.history.words" | translate }}</span>
-                    <span class="shrink-0 rounded px-2 py-0.5 font-bold uppercase"
-                        [class.bg-primary-100]="h.visibility === 'shared'"
-                        [class.text-primary-700]="h.visibility === 'shared'"
-                        [class.bg-gray-100]="h.visibility !== 'shared'"
-                        [class.text-gray-500]="h.visibility !== 'shared'">
-                        {{ h.visibility === 'shared' ? ("executiveSummary.history.shared" | translate) :
-                        ("executiveSummary.history.private" | translate) }}
-                    </span>
-                </div>
-                <div class="flex items-center gap-2.5">
-                    <span class="text-xs text-gray-400">{{ h.created_at | date: 'mediumDate' }}</span>
-                    @if (h.rating) {
-                    <span class="inline-flex items-center gap-0.5 text-xs font-bold text-primary-600"><i
-                            class="pi pi-star-fill text-xs"></i>{{ h.rating }}/5</span>
-                    }
-                </div>
-            </button>
-            <div class="flex items-center gap-0.5 border-t border-gray-100 px-2 py-1.5">
-                <button type="button"
-                    class="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-40"
-                    [disabled]="actingId === h.session_id" (click)="openShareDialog(h); $event.stopPropagation()"
-                    [attr.aria-label]="'Share ' + h.name">
-                    <i class="pi pi-share-alt text-xs"></i>
+        @if ((activeTab === 'research' && entriesLoading) || (activeTab === 'chats' && conversationsLoading)) {
+            <p class="py-4 text-center text-xs text-gray-400">{{ 'executiveSummary.loading' | translate }}</p>
+        } @else if (activeTab === 'research') {
+            @for (h of entries; track h.session_id) {
+            <div class="mb-2.5 overflow-hidden rounded-lg border border-gray-200 bg-white hover:border-primary-300">
+                <button type="button" class="block w-full cursor-pointer px-3 pt-3 pb-2 text-start" (click)="open.emit(h.session_id)">
+                    <span class="line-clamp-2 text-sm font-bold text-gray-800">{{ h.name }}</span>
+                    <div class="mt-2 flex flex-wrap gap-1.5 text-xs">
+                        <span class="rounded bg-primary-50 px-2 py-0.5 font-bold text-primary-700">{{ h.framework }}</span>
+                        <span class="rounded bg-gray-100 px-2 py-0.5 text-gray-500">{{ h.word_count }} {{ 'executiveSummary.history.words' | translate }}</span>
+                        <span class="rounded bg-gray-100 px-2 py-0.5 text-gray-500">{{ ('executiveSummary.history.' + h.visibility) | translate }}</span>
+                    </div>
+                    <span class="mt-2 block text-xs text-gray-400">{{ h.created_at | date: 'mediumDate' }}</span>
                 </button>
-                <button type="button"
-                    class="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-40"
-                    [disabled]="actingId === h.session_id"
-                    (click)="exportItem.emit(h.session_id); $event.stopPropagation()"
-                    [attr.aria-label]="'Export ' + h.name">
-                    <i class="pi pi-download text-xs"></i>
+                <div class="flex gap-1 border-t border-gray-100 px-2 py-1.5">
+                    <button type="button" class="cursor-pointer p-1.5 text-gray-400 hover:text-primary-600" (click)="openShareDialog(h)"><i class="pi pi-share-alt"></i></button>
+                    <button type="button" class="cursor-pointer p-1.5 text-gray-400 hover:text-primary-600" (click)="exportItem.emit(h.session_id)"><i class="pi pi-download"></i></button>
+                    <button type="button" class="cursor-pointer p-1.5 text-gray-400 hover:text-primary-600" (click)="openRenameDialog(h)"><i class="pi pi-pencil"></i></button>
+                    <button type="button" class="cursor-pointer p-1.5 text-gray-400 hover:text-red-600" (click)="confirmDelete(h)"><i class="pi pi-trash"></i></button>
+                </div>
+            </div>
+            } @empty {
+                <p class="px-1 pt-3 text-xs leading-relaxed text-gray-500">{{ 'executiveSummary.history.noMatches' | translate }}</p>
+            }
+        } @else {
+            @for (c of conversations; track c.conversation_id) {
+            <div class="mb-2.5 overflow-hidden rounded-lg border border-gray-200 bg-white hover:border-primary-300">
+                <button type="button" class="block w-full cursor-pointer px-3 py-3 text-start" (click)="openConversation.emit(c.conversation_id)">
+                    <span class="line-clamp-2 text-sm font-bold text-gray-800">{{ c.title }}</span>
+                    <div class="mt-2 flex items-center justify-between text-xs text-gray-400">
+                        <span>{{ c.turn_count }} {{ 'executiveSummary.history.turns' | translate }}</span>
+                        <span>{{ c.updated_at | date: 'mediumDate' }}</span>
+                    </div>
                 </button>
-                <button type="button"
-                    class="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-40"
-                    [disabled]="actingId === h.session_id" (click)="openRenameDialog(h); $event.stopPropagation()"
-                    [attr.aria-label]="'Rename ' + h.name">
-                    <i class="pi pi-pencil text-xs"></i>
-                </button>
-                <button type="button"
-                    class="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-gray-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-40"
-                    [disabled]="actingId === h.session_id" (click)="confirmDelete(h); $event.stopPropagation()"
-                    [attr.aria-label]="'Delete ' + h.name">
-                    <i class="pi pi-trash text-xs"></i>
+                <button type="button" class="w-full cursor-pointer border-t border-gray-100 p-2 text-start text-xs text-red-500"
+                    [disabled]="actingId === c.conversation_id" (click)="confirmDeleteConversation(c)">
+                    <i class="pi pi-trash me-1"></i>{{ 'executiveSummary.history.deleteChat' | translate }}
                 </button>
             </div>
-        </div>
-        }
-        } @else {
-        <p class="px-1 pt-3 text-xs leading-relaxed text-gray-500">{{ "executiveSummary.history.empty" | translate }}
-        </p>
+            } @empty {
+                <p class="px-1 pt-3 text-xs leading-relaxed text-gray-500">{{ 'executiveSummary.history.emptyChats' | translate }}</p>
+            }
         }
     </div>
+
+    @if ((activeTab === 'research' ? entriesTotal : conversationsTotal) > 0) {
+    <div class="flex items-center justify-between border-t border-gray-200 px-3 py-3 text-xs">
+        <button type="button" class="cursor-pointer text-primary-600 disabled:text-gray-300"
+            [disabled]="(activeTab === 'research' ? entriesPage : conversationsPage) <= 1"
+            (click)="activeTab === 'research' ? loadResearch(entriesPage - 1) : loadConversations(conversationsPage - 1)">
+            {{ 'executiveSummary.insights.previous' | translate }}
+        </button>
+        <span class="text-gray-400">{{ activeTab === 'research' ? entriesPage : conversationsPage }} /
+            {{ activeTab === 'research' ? totalResearchPages : totalConversationPages }}</span>
+        <button type="button" class="cursor-pointer text-primary-600 disabled:text-gray-300"
+            [disabled]="activeTab === 'research' ? !entriesHasMore : !conversationsHasMore"
+            (click)="activeTab === 'research' ? loadResearch(entriesPage + 1) : loadConversations(conversationsPage + 1)">
+            {{ 'executiveSummary.insights.next' | translate }}
+        </button>
+    </div>
+    }
     }
 </aside>
 

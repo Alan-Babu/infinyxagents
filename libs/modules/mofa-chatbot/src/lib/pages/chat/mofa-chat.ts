@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { LocationStrategy } from '@angular/common';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CommonService } from '@nfinyx/services';
 import { ButtonModule } from 'primeng/button';
@@ -33,7 +33,6 @@ type EndReason = 'user_exit' | 'idle_timeout' | 'manual';
     imports: [
         CommonModule,
         FormsModule,
-        RouterLink,
         TranslateModule,
         ButtonModule,
         Tooltip,

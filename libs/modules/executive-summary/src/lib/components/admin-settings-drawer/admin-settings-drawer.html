@@ -3,6 +3,13 @@
         <span class="text-base font-semibold text-gray-800">{{ drawerTitle }}</span>
     </ng-template>
 
+    @if (!isAdmin) {
+    <p class="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+        {{ "executiveSummary.adminOnly" | translate }}
+    </p>
+    }
+
+    @if (isAdmin) {
     @if (loading) {
     <p class="text-sm text-gray-500">{{ "executiveSummary.loading" | translate }}</p>
     }
@@ -61,6 +68,42 @@
             </span>
             <i class="pi pi-chevron-right text-xs text-gray-400"></i>
         </button>
+
+        <button type="button" class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white p-3.5 text-start hover:border-primary-300" (click)="view = 'retention'">
+            <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-primary-600"><i class="pi pi-database"></i></span>
+            <span class="min-w-0 flex-1"><span class="text-sm font-bold text-gray-800">{{ "executiveSummary.adminSettings.retention" | translate }}</span><span class="block text-xs text-gray-500">{{ "executiveSummary.adminSettings.retentionSub" | translate }}</span></span>
+            <i class="pi pi-chevron-right text-xs text-gray-400"></i>
+        </button>
+        <button type="button" class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white p-3.5 text-start hover:border-primary-300" (click)="view = 'moderation-model'">
+            <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-primary-600"><i class="pi pi-filter"></i></span>
+            <span class="min-w-0 flex-1"><span class="text-sm font-bold text-gray-800">{{ "executiveSummary.adminSettings.modelModeration" | translate }}</span><span class="block text-xs text-gray-500">{{ "executiveSummary.adminSettings.modelModerationSub" | translate }}</span></span>
+            <i class="pi pi-chevron-right text-xs text-gray-400"></i>
+        </button>
+        <button type="button" class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white p-3.5 text-start hover:border-primary-300" (click)="view = 'fallback-providers'">
+            <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-primary-600"><i class="pi pi-sort-alt"></i></span>
+            <span class="min-w-0 flex-1"><span class="text-sm font-bold text-gray-800">{{ "executiveSummary.adminSettings.fallbackProviders" | translate }}</span><span class="block text-xs text-gray-500">{{ "executiveSummary.adminSettings.fallbackProvidersSub" | translate }}</span></span>
+            <i class="pi pi-chevron-right text-xs text-gray-400"></i>
+        </button>
+        <button type="button" class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white p-3.5 text-start hover:border-primary-300" (click)="view = 'mcp-servers'; loadMcpServers()">
+            <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-primary-600"><i class="pi pi-sitemap"></i></span>
+            <span class="min-w-0 flex-1"><span class="text-sm font-bold text-gray-800">{{ "executiveSummary.adminSettings.mcpServers" | translate }}</span><span class="block text-xs text-gray-500">{{ "executiveSummary.adminSettings.mcpServersSub" | translate }}</span></span>
+            <i class="pi pi-chevron-right text-xs text-gray-400"></i>
+        </button>
+        <button type="button" class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white p-3.5 text-start hover:border-primary-300" (click)="view = 'presenton'">
+            <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-primary-600"><i class="pi pi-images"></i></span>
+            <span class="min-w-0 flex-1"><span class="text-sm font-bold text-gray-800">{{ "executiveSummary.adminSettings.presenton" | translate }}</span><span class="block text-xs text-gray-500">{{ "executiveSummary.adminSettings.presentonSub" | translate }}</span></span>
+            <i class="pi pi-chevron-right text-xs text-gray-400"></i>
+        </button>
+        <button type="button" class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white p-3.5 text-start hover:border-primary-300" (click)="view = 'pptgenx'">
+            <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-primary-600"><i class="pi pi-table"></i></span>
+            <span class="min-w-0 flex-1"><span class="text-sm font-bold text-gray-800">{{ "executiveSummary.adminSettings.pptgenx" | translate }}</span><span class="block text-xs text-gray-500">{{ "executiveSummary.adminSettings.pptgenxSub" | translate }}</span></span>
+            <i class="pi pi-chevron-right text-xs text-gray-400"></i>
+        </button>
+        <button type="button" class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white p-3.5 text-start hover:border-primary-300" (click)="view = 'web-search'; loadTrustedSources()">
+            <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-primary-600"><i class="pi pi-globe"></i></span>
+            <span class="min-w-0 flex-1"><span class="text-sm font-bold text-gray-800">{{ "executiveSummary.adminSettings.webSearch" | translate }}</span><span class="block text-xs text-gray-500">{{ "executiveSummary.adminSettings.webSearchSub" | translate }}</span></span>
+            <i class="pi pi-chevron-right text-xs text-gray-400"></i>
+        </button>
     </div>
     }
 
@@ -101,34 +144,34 @@
         <p class="mb-3.5 text-xs text-gray-500">{{ "executiveSummary.adminSettings.externalModelsHint" | translate }}</p>
 
         <div class="mb-3">
-            <label class="mb-1 block text-xs font-semibold text-gray-600">
+            <label for="admin-openai-key" class="mb-1 block text-xs font-semibold text-gray-600">
                 {{ "executiveSummary.adminSettings.openaiKey" | translate }}
                 {{ settings?.openai_api_key_set ? ("executiveSummary.adminSettings.set" | translate) : ("executiveSummary.adminSettings.notSet" | translate) }}
             </label>
-            <p-password [(ngModel)]="openaiKeyInput" [toggleMask]="true" [feedback]="false" styleClass="w-full" inputStyleClass="w-full" placeholder="sk-..." />
+            <p-password inputId="admin-openai-key" [(ngModel)]="openaiKeyInput" [toggleMask]="true" [feedback]="false" styleClass="w-full" inputStyleClass="w-full" placeholder="sk-..." />
         </div>
         <div class="mb-3">
-            <label class="mb-1 block text-xs font-semibold text-gray-600">
+            <label for="admin-anthropic-key" class="mb-1 block text-xs font-semibold text-gray-600">
                 {{ "executiveSummary.adminSettings.anthropicKey" | translate }}
                 {{ settings?.anthropic_api_key_set ? ("executiveSummary.adminSettings.set" | translate) : ("executiveSummary.adminSettings.notSet" | translate) }}
             </label>
-            <p-password [(ngModel)]="anthropicKeyInput" [toggleMask]="true" [feedback]="false" styleClass="w-full" inputStyleClass="w-full" placeholder="sk-ant-..." />
+            <p-password inputId="admin-anthropic-key" [(ngModel)]="anthropicKeyInput" [toggleMask]="true" [feedback]="false" styleClass="w-full" inputStyleClass="w-full" placeholder="sk-ant-..." />
         </div>
         <div class="mb-3">
-            <label class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.qwenKey" | translate }}</label>
-            <p-password [(ngModel)]="qwenKeyInput" [toggleMask]="true" [feedback]="false" styleClass="w-full" inputStyleClass="w-full" [placeholder]="'executiveSummary.adminSettings.optional' | translate" />
+            <label for="admin-qwen-key" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.qwenKey" | translate }}</label>
+            <p-password inputId="admin-qwen-key" [(ngModel)]="qwenKeyInput" [toggleMask]="true" [feedback]="false" styleClass="w-full" inputStyleClass="w-full" [placeholder]="'executiveSummary.adminSettings.optional' | translate" />
         </div>
         <div class="mb-3">
-            <label class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.modelVersion" | translate }}</label>
-            <input pInputText class="w-full" [(ngModel)]="modelVersion" placeholder="e.g. Qwen3-VL-8B-Instruct-FP8" />
+            <label for="admin-model-version" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.modelVersion" | translate }}</label>
+            <input id="admin-model-version" pInputText class="w-full" [(ngModel)]="modelVersion" placeholder="e.g. Qwen3-VL-8B-Instruct-FP8" />
         </div>
         <div class="mb-3">
-            <label class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.providerName" | translate }}</label>
-            <input pInputText class="w-full" [(ngModel)]="providerName" placeholder="e.g. Local vLLM" />
+            <label for="admin-provider-name" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.providerName" | translate }}</label>
+            <input id="admin-provider-name" pInputText class="w-full" [(ngModel)]="providerName" placeholder="e.g. Local vLLM" />
         </div>
         <div class="mb-4">
-            <label class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.tokenRateLimit" | translate }}</label>
-            <input pInputText type="number" class="w-full" [(ngModel)]="tokenRateLimit" placeholder="e.g. 50000" min="0" />
+            <label for="admin-rate-limit" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.tokenRateLimit" | translate }}</label>
+            <input id="admin-rate-limit" pInputText type="number" class="w-full" [(ngModel)]="tokenRateLimit" placeholder="e.g. 50000" min="0" />
         </div>
 
         <button type="button" pButton styleClass="w-full!" (click)="save()"><span>{{ 'executiveSummary.adminSettings.saveExternalModels' | translate }}</span></button>
@@ -146,8 +189,8 @@
         <p class="mb-3.5 text-xs text-gray-500">{{ "executiveSummary.adminSettings.skillsHint" | translate }}</p>
 
         <div class="mb-3">
-            <label class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.user" | translate }}</label>
-            <input pInputText class="w-full" [(ngModel)]="instructionsUserId" [placeholder]="'executiveSummary.adminSettings.userPlaceholder' | translate" (change)="loadInstructions()" />
+            <label for="admin-instructions-user" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.user" | translate }}</label>
+            <input id="admin-instructions-user" pInputText class="w-full" [(ngModel)]="instructionsUserId" [placeholder]="'executiveSummary.adminSettings.userPlaceholder' | translate" (change)="loadInstructions()" />
         </div>
 
         @for (instr of instructions; track instr.id) {
@@ -183,36 +226,36 @@
             &lsaquo; {{ "executiveSummary.adminSettings.title" | translate }}
         </button>
 
-        <label class="mb-4 flex cursor-pointer items-start gap-2.5">
+        <div class="mb-4 flex items-start gap-2.5">
             <p-checkbox [(ngModel)]="promptOptimizationEnabled" [binary]="true" />
             <span>
                 <span class="block text-sm font-semibold text-gray-800">{{ "executiveSummary.adminSettings.promptOptimization" | translate }}</span>
                 <span class="block text-xs text-gray-500">{{ "executiveSummary.adminSettings.promptOptimizationHint" | translate }}</span>
             </span>
-        </label>
+        </div>
 
-        <label class="mb-4 flex cursor-pointer items-start gap-2.5">
+        <div class="mb-4 flex items-start gap-2.5">
             <p-checkbox [(ngModel)]="arabicEnabled" [binary]="true" />
             <span>
                 <span class="block text-sm font-semibold text-gray-800">{{ "executiveSummary.adminSettings.enableArabic" | translate }}</span>
                 <span class="block text-xs text-gray-500">{{ "executiveSummary.adminSettings.enableArabicHint" | translate }}</span>
             </span>
-        </label>
+        </div>
 
         <div class="mb-2 mt-4 text-xs font-bold uppercase tracking-wide text-gray-400">{{ "executiveSummary.adminSettings.allowedFormats" | translate }}</div>
         @for (ft of allFileTypes; track ft) {
-        <label class="flex cursor-pointer items-center gap-2 py-1.5 text-sm text-gray-700">
+        <div class="flex items-center gap-2 py-1.5 text-sm text-gray-700">
             <p-checkbox [ngModel]="allowedFileTypes.includes(ft)" [binary]="true" (ngModelChange)="toggleFileType(ft)" />
             {{ ft.toUpperCase() }}
-        </label>
+        </div>
         }
 
         <div class="mb-2 mt-4 text-xs font-bold uppercase tracking-wide text-gray-400">{{ "executiveSummary.adminSettings.availableFrameworks" | translate }}</div>
         @for (fw of allFrameworks; track fw) {
-        <label class="flex cursor-pointer items-center gap-2 py-1.5 text-sm text-gray-700">
+        <div class="flex items-center gap-2 py-1.5 text-sm text-gray-700">
             <p-checkbox [ngModel]="enabledFrameworks.includes(fw)" [binary]="true" (ngModelChange)="toggleFramework(fw)" />
             {{ fw }}
-        </label>
+        </div>
         }
 
         <button type="button" pButton styleClass="w-full! mt-4!" (click)="save()"><span>{{ 'executiveSummary.adminSettings.saveGeneral' | translate }}</span></button>
@@ -230,10 +273,10 @@
         <p class="mb-3.5 text-xs text-gray-500">{{ "executiveSummary.adminSettings.logsHint" | translate }}</p>
 
         <div class="mb-3.5 flex items-center justify-between">
-            <label class="flex cursor-pointer items-center gap-2 text-xs font-semibold text-gray-600">
+            <div class="flex items-center gap-2 text-xs font-semibold text-gray-600">
                 <p-checkbox [(ngModel)]="showResolvedOnly" [binary]="true" (ngModelChange)="loadErrorLogs()" />
                 {{ "executiveSummary.adminSettings.showResolvedOnly" | translate }}
-            </label>
+            </div>
             <button type="button" pButton size="small" severity="secondary" [outlined]="true" [loading]="logsLoading" (click)="loadErrorLogs()"><i class="pi pi-refresh"></i></button>
         </div>
 
@@ -266,6 +309,165 @@
         </div>
         }
     </div>
+    }
+
+    @if (!loading && view === 'retention') {
+    <div>
+        <button type="button" class="mb-3.5 cursor-pointer text-xs font-semibold text-gray-500" (click)="view = 'menu'">&lsaquo; {{ "executiveSummary.adminSettings.title" | translate }}</button>
+        <p class="mb-3.5 text-xs text-gray-500">{{ "executiveSummary.adminSettings.retentionHint" | translate }}</p>
+        <label for="error-retention" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.errorRetention" | translate }}</label>
+        <input id="error-retention" pInputText type="number" min="1" class="mb-3 w-full" [(ngModel)]="errorLogRetentionDays" />
+        <label for="telemetry-retention" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.telemetryRetention" | translate }}</label>
+        <input id="telemetry-retention" pInputText type="number" min="1" class="mb-3 w-full" [(ngModel)]="telemetryRetentionDays" />
+        <label for="moderation-retention" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.moderationRetention" | translate }}</label>
+        <input id="moderation-retention" pInputText type="number" min="1" class="mb-3 w-full" [(ngModel)]="moderationFlagRetentionDays" />
+        <label for="audit-retention" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.auditRetention" | translate }}</label>
+        <input id="audit-retention" pInputText type="number" min="1" class="mb-3 w-full" [(ngModel)]="auditLogRetentionDays" />
+        <button type="button" pButton styleClass="w-full!" (click)="save()"><span>{{ "executiveSummary.adminSettings.saveRetention" | translate }}</span></button>
+        <div class="mt-6 border-t border-gray-200 pt-4">
+            <h3 class="mb-1 text-sm font-bold text-gray-800">{{ "executiveSummary.adminSettings.deleteMyData" | translate }}</h3>
+            <p class="mb-3 text-xs text-gray-500">{{ "executiveSummary.adminSettings.deleteMyDataHint" | translate }}</p>
+            <button type="button" pButton severity="danger" styleClass="w-full!" [loading]="deletingUserData" [disabled]="!auth.user()?.id" (click)="deleteCurrentUserData()"><span>{{ "executiveSummary.adminSettings.deleteMyData" | translate }}</span></button>
+            @if (deleteUserDataStatus) { <p class="mt-2 text-xs font-semibold text-gray-600">{{ deleteUserDataStatus }}</p> }
+        </div>
+    </div>
+    }
+
+    @if (!loading && view === 'moderation-model') {
+    <div>
+        <button type="button" class="mb-3.5 cursor-pointer text-xs font-semibold text-gray-500" (click)="view = 'menu'">&lsaquo; {{ "executiveSummary.adminSettings.title" | translate }}</button>
+        <p class="mb-4 text-xs text-gray-500">{{ "executiveSummary.adminSettings.modelModerationHint" | translate }}</p>
+        <div class="mb-4 flex items-start gap-2.5">
+            <p-checkbox [(ngModel)]="modelModerationEnabled" [binary]="true" />
+            <span><span class="block text-sm font-semibold text-gray-800">{{ "executiveSummary.adminSettings.enableModelModeration" | translate }}</span><span class="block text-xs text-gray-500">{{ "executiveSummary.adminSettings.enableModelModerationHint" | translate }}</span></span>
+        </div>
+        <label for="moderation-threshold" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.blockThreshold" | translate }}: {{ modelModerationThreshold }}</label>
+        <input id="moderation-threshold" type="range" min="0" max="1" step="0.05" class="mb-4 w-full" [(ngModel)]="modelModerationThreshold" />
+        <button type="button" pButton styleClass="w-full!" (click)="save()"><span>{{ "executiveSummary.adminSettings.saveModeration" | translate }}</span></button>
+    </div>
+    }
+
+    @if (!loading && view === 'fallback-providers') {
+    <div>
+        <button type="button" class="mb-3.5 cursor-pointer text-xs font-semibold text-gray-500" (click)="view = 'menu'">&lsaquo; {{ "executiveSummary.adminSettings.title" | translate }}</button>
+        <p class="mb-4 text-xs text-gray-500">{{ "executiveSummary.adminSettings.fallbackHint" | translate }}</p>
+        @for (index of [0, 1]; track index) {
+        <label [for]="'fallback-' + index" class="mb-1 block text-xs font-semibold text-gray-600">{{ (index === 0 ? "executiveSummary.adminSettings.secondChoice" : "executiveSummary.adminSettings.thirdChoice") | translate }}</label>
+        <select [id]="'fallback-' + index" class="mb-3 w-full rounded-lg border border-gray-300 p-2 text-sm" [ngModel]="fallbackProviderOrder[index] || ''" (ngModelChange)="setFallbackProvider(index, $event)">
+            <option value="">{{ "executiveSummary.adminSettings.none" | translate }}</option>
+            @for (provider of allProviders; track provider) {
+            <option [value]="provider" [disabled]="fallbackProviderOrder[index === 0 ? 1 : 0] === provider">{{ providerLabel(provider) }}</option>
+            }
+        </select>
+        }
+        <button type="button" pButton styleClass="w-full!" (click)="save()"><span>{{ "executiveSummary.adminSettings.saveFallback" | translate }}</span></button>
+    </div>
+    }
+
+    @if (!loading && view === 'presenton') {
+    <div>
+        <button type="button" class="mb-3.5 cursor-pointer text-xs font-semibold text-gray-500" (click)="view = 'menu'">&lsaquo; {{ "executiveSummary.adminSettings.title" | translate }}</button>
+        <p class="mb-4 text-xs text-gray-500">{{ "executiveSummary.adminSettings.presentonHint" | translate }}</p>
+        <div class="mb-4 flex items-start gap-2.5"><p-checkbox [(ngModel)]="presentonEnabled" [binary]="true" /><span class="text-sm font-semibold text-gray-800">{{ "executiveSummary.adminSettings.enablePresenton" | translate }}</span></div>
+        <label for="presenton-url" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.baseUrl" | translate }}</label>
+        <input id="presenton-url" pInputText class="mb-3 w-full" [(ngModel)]="presentonBaseUrl" placeholder="http://localhost:5001" />
+        <label for="presenton-template" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.templateName" | translate }}</label>
+        <input id="presenton-template" pInputText class="mb-3 w-full" [(ngModel)]="presentonTemplateName" />
+        <label for="presenton-key" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.apiKey" | translate }} {{ settings?.presenton_api_key_set ? ("executiveSummary.adminSettings.set" | translate) : ("executiveSummary.adminSettings.notSet" | translate) }}</label>
+        <input id="presenton-key" type="password" class="mb-3 w-full rounded-lg border border-gray-300 p-2" [(ngModel)]="presentonApiKeyInput" autocomplete="off" />
+        <button type="button" pButton styleClass="w-full!" (click)="save()"><span>{{ "executiveSummary.adminSettings.savePresenton" | translate }}</span></button>
+        @if (saveStatus) {
+        <p class="mt-2 text-xs font-semibold text-green-600">{{ saveStatus }}</p>
+        }
+    </div>
+    }
+
+    @if (!loading && view === 'pptgenx') {
+    <div>
+        <button type="button" class="mb-3.5 cursor-pointer text-xs font-semibold text-gray-500" (click)="view = 'menu'">&lsaquo; {{ "executiveSummary.adminSettings.title" | translate }}</button>
+        <p class="mb-4 text-xs text-gray-500">{{ "executiveSummary.adminSettings.pptgenxHint" | translate }}</p>
+        <div class="mb-4 flex items-start gap-2.5"><p-checkbox [(ngModel)]="pptgenxEnabled" [binary]="true" /><span class="text-sm font-semibold text-gray-800">{{ "executiveSummary.adminSettings.enablePptgenx" | translate }}</span></div>
+        <label for="pptgenx-url" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.baseUrl" | translate }}</label>
+        <input id="pptgenx-url" pInputText class="mb-3 w-full" [(ngModel)]="pptgenxBaseUrl" placeholder="http://localhost:5055" />
+        <label for="pptgenx-key" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.apiKey" | translate }} {{ settings?.pptgenx_api_key_set ? ("executiveSummary.adminSettings.set" | translate) : ("executiveSummary.adminSettings.notSet" | translate) }}</label>
+        <input id="pptgenx-key" type="password" class="mb-3 w-full rounded-lg border border-gray-300 p-2" [(ngModel)]="pptgenxApiKeyInput" autocomplete="off" />
+        <button type="button" pButton styleClass="w-full!" (click)="save()"><span>{{ "executiveSummary.adminSettings.savePptgenx" | translate }}</span></button>
+        @if (saveStatus) {
+        <p class="mt-2 text-xs font-semibold text-green-600">{{ saveStatus }}</p>
+        }
+    </div>
+    }
+
+    @if (!loading && view === 'web-search') {
+    <div>
+        <button type="button" class="mb-3.5 cursor-pointer text-xs font-semibold text-gray-500" (click)="view = 'menu'">&lsaquo; {{ "executiveSummary.adminSettings.title" | translate }}</button>
+        <p class="mb-4 text-xs text-gray-500">{{ "executiveSummary.adminSettings.webSearchHint" | translate }}</p>
+        <div class="mb-4 flex items-start gap-2.5"><p-checkbox [(ngModel)]="webSearchEnabled" [binary]="true" /><span class="text-sm font-semibold text-gray-800">{{ "executiveSummary.adminSettings.enableWebSearch" | translate }}</span></div>
+        <label for="tavily-key" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.tavilyKey" | translate }} {{ settings?.tavily_api_key_set ? ("executiveSummary.adminSettings.set" | translate) : ("executiveSummary.adminSettings.notSet" | translate) }}</label>
+        <input id="tavily-key" type="password" class="mb-3 w-full rounded-lg border border-gray-300 p-2" [(ngModel)]="tavilyApiKeyInput" autocomplete="off" />
+        <button type="button" pButton styleClass="w-full!" (click)="save()"><span>{{ "executiveSummary.adminSettings.saveWebSearch" | translate }}</span></button>
+        @if (saveStatus) {
+        <p class="mt-2 text-xs font-semibold text-green-600">{{ saveStatus }}</p>
+        }
+
+        <h3 class="mb-1 mt-6 text-sm font-bold text-gray-800">{{ "executiveSummary.adminSettings.trustedSources" | translate }}</h3>
+        @if (trustedSourcesLoading) { <p class="text-xs text-gray-500">{{ "executiveSummary.loading" | translate }}</p> }
+        @for (category of trustedSourceCategories; track category) {
+        <div class="mb-3"><h4 class="mb-1 text-xs font-bold uppercase text-gray-500">{{ category }}</h4>
+            @for (source of trustedSourcesFor(category); track source.id) {
+            <div class="mb-1 flex items-center gap-2 rounded-lg border border-gray-200 p-2">
+                <span class="min-w-0 flex-1"><span class="block text-xs font-semibold">{{ source.name }}</span><a class="block truncate text-xs text-primary-600" [href]="source.url" target="_blank" rel="noopener">{{ source.url }}</a></span>
+                <button type="button" class="text-red-600" (click)="deleteTrustedSource(source.id)" [attr.aria-label]="'executiveSummary.adminSettings.removeSource' | translate"><i class="pi pi-trash"></i></button>
+            </div>
+            }
+        </div>
+        }
+        @if (!trustedSourcesLoading && !trustedSources.length) { <p class="text-xs text-gray-500">{{ "executiveSummary.adminSettings.noTrustedSources" | translate }}</p> }
+        <h4 class="mb-2 mt-4 text-xs font-bold text-gray-700">{{ "executiveSummary.adminSettings.addSource" | translate }}</h4>
+        <input pInputText class="mb-2 w-full" [(ngModel)]="newSourceCategory" [placeholder]="'executiveSummary.adminSettings.sourceCategory' | translate" [attr.aria-label]="'executiveSummary.adminSettings.sourceCategory' | translate" />
+        <input pInputText class="mb-2 w-full" [(ngModel)]="newSourceName" [placeholder]="'executiveSummary.adminSettings.sourceName' | translate" [attr.aria-label]="'executiveSummary.adminSettings.sourceName' | translate" />
+        <input pInputText class="mb-2 w-full" [(ngModel)]="newSourceUrl" placeholder="https://..." [attr.aria-label]="'executiveSummary.adminSettings.sourceUrl' | translate" />
+        <button type="button" pButton styleClass="w-full!" [disabled]="!newSourceCategory || !newSourceName || !newSourceUrl" (click)="addTrustedSource()"><span>{{ "executiveSummary.adminSettings.addSource" | translate }}</span></button>
+        <h4 class="mb-1 mt-5 text-xs font-bold text-gray-700">{{ "executiveSummary.adminSettings.bulkImport" | translate }}</h4>
+        <p class="mb-2 text-xs text-gray-500">{{ "executiveSummary.adminSettings.bulkImportHint" | translate }}</p>
+        <textarea class="mb-2 w-full rounded-lg border border-gray-300 p-2 text-xs" rows="7" [(ngModel)]="bulkImportText" [attr.aria-label]="'executiveSummary.adminSettings.bulkImport' | translate"></textarea>
+        <button type="button" pButton styleClass="w-full!" [loading]="bulkImporting" [disabled]="!bulkImportText.trim()" (click)="bulkImport()"><span>{{ "executiveSummary.adminSettings.import" | translate }}</span></button>
+        @if (bulkImportStatus) { <p class="mt-2 text-xs font-semibold text-gray-600">{{ bulkImportStatus }}</p> }
+    </div>
+    }
+
+    @if (!loading && view === 'mcp-servers') {
+    <div>
+        <button type="button" class="mb-3.5 cursor-pointer text-xs font-semibold text-gray-500" (click)="view = 'menu'">&lsaquo; {{ "executiveSummary.adminSettings.title" | translate }}</button>
+        <p class="mb-4 text-xs text-gray-500">{{ "executiveSummary.adminSettings.mcpServersHint" | translate }}</p>
+        @if (mcpServersLoading) { <p class="text-xs text-gray-500">{{ "executiveSummary.loading" | translate }}</p> }
+        @for (server of mcpServers; track server.id) {
+        <div class="mb-2 flex items-center gap-2 rounded-lg border border-gray-200 p-2.5">
+            <span class="min-w-0 flex-1"><span class="block text-xs font-bold">{{ server.name }} <small class="rounded-full bg-primary-50 px-2 py-0.5 text-primary-700">{{ server.auth_type }}</small></span><span class="block truncate text-xs text-gray-500">{{ server.base_url }}</span></span>
+            <button type="button" class="text-red-600" (click)="deleteMcpServer(server.id)" [attr.aria-label]="'executiveSummary.adminSettings.removeServer' | translate"><i class="pi pi-trash"></i></button>
+        </div>
+        }
+        @if (!mcpServersLoading && !mcpServers.length) { <p class="text-xs text-gray-500">{{ "executiveSummary.adminSettings.noMcpServers" | translate }}</p> }
+        <h3 class="mb-2 mt-5 text-sm font-bold">{{ "executiveSummary.adminSettings.addServer" | translate }}</h3>
+        <input pInputText class="mb-2 w-full" [(ngModel)]="newMcpServer.name" [placeholder]="'executiveSummary.adminSettings.serverName' | translate" [attr.aria-label]="'executiveSummary.adminSettings.serverName' | translate" />
+        <input pInputText class="mb-2 w-full" [(ngModel)]="newMcpServer.description" [placeholder]="'executiveSummary.adminSettings.description' | translate" [attr.aria-label]="'executiveSummary.adminSettings.description' | translate" />
+        <input pInputText class="mb-2 w-full" [(ngModel)]="newMcpServer.base_url" placeholder="https://.../sse" [attr.aria-label]="'executiveSummary.adminSettings.serverUrl' | translate" />
+        <label for="mcp-auth" class="mb-1 block text-xs font-semibold">{{ "executiveSummary.adminSettings.authType" | translate }}</label>
+        <select id="mcp-auth" class="mb-2 w-full rounded-lg border border-gray-300 p-2 text-sm" [(ngModel)]="newMcpServer.auth_type"><option value="none">None</option><option value="oauth">OAuth</option><option value="api_key">API key</option></select>
+        @if (newMcpServer.auth_type === 'oauth') {
+        <input pInputText class="mb-2 w-full" [(ngModel)]="newMcpServer.oauth_authorize_url" [placeholder]="'executiveSummary.adminSettings.authorizeUrl' | translate" [attr.aria-label]="'executiveSummary.adminSettings.authorizeUrl' | translate" />
+        <input pInputText class="mb-2 w-full" [(ngModel)]="newMcpServer.oauth_token_url" [placeholder]="'executiveSummary.adminSettings.tokenUrl' | translate" [attr.aria-label]="'executiveSummary.adminSettings.tokenUrl' | translate" />
+        <input pInputText class="mb-2 w-full" [(ngModel)]="newMcpServer.oauth_client_id" [placeholder]="'executiveSummary.adminSettings.clientId' | translate" [attr.aria-label]="'executiveSummary.adminSettings.clientId' | translate" />
+        <input type="password" class="mb-2 w-full rounded-lg border border-gray-300 p-2" [(ngModel)]="newMcpServer.oauth_client_secret" [placeholder]="'executiveSummary.adminSettings.clientSecret' | translate" [attr.aria-label]="'executiveSummary.adminSettings.clientSecret' | translate" />
+        <input pInputText class="mb-2 w-full" [(ngModel)]="newMcpServer.oauth_scopes" [placeholder]="'executiveSummary.adminSettings.scopes' | translate" [attr.aria-label]="'executiveSummary.adminSettings.scopes' | translate" />
+        }
+        @if (newMcpServer.auth_type === 'api_key') {
+        <input type="password" class="mb-2 w-full rounded-lg border border-gray-300 p-2" [(ngModel)]="newMcpServer.static_api_key" [placeholder]="'executiveSummary.adminSettings.apiKey' | translate" [attr.aria-label]="'executiveSummary.adminSettings.apiKey' | translate" />
+        }
+        <button type="button" pButton styleClass="w-full!" [disabled]="!newMcpServer.name || !newMcpServer.base_url" (click)="addMcpServer()"><span>{{ "executiveSummary.adminSettings.addServer" | translate }}</span></button>
+        @if (mcpServerStatus) { <p class="mt-2 text-xs text-gray-500">{{ mcpServerStatus }}</p> }
+    </div>
+    }
     }
 
     <ng-template pTemplate="footer">

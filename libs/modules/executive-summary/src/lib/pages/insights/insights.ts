@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, inject, OnInit } from '@angular/core';
+import { Component, HostListener, inject, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService, CommonService } from '@nfinyx/services';
@@ -18,20 +18,25 @@ import { CountryDashboardComponent } from '../../components/country-dashboard/co
 import { HistoryPanelComponent } from '../../components/history-panel/history-panel';
 import { ExportPanelComponent, RecentReport } from '../../components/export-panel/export-panel';
 import { AdminSettingsDrawerComponent } from '../../components/admin-settings-drawer/admin-settings-drawer';
+import { AgentOptionsPanelComponent } from '../../components/agent-options-panel/agent-options-panel';
+import { ProfileSettingsComponent } from '../../components/profile-settings/profile-settings';
 import { ShareTaskDrawerComponent, ShareTaskFormModel, ShareTaskStage } from '../../components/share-task-drawer/share-task-drawer';
 import { ScheduleDrawerComponent, ScheduleFormModel } from '../../components/schedule-drawer/schedule-drawer';
 import { SaveProfileDrawerComponent, SaveProfileFormModel } from '../../components/save-profile-drawer/save-profile-drawer';
 import {
     ClarifyingQuestion,
     CountryDashboardData,
+    ExpertiseLevel,
     Framework,
     HistoryEntry,
     LengthPreset,
+    McpServerEntry,
     OutputFormat,
     Provider,
     ResearchType,
     ScheduleJobRequest,
     ScheduledJobEntry,
+    SourceHit,
 } from '../../models/executive-summary.models';
 
 type Stage = 'idle' | 'clarifying' | 'params' | 'loading' | 'result';
@@ -123,6 +128,32 @@ interface BriefSection {
     isFrameworkSection: boolean;
 }
 
+interface BriefTurn {
+    id: string;
+    kind: 'brief' | 'chitchat';
+    instruction: string;
+    title: string;
+    markdown: string;
+    html: string;
+    sessionId: string;
+    framework: string;
+    provider: string;
+    sourceSelection: string;
+    topic: string;
+    answers: { question: string; answer: string }[];
+    sources: SourceHit[];
+    createdAt: Date;
+}
+
+const TEMPLATE_THEMES: Record<string, { accent: string; dark: string; tint: string }> = {
+    'Auto (agent picks)': { accent: '#92722A', dark: '#6C4527', tint: '#F9F7ED' },
+    'UAE Color Theme': { accent: '#92722A', dark: '#6C4527', tint: '#F9F7ED' },
+    'Editorial Navy': { accent: '#2F4A70', dark: '#1B2A42', tint: '#EEF1F6' },
+    'Corporate Minimal': { accent: '#565D68', dark: '#282C33', tint: '#F1F2F3' },
+    'Modern Teal': { accent: '#177070', dark: '#0D4141', tint: '#EAF6F6' },
+    MoFA: { accent: '#AC833B', dark: '#5F5F5F', tint: '#F7F3EB' },
+};
+
 const FRAMEWORK_DIMENSIONS: Record<string, string[]> = {
     PESTLE: ['political', 'economic', 'social', 'technological', 'legal', 'environmental'],
     "Porter's Five Forces": [
@@ -148,7 +179,7 @@ function isFrameworkDimension(title: string, framework: string): boolean {
 function splitIntoSections(markdown: string, framework: string): BriefSection[] {
     const lines = markdown.split('\n');
     const sections: { title: string; body: string[] }[] = [];
-    let intro: string[] = [];
+    const intro: string[] = [];
     let current: { title: string; body: string[] } | null = null;
 
     for (const line of lines) {
@@ -189,6 +220,7 @@ function splitIntoSections(markdown: string, framework: string): BriefSection[] 
         CommonModule, FormsModule, TranslateModule,
         ButtonModule, CheckboxModule, InputTextModule, PopoverModule, RatingModule, SelectModule, TooltipModule,
         CountryDashboardComponent, HistoryPanelComponent, ExportPanelComponent, AdminSettingsDrawerComponent,
+        AgentOptionsPanelComponent, ProfileSettingsComponent,
         ShareTaskDrawerComponent, ScheduleDrawerComponent, SaveProfileDrawerComponent,
     ],
     templateUrl: './insights.html',
@@ -199,8 +231,16 @@ export class InsightsPage implements OnInit {
     private readonly translate = inject(TranslateService);
     private readonly auth = inject(AuthService);
 
-    readonly templateOptions = TEMPLATE_OPTIONS;
-    readonly frameworkOptions = FRAMEWORK_OPTIONS;
+    // The history panel loads its own "My Research"/"Chat History" lists
+    // once in its own ngOnInit and never refetches on its own — it's kept
+    // permanently in the DOM (just visually collapsed/expanded), so saving
+    // a report here left its list stale until a full page reload. Calling
+    // its public refresh() right after a successful save (see confirmSave
+    // below) keeps it in sync without needing to reload the page.
+    @ViewChild('historyPanel') historyPanel?: HistoryPanelComponent;
+
+    readonly templateOptions = [...TEMPLATE_OPTIONS, { label: 'MoFA', description: 'UAE Ministry of Foreign Affairs' }];
+    frameworkOptions = [...FRAMEWORK_OPTIONS];
     readonly lengthOptions = LENGTH_OPTIONS;
     readonly providerOptions = PROVIDER_OPTIONS;
     readonly researchTypeOptions = RESEARCH_TYPE_OPTIONS;
@@ -223,19 +263,49 @@ export class InsightsPage implements OnInit {
         return this.auth.user()?.displayName || '';
     }
 
+    get userId(): string {
+        return this.auth.user()?.id?.trim() || '';
+    }
+
+    /**
+     * The exec-agent admin router answers 401/403 for everyone else, so non-admins must not
+     * call it at all — an unauthorized probe on page load surfaces as a spurious backend error.
+     */
+    get isAdmin(): boolean {
+        return this.auth.isAdmin();
+    }
+
+    get backendUserId(): string {
+        return this.userId || 'anonymous';
+    }
+
+    get exportCreatedBy(): string {
+        return this.preparedBy.trim() || this.userName || this.userId;
+    }
+
     stage: Stage = 'idle';
     errorMessage = '';
     moderationBlocked = false;
+    quotaExceeded = false;
 
     historyCollapsed = false;
     exportPanelOpen = false;
     adminSettingsOpen = false;
+    optionsOpen = false;
+    profileOpen = false;
 
     // step 1
     topic = '';
-    template = TEMPLATE_OPTIONS[0].label;
+    private _template = TEMPLATE_OPTIONS[0].label;
+    get template(): string { return this._template; }
+    set template(value: string) {
+        this._template = value;
+        this.applyTemplateTheme(value);
+    }
     framework = FRAMEWORK_OPTIONS[0].label;
     composerMode: 'topic' | 'document' = 'topic';
+    source = 'Web search';
+    expertiseLevel: ExpertiseLevel = 'expert';
 
     // step 2
     sessionId = '';
@@ -256,10 +326,13 @@ export class InsightsPage implements OnInit {
     provider = 'Qwen (local)';
     personnelProfile = false;
     countryDashboard = false;
+    mcpServers: McpServerEntry[] = [];
+    mcpConnectionId: string | null = null;
 
     // step 4 — result
     briefTitle = '';
     briefMarkdown = '';
+    briefSources: SourceHit[] = [];
     wordCount = 0;
     dashboardData: CountryDashboardData | null = null;
     telemetry: ResponseTelemetry | null = null;
@@ -306,15 +379,55 @@ export class InsightsPage implements OnInit {
     refineInstruction = '';
     refining = false;
     refineError = '';
+    resultComposerMode: 'refine' | 'new' = 'refine';
+    activeTopic = '';
+    pendingUserMessage: string | null = null;
+    conversationId = this.newId();
+    turns: BriefTurn[] = [];
+    sourcesOpenTurnId: string | null = null;
+    readingAloudTurnId: string | null = null;
+    forkingTurnId: string | null = null;
+    expandedTurnId: string | null = null;
+    generationMode: 'Local' | 'Gamma AI' | 'Presenton' | 'PptGenX' = 'Local';
+    readonly generationOptions = ['Local', 'Gamma AI', 'Presenton', 'PptGenX'];
+    preparedBy = '';
 
     async ngOnInit(): Promise<void> {
+        this.preparedBy = this.userName;
+        this.applyTemplateTheme(this.template);
+        if (this.auth.isLoggedIn()) {
+            try {
+                this.onServersChange(await this.api.listMcpServers());
+            } catch {
+                // MCP is optional and must not prevent the main research flow.
+            }
+        }
+        if (this.userId) {
+            try {
+                this.expertiseLevel = (await this.api.getUserProfile(this.userId)).expertise_level;
+            } catch {
+                // Keep expert defaults when no profile has been saved.
+            }
+        }
+        if (this.isAdmin) await this.applyAdminSettings();
+        try {
+            this.historyEntries = (await this.api.listHistory()).items;
+        } catch (err) {
+            this.historyEntries = [];
+            this.historyLoadError = this.describeError(err);
+        }
+    }
+
+    /** Narrows the composer's options to what the admin settings allow. Admin-only endpoint. */
+    private async applyAdminSettings(): Promise<void> {
         try {
             const settings = await this.api.getAdminSettings();
             if (settings.enabled_frameworks?.length) {
                 const enabled = new Set(settings.enabled_frameworks);
                 const filtered = FRAMEWORK_OPTIONS.filter(f => enabled.has(f.label));
-                if (filtered.length && !filtered.some(f => f.label === this.framework)) {
-                    this.framework = filtered[0].label;
+                this.frameworkOptions = filtered.length ? filtered : [...FRAMEWORK_OPTIONS];
+                if (!this.frameworkOptions.some(f => f.label === this.framework)) {
+                    this.framework = this.frameworkOptions[0].label;
                 }
             }
             if (settings.allowed_file_types?.length) {
@@ -335,7 +448,27 @@ export class InsightsPage implements OnInit {
         } catch {
             // Settings fetch failing shouldn't block the rest of the app.
         }
-        this.historyEntries = await this.api.listHistory();
+    }
+
+    get currentTurn(): BriefTurn | null {
+        return this.turns.length ? this.turns[this.turns.length - 1] : null;
+    }
+
+    get historyTurns(): BriefTurn[] {
+        return this.stage === 'result' ? this.turns.slice(0, -1) : this.turns;
+    }
+
+    get showingRefineComposer(): boolean {
+        return this.stage === 'result' && this.resultComposerMode === 'refine';
+    }
+
+    get mcpToolOptions(): { label: string; value: string | null }[] {
+        return [
+            { label: 'None', value: null },
+            ...this.mcpServers
+                .filter(server => server.connection_status === 'connected' && server.imported_tools.length)
+                .map(server => ({ label: server.name, value: server.connection_id ?? null })),
+        ];
     }
 
     async loadFromHistory(sessionId: string): Promise<void> {
@@ -345,6 +478,7 @@ export class InsightsPage implements OnInit {
             this.sessionId = detail.session_id;
             this.briefTitle = detail.title;
             this.briefMarkdown = detail.content_markdown;
+            this.briefSources = [];
             this.wordCount = detail.word_count;
             this.dashboardData = detail.dashboard_data || null;
             this.framework = FRAMEWORK_OPTIONS.find(f => f.label === detail.framework)?.label || this.framework;
@@ -359,6 +493,51 @@ export class InsightsPage implements OnInit {
             this.translationState = 'idle';
             this.feedbackSubmitted = false;
             this.feedbackRating = 0;
+            this.turns = [this.turnFromHistory(detail)];
+            this.activeTopic = detail.name;
+            this.resultComposerMode = 'refine';
+        } catch (err) {
+            this.historyLoadError = this.describeError(err);
+        }
+    }
+
+    async loadConversation(conversationId: string): Promise<void> {
+        this.historyLoadError = '';
+        try {
+            const detail = await this.api.getConversation(conversationId);
+            if (!detail.turns.length) return;
+            this.conversationId = conversationId;
+            this.turns = detail.turns.map(turn => ({
+                id: this.newId(),
+                kind: turn.kind,
+                instruction: turn.instruction,
+                title: turn.title,
+                markdown: turn.content_markdown,
+                html: marked.parse(turn.content_markdown || '') as string,
+                sessionId: turn.session_id,
+                framework: turn.framework,
+                provider: turn.provider,
+                sourceSelection: turn.source_selection ?? '',
+                topic: turn.topic,
+                answers: turn.answers,
+                sources: turn.sources,
+                createdAt: new Date(turn.created_at),
+            }));
+            const last = this.turns[this.turns.length - 1];
+            if (!last) return;
+            this.resetLoadedConversationState();
+            this.sessionId = last.sessionId;
+            this.activeTopic = last.topic;
+            this.framework = last.framework || this.framework;
+            this.provider = this.providerLabel(last.provider);
+            this.source = last.sourceSelection || this.source;
+            if (last.kind === 'brief') {
+                this.applyBrief(last.title, last.markdown, last.sources);
+                this.stage = 'result';
+                this.resultComposerMode = 'refine';
+            } else {
+                this.stage = 'idle';
+            }
         } catch (err) {
             this.historyLoadError = this.describeError(err);
         }
@@ -388,7 +567,7 @@ export class InsightsPage implements OnInit {
         const keyEv = ev as KeyboardEvent;
         if (keyEv.shiftKey) return;
         ev.preventDefault();
-        if (this.stage === 'result') {
+        if (this.showingRefineComposer) {
             if (!this.refineInstruction.trim() || this.refining) return;
             this.refineBrief();
             return;
@@ -399,17 +578,20 @@ export class InsightsPage implements OnInit {
 
     async refineBrief(): Promise<void> {
         if (!this.refineInstruction.trim()) return;
+        const instruction = this.refineInstruction.trim();
         this.refining = true;
+        this.errorMessage = '';
         this.refineError = '';
+        this.moderationBlocked = false;
+        this.quotaExceeded = false;
+        this.pendingUserMessage = instruction;
+        this.refineInstruction = '';
         try {
-            const res = await this.api.refine(this.sessionId, this.refineInstruction.trim());
+            const res = await this.api.refine(this.sessionId, instruction);
             this.refining = false;
-            this.refineInstruction = '';
-            this.briefTitle = res.title;
-            this.briefMarkdown = res.content_markdown;
-            this.wordCount = res.content_markdown.trim().split(/\s+/).filter(Boolean).length;
-            this.sections = splitIntoSections(res.content_markdown, this.framework);
-            this.currentSectionIndex = 0;
+            this.pendingUserMessage = null;
+            this.applyBrief(res.title, res.content_markdown, this.briefSources);
+            this.pushBriefTurn(instruction, res.title, res.content_markdown, this.sessionId, this.briefSources);
             this.translationState = 'idle';
             this.translatedTitle = '';
             this.translatedHtml = '';
@@ -417,18 +599,37 @@ export class InsightsPage implements OnInit {
         } catch (err) {
             this.refining = false;
             this.refineError = this.describeError(err);
+            this.errorMessage = this.refineError;
+            this.moderationBlocked = this.isModerationBlock(err);
+            this.quotaExceeded = this.isQuotaExceeded(err);
+            this.refineInstruction = instruction;
+            this.pendingUserMessage = null;
         }
     }
 
     async startResearch(): Promise<void> {
         if (!this.topic.trim()) return;
+        const submittedTopic = this.topic.trim();
+        this.activeTopic = submittedTopic;
+        this.pendingUserMessage = submittedTopic;
+        this.topic = '';
         this.errorMessage = '';
         this.moderationBlocked = false;
+        this.quotaExceeded = false;
         this.stage = 'loading';
         try {
-            const res = await this.api.startSession(this.topic, this.providerKey(this.provider));
+            const res = await this.api.startSession(submittedTopic, this.providerKey(this.provider), this.backendUserId);
+            if (res.intent === 'chit_chat') {
+                this.sessionId = res.session_id;
+                const turn = this.makeTurn('chitchat', submittedTopic, '', res.reply ?? '', res.session_id, []);
+                this.turns.push(turn);
+                await this.persistTurn(turn);
+                this.pendingUserMessage = null;
+                this.stage = 'idle';
+                return;
+            }
             this.sessionId = res.session_id;
-            this.categoryGuess = res.category_guess;
+            this.categoryGuess = res.category_guess || '';
             this.questions = res.clarifying_questions;
             this.answers = {};
             this.otherMode = {};
@@ -439,18 +640,32 @@ export class InsightsPage implements OnInit {
             this.showCountryDashboardCheckbox = res.involves_country_relations;
             this.personnelProfile = res.involves_specific_person && this.personnelProfile;
             this.countryDashboard = res.involves_country_relations && this.countryDashboard;
-            this.stage = 'clarifying';
+            if (this.expertiseLevel === 'beginner') {
+                this.useSuggestedFramework();
+                await this.api.submitAnswers(this.sessionId, {});
+                await this.generateBrief('idle');
+            } else {
+                this.stage = 'clarifying';
+            }
         } catch (err) {
             this.moderationBlocked = this.isModerationBlock(err);
+            this.quotaExceeded = this.isQuotaExceeded(err);
             this.errorMessage = this.describeError(err);
             this.stage = 'idle';
+            this.topic = submittedTopic;
+            this.pendingUserMessage = null;
         }
     }
 
     async continueToParams(): Promise<void> {
         try {
             await this.api.submitAnswers(this.sessionId, this.answers);
-            this.stage = 'params';
+            if (this.expertiseLevel === 'intermediate') {
+                this.useSuggestedFramework();
+                await this.generateBrief('idle');
+            } else {
+                this.stage = 'params';
+            }
         } catch (err) {
             this.errorMessage = this.describeError(err);
         }
@@ -504,10 +719,11 @@ export class InsightsPage implements OnInit {
         }
     }
 
-    async generateBrief(): Promise<void> {
+    async generateBrief(errorStage: Stage = 'params'): Promise<void> {
         this.stage = 'loading';
         this.errorMessage = '';
         this.moderationBlocked = false;
+        this.quotaExceeded = false;
         try {
             const res = await this.api.generate(this.sessionId, {
                 length: this.lengthKey(this.length),
@@ -518,9 +734,11 @@ export class InsightsPage implements OnInit {
                 provider: this.providerKey(this.provider),
                 personnel_profile: this.personnelProfile,
                 country_dashboard: this.countryDashboard,
+                source: this.source,
+                mcp_connection_id: this.mcpConnectionId,
+                user_id: this.backendUserId,
             });
-            this.briefTitle = res.title;
-            this.briefMarkdown = res.content_markdown;
+            this.applyBrief(res.title, res.content_markdown, res.sources ?? []);
             this.wordCount = res.word_count;
             this.dashboardData = res.dashboard_data || null;
             this.telemetry = {
@@ -556,10 +774,15 @@ export class InsightsPage implements OnInit {
             this.historyLoadError = '';
             this.exporting = false;
             this.stage = 'result';
+            this.resultComposerMode = 'refine';
+            this.pendingUserMessage = null;
+            this.pushBriefTurn(this.activeTopic, res.title, res.content_markdown, this.sessionId, res.sources ?? []);
         } catch (err) {
             this.moderationBlocked = this.isModerationBlock(err);
+            this.quotaExceeded = this.isQuotaExceeded(err);
             this.errorMessage = this.describeError(err);
-            this.stage = 'params';
+            this.stage = errorStage;
+            this.pendingUserMessage = null;
         }
     }
 
@@ -567,7 +790,18 @@ export class InsightsPage implements OnInit {
         this.exporting = true;
         const fmt = this.exportFormatKey(format);
         try {
-            const res = await this.api.export(this.sessionId, fmt, this.template, undefined, undefined, this.userName);
+            const res = await this.api.export(
+                this.sessionId,
+                fmt,
+                this.template,
+                this.briefMarkdown,
+                this.briefTitle,
+                this.exportCreatedBy,
+                this.briefSources,
+                this.exportEngineKey(),
+                undefined,
+                this.dashboardData,
+            );
             this.exporting = false;
             window.open(this.api.downloadUrl(res.file_name), '_blank');
         } catch (err) {
@@ -607,7 +841,7 @@ export class InsightsPage implements OnInit {
         try {
             const task = await this.api.createTask(
                 this.sessionId, `Review: ${this.briefTitle}`, assignees, undefined,
-                this.shareTaskForm.taskDueDate || undefined, this.shareTaskForm.taskPriority, this.shareTaskForm.taskImportance, this.userName,
+                this.shareTaskForm.taskDueDate || undefined, this.shareTaskForm.taskPriority, this.shareTaskForm.taskImportance, this.backendUserId,
             );
             this.common.showSuccessMessage(this.translate.instant('executiveSummary.insights.taskCreated', { id: task.id, assignees: task.assignees.join(', ') }));
         } catch (err) {
@@ -688,7 +922,18 @@ export class InsightsPage implements OnInit {
         const fmt = this.exportFormatKey(this.translatedExportFormat);
         this.translatedExportBusy = true;
         try {
-            const res = await this.api.export(this.sessionId, fmt, this.template, this.translatedMarkdownFull, this.translatedTitle, this.userName);
+            const res = await this.api.export(
+                this.sessionId,
+                fmt,
+                this.template,
+                this.translatedMarkdownFull,
+                this.translatedTitle,
+                this.exportCreatedBy,
+                this.briefSources,
+                this.exportEngineKey(),
+                undefined,
+                this.dashboardData,
+            );
             this.translatedExportBusy = false;
             window.open(this.api.downloadUrl(res.file_name), '_blank');
         } catch (err) {
@@ -703,7 +948,18 @@ export class InsightsPage implements OnInit {
         try {
             const detail = await this.api.getHistoryDetail(sessionId);
             const fmt = this.exportFormatKey(this.exportFormat);
-            const res = await this.api.export(sessionId, fmt, this.template, detail.content_markdown, detail.title, this.userName);
+            const res = await this.api.export(
+                sessionId,
+                fmt,
+                this.template,
+                detail.content_markdown,
+                detail.title,
+                this.exportCreatedBy,
+                [],
+                this.exportEngineKey(),
+                undefined,
+                detail.dashboard_data,
+            );
             this.downloadingRecentId = null;
             window.open(this.api.downloadUrl(res.file_name), '_blank');
         } catch (err) {
@@ -732,19 +988,99 @@ export class InsightsPage implements OnInit {
                 visibility: form.visibility === 'Shared' ? 'shared' : 'private',
             });
             this.saveStage = 'saved';
-            this.historyEntries = await this.api.listHistory();
+            this.historyEntries = (await this.api.listHistory()).items;
+            void this.historyPanel?.refresh();
             this.common.showSuccessMessage(this.translate.instant('executiveSummary.insights.savedAs', { visibility: form.visibility.toLowerCase() }));
         } catch (err) {
             this.common.showApiError(err);
         }
     }
 
+    switchResultComposerMode(mode: 'refine' | 'new'): void {
+        this.resultComposerMode = mode;
+        if (mode === 'refine') this.topic = '';
+        else this.refineInstruction = '';
+        this.errorMessage = '';
+        this.refineError = '';
+    }
+
+    toggleSources(turnId: string): void {
+        this.sourcesOpenTurnId = this.sourcesOpenTurnId === turnId ? null : turnId;
+    }
+
+    toggleTurn(turnId: string): void {
+        this.expandedTurnId = this.expandedTurnId === turnId ? null : turnId;
+    }
+
+    isGroundingSource(source: string): boolean {
+        return source === 'Web search' || source === 'Specific URL(s)';
+    }
+
+    async forkFromTurn(turn: BriefTurn): Promise<void> {
+        if (turn.kind !== 'brief' || this.forkingTurnId) return;
+        this.forkingTurnId = turn.id;
+        try {
+            const response = await this.api.fork(turn.sessionId, turn.markdown, turn.title);
+            this.sessionId = response.session_id;
+            this.activeTopic = turn.topic;
+            this.framework = turn.framework || this.framework;
+            this.provider = this.providerLabel(turn.provider);
+            this.source = turn.sourceSelection || this.source;
+            this.applyBrief(response.title, response.content_markdown, turn.sources);
+            this.conversationId = this.newId();
+            const forked = this.makeTurn(
+                'brief', turn.instruction, response.title, response.content_markdown, response.session_id, turn.sources,
+            );
+            this.turns = [forked];
+            await this.persistTurn(forked);
+            this.stage = 'result';
+            this.resultComposerMode = 'refine';
+        } catch (err) {
+            this.errorMessage = this.describeError(err);
+        } finally {
+            this.forkingTurnId = null;
+        }
+    }
+
+    toggleReadAloud(turn: BriefTurn): void {
+        if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+        if (this.readingAloudTurnId === turn.id) {
+            window.speechSynthesis.cancel();
+            this.readingAloudTurnId = null;
+            return;
+        }
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(
+            turn.markdown.replace(/^#{1,6}\s+/gm, '').replace(/[*_`>]/g, '').replace(/\[(.*?)\]\(.*?\)/g, '$1'),
+        );
+        utterance.onend = () => this.readingAloudTurnId = null;
+        utterance.onerror = () => this.readingAloudTurnId = null;
+        this.readingAloudTurnId = turn.id;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    onServersChange(servers: McpServerEntry[]): void {
+        this.mcpServers = servers;
+        if (this.mcpConnectionId && !servers.some(server => server.connection_id === this.mcpConnectionId)) {
+            this.mcpConnectionId = null;
+        }
+    }
+
     startOver(): void {
+        if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel();
+        this.turns = [];
+        this.conversationId = this.newId();
+        this.activeTopic = '';
+        this.pendingUserMessage = null;
+        this.sourcesOpenTurnId = null;
+        this.readingAloudTurnId = null;
+        this.expandedTurnId = null;
         this.stage = 'idle';
         this.topic = '';
         this.composerMode = 'topic';
         this.errorMessage = '';
         this.moderationBlocked = false;
+        this.quotaExceeded = false;
         this.viewingHistoryIndex = null;
         this.historyLoadError = '';
         this.questions = [];
@@ -782,6 +1118,108 @@ export class InsightsPage implements OnInit {
         this.translatedExportPrompted = false;
         this.translatedExportAccepted = false;
         this.translatedExportFormat = 'Word (.docx)';
+        this.resultComposerMode = 'refine';
+    }
+
+    private applyBrief(title: string, markdown: string, sources: SourceHit[]): void {
+        this.briefTitle = title;
+        this.briefMarkdown = markdown;
+        this.briefSources = sources;
+        this.wordCount = markdown.trim().split(/\s+/).filter(Boolean).length;
+        this.sections = splitIntoSections(markdown, this.framework);
+        this.currentSectionIndex = 0;
+        this.readMode = this.sections.length > 1 && this.wordCount >= SECTION_MODE_WORD_THRESHOLD ? 'sections' : 'full';
+    }
+
+    private resetLoadedConversationState(): void {
+        this.saveStage = 'prompt';
+        this.actionStage = 'prompt';
+        this.scheduleStage = 'prompt';
+        this.translationState = 'idle';
+        this.feedbackSubmitted = false;
+        this.feedbackRating = 0;
+        this.viewingHistoryIndex = null;
+        this.sourcesOpenTurnId = null;
+        this.expandedTurnId = null;
+        this.forkingTurnId = null;
+        this.pendingUserMessage = null;
+    }
+
+    private applyTemplateTheme(value: string): void {
+        if (typeof document === 'undefined') return;
+        const theme = TEMPLATE_THEMES[value] ?? TEMPLATE_THEMES['Auto (agent picks)'];
+        document.documentElement.style.setProperty('--exec-accent', theme.accent);
+        document.documentElement.style.setProperty('--exec-accent-dark', theme.dark);
+        document.documentElement.style.setProperty('--exec-accent-tint', theme.tint);
+        document.documentElement.style.setProperty('--p-primary-500', theme.accent);
+        document.documentElement.style.setProperty('--p-primary-600', theme.dark);
+        document.documentElement.style.setProperty('--p-primary-50', theme.tint);
+    }
+
+    private pushBriefTurn(
+        instruction: string,
+        title: string,
+        markdown: string,
+        sessionId: string,
+        sources: SourceHit[],
+    ): void {
+        const turn = this.makeTurn('brief', instruction, title, markdown, sessionId, sources);
+        this.turns.push(turn);
+        void this.persistTurn(turn);
+    }
+
+    private makeTurn(
+        kind: 'brief' | 'chitchat',
+        instruction: string,
+        title: string,
+        markdown: string,
+        sessionId: string,
+        sources: SourceHit[],
+    ): BriefTurn {
+        return {
+            id: this.newId(), kind, instruction, title, markdown,
+            html: marked.parse(markdown || '') as string,
+            sessionId, framework: kind === 'brief' ? this.framework : '', provider: this.provider,
+            sourceSelection: this.source, topic: this.activeTopic || instruction,
+            answers: this.questions.filter(q => this.answers[q.id]).map(q => ({ question: q.question, answer: this.answers[q.id] })),
+            sources, createdAt: new Date(),
+        };
+    }
+
+    private turnFromHistory(detail: {
+        session_id: string; name: string; title: string; content_markdown: string; framework: string;
+        provider?: string | null; created_at: string;
+    }): BriefTurn {
+        return {
+            id: this.newId(), kind: 'brief', instruction: detail.name, title: detail.title,
+            markdown: detail.content_markdown, html: marked.parse(detail.content_markdown) as string,
+            sessionId: detail.session_id, framework: detail.framework, provider: detail.provider ?? '',
+            sourceSelection: '', topic: detail.name, answers: [], sources: [], createdAt: new Date(detail.created_at),
+        };
+    }
+
+    private persistTurn(turn: BriefTurn): Promise<unknown> {
+        return this.api.saveChatTurn({
+            conversation_id: this.conversationId,
+            turn_index: this.turns.indexOf(turn),
+            session_id: turn.sessionId,
+            kind: turn.kind,
+            instruction: turn.instruction,
+            topic: turn.topic,
+            title: turn.title,
+            content_markdown: turn.markdown,
+            framework: turn.framework,
+            provider: turn.provider,
+            source_selection: turn.sourceSelection || null,
+            sources: turn.sources,
+            answers: turn.answers,
+        }).catch(() => undefined);
+    }
+
+    private newId(): string {
+        return typeof crypto !== 'undefined' && 'randomUUID' in crypto
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     }
 
     private defaultShareTaskForm(): ShareTaskFormModel {
@@ -804,6 +1242,14 @@ export class InsightsPage implements OnInit {
         if (label.startsWith('OpenAI')) return 'openai';
         return 'qwen';
     }
+
+    private providerLabel(provider: string): string {
+        if (provider === 'claude') return 'Claude';
+        if (provider === 'openai') return 'OpenAI';
+        if (provider === 'qwen') return 'Qwen (local)';
+        return provider || this.provider;
+    }
+
     private lengthKey(label: string): LengthPreset {
         return label.toLowerCase() as LengthPreset;
     }
@@ -811,6 +1257,13 @@ export class InsightsPage implements OnInit {
         if (label.startsWith('Word')) return 'docx';
         if (label.startsWith('PDF')) return 'pdf';
         return 'pptx';
+    }
+
+    private exportEngineKey(): 'local' | 'gamma' | 'presenton' | 'pptgenx' {
+        if (this.generationMode === 'Gamma AI') return 'gamma';
+        if (this.generationMode === 'Presenton') return 'presenton';
+        if (this.generationMode === 'PptGenX') return 'pptgenx';
+        return 'local';
     }
 
     formatResponseTime(ms: number): string {
@@ -825,5 +1278,9 @@ export class InsightsPage implements OnInit {
     private isModerationBlock(err: unknown): boolean {
         const anyErr = err as { status?: number };
         return anyErr?.status === 403;
+    }
+
+    private isQuotaExceeded(err: unknown): boolean {
+        return (err as { status?: number })?.status === 429;
     }
 }

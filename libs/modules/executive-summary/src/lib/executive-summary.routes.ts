@@ -1,11 +1,15 @@
+import { inject } from '@angular/core';
 import { Route } from '@angular/router';
 import { AgentLayout } from '@nfinyx/layouts';
-import { createModuleI18nResolver } from '@nfinyx/services';
+import { AuthService, createModuleI18nResolver } from '@nfinyx/services';
 import { MenuIcon, MenuModel } from '@nfinyx/types';
 import * as en from './i18n/en.json';
 import * as ar from './i18n/ar.json';
 
 const execSummaryI18nResolver = createModuleI18nResolver({ en, ar });
+
+/** Backed entirely by the exec-agent admin router, which rejects non-admin callers. */
+const ADMIN_ONLY_NAV = ['executive-summary-guardrails', 'executive-summary-analytics'];
 
 const EXEC_SUMMARY_NAV: MenuModel[] = [
     {
@@ -48,14 +52,34 @@ const EXEC_SUMMARY_NAV: MenuModel[] = [
         icon: MenuIcon.ReceiptWarning,
         link: '/executive-summary/feedback',
     },
+    {
+        id: 6,
+        name: 'executive-summary-analytics',
+        menu: 'executiveSummary.analytics.title',
+        activatedRoute: true,
+        icon: MenuIcon.Chart,
+        link: '/executive-summary/analytics',
+    },
 ];
+
+/**
+ * Hides the admin-only entries before `AgentLayout` reads `data['main-nav']`, so a
+ * non-admin is never offered a page that can only answer "admin required".
+ */
+const execSummaryNavResolver = () => {
+    const isAdmin = inject(AuthService).isAdmin();
+    for (const item of EXEC_SUMMARY_NAV) {
+        if (ADMIN_ONLY_NAV.includes(item.name)) item.hide = !isAdmin;
+    }
+    return EXEC_SUMMARY_NAV;
+};
 
 export const EXECUTIVE_SUMMARY_ROUTES: Route[] = [
     {
         path: '',
         component: AgentLayout,
         data: { 'main-nav': EXEC_SUMMARY_NAV },
-        resolve: { i18n: execSummaryI18nResolver },
+        resolve: { i18n: execSummaryI18nResolver, nav: execSummaryNavResolver },
         children: [
             {
                 path: '',
@@ -81,6 +105,11 @@ export const EXECUTIVE_SUMMARY_ROUTES: Route[] = [
                 path: 'feedback',
                 loadComponent: () => import('./pages/feedback-report/feedback-report').then(m => m.FeedbackReportPage),
                 data: { name: 'executive-summary-feedback' },
+            },
+            {
+                path: 'analytics',
+                loadComponent: () => import('./pages/usage-analytics/usage-analytics').then(m => m.UsageAnalyticsPage),
+                data: { name: 'executive-summary-analytics' },
             },
         ],
     },

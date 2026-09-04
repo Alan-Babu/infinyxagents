@@ -62,7 +62,14 @@ export class MyTasksPage implements OnInit, OnDestroy {
     }
 
     get currentUser(): string {
-        return this.auth.user()?.displayName || '';
+        return this.auth.user()?.id || '';
+    }
+
+    private get currentUserAliases(): string[] {
+        const user = this.auth.user();
+        return [user?.id, user?.displayName, user?.email]
+            .map(value => (value || '').trim().toLowerCase())
+            .filter((value, index, aliases) => Boolean(value) && aliases.indexOf(value) === index);
     }
 
     ngOnInit(): void {
@@ -91,17 +98,15 @@ export class MyTasksPage implements OnInit, OnDestroy {
         return this.tasks.filter(t => this.matchesCurrentUser(t.created_by));
     }
 
-    /**
-     * Assignees are typed as free text (often just a first name, e.g. "Alwin" —
-     * see the assigneesPlaceholder hint), so an exact match against the full
-     * displayName from auth almost never hits. Normalize case/whitespace and
-     * accept either name being a prefix of the other.
-     */
-    private matchesCurrentUser(name: string): boolean {
-        const target = this.currentUser.trim().toLowerCase();
-        const candidate = (name || '').trim().toLowerCase();
-        if (!target || !candidate) return false;
-        return candidate === target || target.startsWith(candidate) || candidate.startsWith(target);
+    private matchesCurrentUser(identity: string): boolean {
+        const candidate = (identity || '').trim().toLowerCase();
+        if (!candidate) return false;
+
+        const candidateAliases = new Set([
+            candidate,
+            ...candidate.split(':').map(part => part.trim()).filter(Boolean),
+        ]);
+        return this.currentUserAliases.some(alias => candidateAliases.has(alias));
     }
 
     tabCount(id: SubTab): number {

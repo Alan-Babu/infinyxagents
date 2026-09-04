@@ -19,7 +19,23 @@ export type Mode = 'General Research' | 'Executive Concierge';
 
 export type Source = 'Web search' | 'Specific URL(s)' | 'Upload document';
 
-export type Template = 'Auto (agent picks)' | 'Editorial Navy' | 'Corporate Minimal' | 'Modern Teal';
+export type Template =
+    | 'Auto (agent picks)'
+    | 'UAE Color Theme'
+    | 'Editorial Navy'
+    | 'Corporate Minimal'
+    | 'Modern Teal'
+    | 'MoFA';
+
+export type ExpertiseLevel = 'beginner' | 'intermediate' | 'expert';
+
+export const ALL_PROVIDERS: Provider[] = ['qwen', 'openai', 'claude'];
+
+export interface UserProfileResponse {
+    user_id: string;
+    expertise_level: ExpertiseLevel;
+    updated_at: string;
+}
 
 export interface ClarifyingQuestion {
     id: string;
@@ -29,7 +45,26 @@ export interface ClarifyingQuestion {
 
 export interface StartSessionResponse {
     session_id: string;
-    category_guess: Category;
+    intent: 'research' | 'chit_chat';
+    reply?: string | null;
+    category_guess: Category | null;
+    clarifying_questions: ClarifyingQuestion[];
+    suggested_framework: Framework;
+    framework_reason: string;
+    involves_specific_person: boolean;
+    involves_country_relations: boolean;
+}
+
+export interface ForkSessionRequest {
+    content_markdown?: string | null;
+    title?: string | null;
+}
+
+export interface ForkSessionResponse {
+    session_id: string;
+    title: string;
+    content_markdown: string;
+    category_guess: Category | null;
     clarifying_questions: ClarifyingQuestion[];
     suggested_framework: Framework;
     framework_reason: string;
@@ -48,6 +83,82 @@ export interface GenerateRequest {
     provider: Provider;
     personnel_profile?: boolean;
     country_dashboard?: boolean;
+    source?: string | null;
+    mcp_connection_id?: string | null;
+    user_id: string;
+}
+
+export interface SourceHit {
+    title: string;
+    url: string;
+}
+
+export type ChatTurnKind = 'chitchat' | 'brief';
+
+export interface ChatAnswerEntry {
+    question: string;
+    answer: string;
+}
+
+export interface SaveChatTurnRequest {
+    conversation_id: string;
+    turn_index: number;
+    session_id: string;
+    kind: ChatTurnKind;
+    instruction: string;
+    topic: string;
+    title?: string;
+    content_markdown?: string;
+    framework?: string;
+    provider?: string;
+    source_selection?: string | null;
+    sources?: SourceHit[];
+    answers?: ChatAnswerEntry[];
+}
+
+export interface ChatTurnEntry {
+    conversation_id: string;
+    turn_index: number;
+    session_id: string;
+    kind: ChatTurnKind;
+    instruction: string;
+    topic: string;
+    title: string;
+    content_markdown: string;
+    framework: string;
+    provider: string;
+    source_selection?: string | null;
+    sources: SourceHit[];
+    answers: ChatAnswerEntry[];
+    created_at: string;
+}
+
+export interface ConversationSummary {
+    conversation_id: string;
+    title: string;
+    turn_count: number;
+    last_kind: ChatTurnKind;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ConversationDetail {
+    conversation_id: string;
+    turns: ChatTurnEntry[];
+}
+
+export interface PaginatedConversationsResponse {
+    items: ConversationSummary[];
+    total: number;
+    limit: number;
+    offset: number;
+    has_more: boolean;
+}
+
+export interface ConversationSearchParams {
+    q?: string;
+    limit: number;
+    offset: number;
 }
 
 export interface CountryDashboardData {
@@ -74,11 +185,13 @@ export interface GenerateResponse {
     total_tokens?: number | null;
     confidence_score?: number | null;
     quality_score?: number | null;
+    sources?: SourceHit[];
 }
 
 export interface ExportResponse {
     file_path: string;
     file_name: string;
+    generated_via: 'gamma' | 'presenton' | 'pptgenx' | 'local';
 }
 
 export interface ShareResult {
@@ -98,6 +211,7 @@ export interface Task {
     priority: 'Low' | 'Medium' | 'High' | 'Urgent';
     importance: 'Low' | 'Medium' | 'High';
     status: string;
+    external_ref?: string | null;
     created_at: string;
 }
 
@@ -124,12 +238,33 @@ export interface HistoryEntry {
     created_at: string;
     rating?: number | null;
     confidence_score?: number | null;
+    provider?: string | null;
+    model?: string | null;
+    generated_at?: string | null;
 }
 
 export interface HistoryDetailEntry extends HistoryEntry {
     title: string;
     content_markdown: string;
     dashboard_data?: CountryDashboardData | null;
+}
+
+export interface PaginatedHistoryResponse {
+    items: HistoryEntry[];
+    total: number;
+    limit: number;
+    offset: number;
+    has_more: boolean;
+}
+
+export interface HistorySearchParams {
+    q?: string;
+    category?: Category;
+    research_type?: ResearchType;
+    framework?: Framework;
+    visibility?: Visibility;
+    limit: number;
+    offset: number;
 }
 
 export interface SaveReportRequest {
@@ -202,6 +337,22 @@ export interface AdminSettingsResponse {
     arabic_enabled: boolean;
     allowed_file_types: string[];
     enabled_frameworks: string[];
+    model_moderation_enabled: boolean;
+    model_moderation_threshold: number;
+    error_log_retention_days?: number | null;
+    telemetry_retention_days?: number | null;
+    moderation_flag_retention_days?: number | null;
+    audit_log_retention_days?: number | null;
+    fallback_provider_order: string[];
+    presenton_enabled: boolean;
+    presenton_base_url?: string | null;
+    presenton_api_key_set: boolean;
+    presenton_template_name?: string | null;
+    pptgenx_enabled: boolean;
+    pptgenx_base_url?: string | null;
+    pptgenx_api_key_set: boolean;
+    web_search_enabled: boolean;
+    tavily_api_key_set: boolean;
     updated_at: string;
 }
 
@@ -217,6 +368,99 @@ export interface AdminSettingsPayload {
     arabic_enabled: boolean;
     allowed_file_types: string[];
     enabled_frameworks: string[];
+    model_moderation_enabled: boolean;
+    model_moderation_threshold: number;
+    error_log_retention_days?: number | null;
+    telemetry_retention_days?: number | null;
+    moderation_flag_retention_days?: number | null;
+    audit_log_retention_days?: number | null;
+    fallback_provider_order: Provider[];
+    presenton_enabled: boolean;
+    presenton_base_url?: string | null;
+    presenton_api_key?: string | null;
+    presenton_template_name?: string | null;
+    pptgenx_enabled: boolean;
+    pptgenx_base_url?: string | null;
+    pptgenx_api_key?: string | null;
+    web_search_enabled: boolean;
+    tavily_api_key?: string | null;
+}
+
+export interface TrustedSourceEntry {
+    id: number;
+    category: string;
+    name: string;
+    url: string;
+    created_at: string;
+}
+
+export interface CreateTrustedSourceRequest {
+    category: string;
+    name: string;
+    url: string;
+}
+
+export interface BulkImportTrustedSourcesResponse {
+    imported: TrustedSourceEntry[];
+    count: number;
+}
+
+export interface McpServerEntry {
+    id: string;
+    name: string;
+    description: string | null;
+    base_url: string;
+    auth_type: 'none' | 'oauth' | 'api_key';
+    oauth_scopes: string | null;
+    enabled: boolean;
+    created_at: string;
+    connection_id?: string | null;
+    connection_status?: 'pending' | 'connected' | 'error' | null;
+    imported_tools: string[];
+}
+
+export interface McpToolEntry {
+    name: string;
+    description?: string | null;
+    inputSchema?: Record<string, unknown>;
+    annotations?: {
+        title?: string;
+        readOnlyHint?: boolean;
+        destructiveHint?: boolean;
+        idempotentHint?: boolean;
+        openWorldHint?: boolean;
+    } | null;
+}
+
+export interface CreateMcpServerRequest {
+    name: string;
+    description?: string;
+    base_url: string;
+    auth_type: 'none' | 'oauth' | 'api_key';
+    oauth_authorize_url?: string;
+    oauth_token_url?: string;
+    oauth_client_id?: string;
+    oauth_client_secret?: string;
+    oauth_scopes?: string;
+    static_api_key?: string;
+}
+
+export interface McpAuthorizeUrlResponse {
+    authorize_url: string;
+}
+
+export interface McpToolCallResult {
+    result: { tools?: McpToolEntry[]; isError?: boolean; content?: unknown[] };
+}
+
+export interface GammaStatusResponse {
+    connected: boolean;
+    theme_id?: string | null;
+}
+
+export interface GammaThemeEntry {
+    id: string;
+    name: string;
 }
 
 export interface AgentInstructionEntry {
@@ -276,6 +520,8 @@ export interface ModerationFlagEntry {
     input_text: string;
     category: string;
     matched_terms: string[];
+    detection_method?: 'blacklist' | 'model' | null;
+    model_score?: number | null;
     status: 'flagged' | 'reviewed' | 'corrective_action_taken';
     created_at: string;
 }
@@ -290,4 +536,48 @@ export interface ErrorLogEntry {
     user_id?: string | null;
     resolved: boolean;
     created_at: string;
+}
+
+export interface AuditLogEntry {
+    id: number;
+    user_id: string;
+    action: string;
+    resource_type: string;
+    resource_id?: string | null;
+    extra_data?: Record<string, unknown> | null;
+    created_at: string;
+}
+
+export interface ProviderUsage {
+    provider: string;
+    count: number;
+    avg_response_time_ms?: number | null;
+    avg_total_tokens?: number | null;
+}
+
+export interface FrameworkUsage {
+    framework: string;
+    count: number;
+}
+
+export interface UsageSummaryResponse {
+    total_requests: number;
+    by_provider: ProviderUsage[];
+    avg_confidence_score?: number | null;
+    avg_quality_score?: number | null;
+    top_frameworks: FrameworkUsage[];
+    moderation_block_rate: number;
+}
+
+export interface UsageTimeseriesPoint {
+    date: string;
+    count: number;
+    avg_response_time_ms?: number | null;
+}
+
+export interface ModerationSummaryResponse {
+    total_flags: number;
+    by_category: { category: string; count: number }[];
+    by_detection_method: { detection_method: string; count: number }[];
+    by_status: { status: string; count: number }[];
 }

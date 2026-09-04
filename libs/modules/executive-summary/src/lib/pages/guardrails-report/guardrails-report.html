@@ -1,6 +1,23 @@
 <lib-page-header titleKey="executiveSummary.guardrails.title" subtitleKey="executiveSummary.guardrails.subtitle" [showBack]="false" />
 
+@if (!isAdmin) {
+<div class="p-6">
+    <div class="rounded-xl border border-amber-200 bg-amber-50 p-6 text-sm text-amber-800">{{ "executiveSummary.adminOnly" | translate }}</div>
+</div>
+} @else {
 <div class="flex flex-col gap-5 p-6">
+    <div class="flex gap-2 border-b border-gray-200">
+        <button type="button" class="cursor-pointer border-b-2 px-4 py-2 text-sm font-semibold"
+            [class.border-primary-500]="activeTab === 'blocked'" [class.text-primary-700]="activeTab === 'blocked'"
+            [class.border-transparent]="activeTab !== 'blocked'" [class.text-gray-500]="activeTab !== 'blocked'"
+            (click)="selectTab('blocked')">{{ "executiveSummary.guardrails.blockedSearches" | translate }}</button>
+        <button type="button" class="cursor-pointer border-b-2 px-4 py-2 text-sm font-semibold"
+            [class.border-primary-500]="activeTab === 'activity'" [class.text-primary-700]="activeTab === 'activity'"
+            [class.border-transparent]="activeTab !== 'activity'" [class.text-gray-500]="activeTab !== 'activity'"
+            (click)="selectTab('activity')">{{ "executiveSummary.guardrails.activityLog" | translate }}</button>
+    </div>
+
+    @if (activeTab === 'blocked') {
     <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-4">
         <lib-stat-card [label]="'executiveSummary.guardrails.exceptions' | translate" [value]="flags.length" icon="pi pi-flag" fgClass="text-primary-600" bgClass="bg-primary-50" />
         <lib-stat-card [label]="'executiveSummary.guardrails.highPriority' | translate" [value]="highPriorityCount"
@@ -13,4 +30,17 @@
     </lib-data-table>
 
     <lib-guardrail-drawer [flag]="selectedFlag" [updatingId]="updatingId" (closed)="closeDrawer()" (setStatus)="setStatus($event.flag, $event.status)" />
+    } @else {
+    <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-4">
+        <lib-stat-card [label]="'executiveSummary.guardrails.activityEvents' | translate" [value]="auditEntries.length" icon="pi pi-list" fgClass="text-primary-600" bgClass="bg-primary-50" />
+    </div>
+    @if (auditLoading) {
+    <div class="rounded-xl border border-gray-200 bg-white p-6 text-sm text-gray-500">{{ "executiveSummary.loading" | translate }}</div>
+    } @else {
+    <lib-data-table [rowData]="auditEntries" [colDefs]="auditColDefs" [paginator]="true" [searchPlaceholder]="'executiveSummary.search' | translate">
+        <span class="font-semibold text-gray-700">{{ auditEntries.length }} {{ "executiveSummary.records" | translate }}</span>
+    </lib-data-table>
+    }
+    }
 </div>
+}

@@ -1,7 +1,8 @@
-import { Injectable, inject } from '@angular/core';
+import { Inject, Injectable, inject } from '@angular/core';
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Observable, catchError, throwError } from 'rxjs';
-import { LocalStorage, SessionState } from '@nfinyx/types';
+import { AppConfig, LocalStorage, SessionState } from '@nfinyx/types';
+import { APP_CONFIG } from '../app-config';
 import { StorageService } from '../local-storage';
 
 /**
@@ -32,10 +33,22 @@ function isUnauthenticatedHost(url: string): boolean {
  * Attaches the persisted session's bearer token to outgoing requests, and clears the
  * session on a 401 so `AuthService.isLoggedIn` reflects reality immediately rather than
  * only after the next explicit `/auth/me` call.
+ *
+ * A 401 only means "this session is dead" when it comes from the platform API that issued
+ * the token, or when the token has actually expired. Agent backends behind their own
+ * service segment (e.g. `{baseURL}/exec-agent/api`) also answer 401 for routes the caller
+ * simply isn't allowed to use — treating those as a logout would silently drop a perfectly
+ * valid shared login the first time any agent probed an admin-only endpoint.
  */
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
     private readonly storage = inject(StorageService);
+    /** `{baseURL}/api/` — the platform API that issues and validates the session token. */
+    private readonly platformApiPrefix: string;
+
+    constructor(@Inject(APP_CONFIG) appConfig: AppConfig) {
+        this.platformApiPrefix = `${(appConfig.baseURL ?? '').replace(/\/+$/, '')}/api/`;
+    }
 
     intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
         if (isUnauthenticatedHost(req.url)) {
@@ -47,16 +60,31 @@ export class AuthInterceptor implements HttpInterceptor {
             return next.handle(req);
         }
 
-        const token = this.storage.getJSON<SessionState>(LocalStorage.Session)?.token;
-        const request = token ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;
+        const session = this.storage.getJSON<SessionState>(LocalStorage.Session);
+        const request = session?.token
+            ? req.clone({ setHeaders: { Authorization: `Bearer ${session.token}` } })
+            : req;
 
         return next.handle(request).pipe(
             catchError((error: unknown) => {
-                if (error instanceof HttpErrorResponse && error.status === 401 && !req.url.includes('/auth/token')) {
+                if (error instanceof HttpErrorResponse && error.status === 401 && this.isDeadSession(req.url, session)) {
                     this.storage.removeItem(LocalStorage.Session);
                 }
                 return throwError(() => error);
             }),
         );
+    }
+
+    /**
+     * A 401 invalidates the stored session only when the platform API itself rejected the
+     * token, or when the token was already past its own `exp`. Sessions persisted before
+     * `expiresAt` existed have no expiry to trust, so they keep the original clear-on-401
+     * behaviour.
+     */
+    private isDeadSession(url: string, session: SessionState | null): boolean {
+        if (!session) return false;
+        if (url.includes('/auth/token')) return false;
+        if (url.startsWith(this.platformApiPrefix)) return true;
+        return !session.expiresAt || session.expiresAt <= Date.now();
     }
 }
