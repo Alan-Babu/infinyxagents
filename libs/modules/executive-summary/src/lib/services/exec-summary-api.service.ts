@@ -163,6 +163,25 @@ export class ExecSummaryApiService extends ExecSummaryApiBase {
         );
     }
 
+    /**
+     * Streaming counterpart to generate() — `onDelta` fires with each chunk
+     * of markdown text as the backend produces it, so the caller can render
+     * the brief live instead of showing a blank loading state for the
+     * entire generation. Resolves with the same GenerateResponse shape as
+     * generate() once the backend's final "done" event arrives.
+     */
+    generateStream(
+        sessionId: string,
+        params: GenerateRequest,
+        onDelta: (text: string) => void,
+    ): Promise<GenerateResponse> {
+        return this.postStream<GenerateResponse & Record<string, unknown>>(
+            `${ExecSummaryApiPaths.session}/${encodeURIComponent(sessionId)}/generate/stream`,
+            { ...params, user_id: params.user_id.trim() || 'anonymous' },
+            onDelta,
+        );
+    }
+
     export(
         sessionId: string,
         format: OutputFormat,
