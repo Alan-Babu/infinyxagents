@@ -93,4 +93,23 @@ export class AdminCrawlPage implements OnInit {
             this.common.showApiError(err);
         }
     }
+
+    /**
+     * Formats the next-run ISO datetime explicitly in the schedule's OWN
+     * timezone (not the admin's browser timezone, which may differ) --
+     * makes it unambiguous exactly when the next crawl will actually run.
+     */
+    formatNextRunAt(iso: string, timezone: string): string {
+        try {
+            return new Date(iso).toLocaleString(undefined, {
+                timeZone: timezone,
+                day: '2-digit',
+                month: 'short',
+                hour: '2-digit',
+                minute: '2-digit',
+            });
+        } catch {
+            return iso;
+        }
+    }
 }

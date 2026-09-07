@@ -15,7 +15,7 @@
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="p-control-label" for="crawlHour">{{ 'mofaChatbot.admin.crawl.hourLabel' | translate }}</label>
+                        <label class="p-control-label" for="crawlHour">{{ 'mofaChatbot.admin.crawl.hourLabel' | translate: { tz: schedule.timezone } }}</label>
                         <p-inputNumber [(ngModel)]="scheduleDraft.hour" [min]="0" [max]="23" styleClass="w-full" inputStyleClass="w-full" inputId="crawlHour" />
                     </div>
                     <div>
@@ -73,7 +73,12 @@
                     <button type="button" pButton class="cursor-pointer" (click)="saveSchedule()">
                         <span>{{ 'mofaChatbot.admin.crawl.saveButton' | translate }}</span>
                     </button>
-                    <span class="text-xs text-gray-400">{{ schedule.next_run_description }}</span>
+                    <span class="text-xs text-gray-400">
+                        {{ schedule.next_run_description }}
+                        @if (schedule.next_run_at) {
+                            &middot; {{ 'mofaChatbot.admin.crawl.nextRunLabel' | translate }}: {{ formatNextRunAt(schedule.next_run_at, schedule.timezone) }}
+                        }
+                    </span>
                 </div>
             </div>
         }

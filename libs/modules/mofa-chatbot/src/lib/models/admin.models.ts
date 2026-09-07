@@ -40,7 +40,11 @@ export interface CrawlSchedule {
     max_pages_per_run: number;
     updated_at: string | null;
     updated_by: string | null;
+    /** IANA timezone name (e.g. "Asia/Dubai") that `hour`/`minute` are interpreted in -- see the backend's SCHEDULE_TIMEZONE. */
+    timezone: string;
     next_run_description: string;
+    /** ISO datetime (timezone-aware) of the next scheduled fire, or null if disabled. */
+    next_run_at: string | null;
 }
 
 export interface CrawlRun {

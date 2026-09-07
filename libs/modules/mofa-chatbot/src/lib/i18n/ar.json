@@ -134,8 +134,9 @@
             "crawl": {
                 "title": "جدولة الزحف",
                 "enabledLabel": "تفعيل التحديث الليلي",
-                "hourLabel": "الساعة (0-23، بتوقيت الخادم)",
+                "hourLabel": "الساعة (0-23، {{tz}})",
                 "minuteLabel": "الدقيقة",
+                "nextRunLabel": "التشغيل التالي",
                 "modeLabel": "نمط الزحف",
                 "modeIncremental": "تدريجي",
                 "modeFull": "زحف كامل",
