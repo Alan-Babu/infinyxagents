@@ -77,6 +77,7 @@
             "tabs": {
                 "overview": "نظرة عامة",
                 "agents": "الوكلاء",
+                "matching": "المطابقة",
                 "files": "الملفات"
             },
             "documentType": "نوع المستند",
@@ -119,6 +120,40 @@
                 "loading": "جارٍ تحميل المعاينة...",
                 "loadFailed": "تعذر تحميل هذا الملف.",
                 "previewUnavailable": "هذا الملف غير متوفر لهذه الحالة."
+            },
+            "matching": {
+                "loading": "جارٍ تحميل نتائج المطابقة...",
+                "loadFailed": "تعذر تحميل نتائج المطابقة مع المصدر الرسمي.",
+                "empty": "لا توجد بيانات مطابقة لهذه الحالة.",
+                "applicant": "مقدم الطلب",
+                "keyIdentifier": "المعرّف الرئيسي",
+                "outcome": "نتيجة المطابقة",
+                "matchLabel": "مطابقة",
+                "forcedTag": "تم تطبيق تجاوز السياسة",
+                "rationaleHeading": "الأسباب",
+                "rationaleEmpty": "لم يتم إرجاع تفاصيل الأسباب.",
+                "calcHeading": "حساب المطابقة",
+                "calcHint": "مرجّح حسب أهمية الحقل",
+                "colField": "الحقل",
+                "colApplication": "الطلب (المدخل)",
+                "colPortal": "البوابة الرسمية",
+                "colMatch": "نسبة المطابقة",
+                "legendMismatch": "حقل غير مطابق",
+                "legendMinor": "تباين طفيف",
+                "legendExact": "مطابقة تامة",
+                "weightedTotal": "ثقة المطابقة المرجّحة",
+                "threshApproved": "≥ 97% اعتماد تلقائي",
+                "threshReview": "85–96% مراجعة يدوية",
+                "threshRejected": "< 85% رفض",
+                "portalHeading": "سجل البوابة الرسمية",
+                "portalSource": "المصدر",
+                "portalVerified": "تم التحقق",
+                "portalStatus": "حالة البوابة",
+                "portalChecked": "تاريخ التحقق",
+                "verifiedYes": "نعم",
+                "verifiedNo": "لا",
+                "portalNote": "يعكس هذا سجل البوابة المستخدم في المطابقة مع المصدر الرسمي.",
+                "portalView": "عرض على البوابة الرسمية"
             }
         }
     }

@@ -55,6 +55,13 @@ const TONE_BAR_CLASS: Record<ConfidenceTone, string> = {
     none: 'bg-gray-300',
 };
 
+const TONE_STROKE_CLASS: Record<ConfidenceTone, string> = {
+    high: 'stroke-green-500',
+    mid: 'stroke-amber-500',
+    low: 'stroke-red-500',
+    none: 'stroke-gray-300',
+};
+
 export function toneTextClass(tone: ConfidenceTone): string {
     return TONE_TEXT_CLASS[tone];
 }
@@ -65,6 +72,10 @@ export function toneBadgeClass(tone: ConfidenceTone): string {
 
 export function toneBarClass(tone: ConfidenceTone): string {
     return TONE_BAR_CLASS[tone];
+}
+
+export function toneStrokeClass(tone: ConfidenceTone): string {
+    return TONE_STROKE_CLASS[tone];
 }
 
 export function timeAgo(ts: number): string {

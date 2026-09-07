@@ -34,6 +34,8 @@
                 <span class="ms-1 rounded-full bg-gray-100 px-1.5 py-0.5 text-xs font-bold text-gray-600">{{
                     case.pipeline.length }}</span>
             </p-tab>
+            <p-tab value="matching"><i class="pi pi-sitemap"></i> {{ "digitalAttestation.drawer.tabs.matching" |
+                translate }}</p-tab>
             <p-tab value="files"><i class="pi pi-folder"></i> {{ "digitalAttestation.drawer.tabs.files" | translate
                 }}</p-tab>
         </p-tablist>
@@ -189,6 +191,205 @@
                         </div>
                         }
                     </article>
+                    }
+                </div>
+                }
+            </p-tabpanel>
+
+            <p-tabpanel value="matching">
+                @if (matchingLoading) {
+                <div class="flex items-center justify-center gap-2 py-10 text-sm text-gray-400">
+                    <i class="pi pi-spin pi-spinner"></i> {{ "digitalAttestation.drawer.matching.loading" | translate }}
+                </div>
+                } @else if (matchingError) {
+                <p class="py-6 text-center text-sm text-red-600">{{ "digitalAttestation.drawer.matching.loadFailed" | translate }}</p>
+                } @else if (!matching || (!matching.fields.length && !matching.decision)) {
+                <p class="py-6 text-center text-sm text-gray-400">{{ "digitalAttestation.drawer.matching.empty" | translate }}</p>
+                } @else {
+                <div class="flex flex-col gap-4">
+
+                    @if (matching.applicantName || matching.keyIdentifier) {
+                    <div class="grid grid-cols-2 gap-3">
+                        @if (matching.applicantName) {
+                        <div class="rounded-lg border border-gray-200 bg-white p-3">
+                            <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{
+                                "digitalAttestation.drawer.matching.applicant" | translate }}</div>
+                            <div class="text-sm font-semibold text-gray-800">{{ matching.applicantName }}</div>
+                        </div>
+                        }
+                        @if (matching.keyIdentifier) {
+                        <div class="rounded-lg border border-gray-200 bg-white p-3">
+                            <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{
+                                "digitalAttestation.drawer.matching.keyIdentifier" | translate }}</div>
+                            <div class="text-sm font-semibold text-gray-800">{{ matching.keyIdentifier }}</div>
+                        </div>
+                        }
+                    </div>
+                    }
+
+                    <div class="rounded-lg border border-gray-200 bg-white p-4">
+                        <div class="mb-3 text-xs font-bold uppercase tracking-wide text-gray-400">{{
+                            "digitalAttestation.drawer.matching.outcome" | translate }}</div>
+                        <div class="flex flex-wrap items-center gap-5">
+                            <div class="relative h-32 w-32 shrink-0">
+                                <svg viewBox="0 0 128 128" aria-hidden="true" class="-rotate-90">
+                                    <circle cx="64" cy="64" r="52" fill="none" stroke-width="11" class="stroke-gray-200"></circle>
+                                    <circle cx="64" cy="64" r="52" fill="none" stroke-width="11" stroke-linecap="round"
+                                        class="transition-[stroke-dashoffset] duration-700 ease-out"
+                                        [class]="toneStrokeClass(confidenceTone(matching.overallMatchPercent))"
+                                        [attr.stroke-dasharray]="gaugeCircumference"
+                                        [style.stroke-dashoffset]="gaugeOffset(matching.overallMatchPercent)"></circle>
+                                </svg>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                    <div class="text-2xl font-bold text-gray-900">{{ matching.overallMatchPercent }}%</div>
+                                    <div class="text-xs font-semibold uppercase tracking-wider text-gray-400">{{
+                                        "digitalAttestation.drawer.matching.matchLabel" | translate }}</div>
+                                </div>
+                            </div>
+                            <div class="min-w-0 flex-1 space-y-2">
+                                @if (matching.decision) {
+                                <div class="flex items-center gap-2">
+                                    <span class="rounded-full border px-2.5 py-1 text-xs font-bold uppercase tracking-wide"
+                                        [class]="toneBadgeClass(confidenceTone(matching.overallMatchPercent))">{{ matching.decision }}</span>
+                                    @if (matching.decisionForced) {
+                                    <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-600">{{
+                                        "digitalAttestation.drawer.matching.forcedTag" | translate }}</span>
+                                    }
+                                </div>
+                                }
+                                @if (matching.decisionReason) {
+                                <p class="text-sm text-gray-600">{{ matching.decisionReason }}</p>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="mt-3 border-t border-gray-100 pt-3 text-xs font-bold uppercase tracking-widest text-gray-500">{{
+                            "digitalAttestation.drawer.matching.rationaleHeading" | translate }}</div>
+                        @if (matching.rationale.length) {
+                        <ul class="mt-2 space-y-1.5">
+                            @for (r of matching.rationale; track r.fieldName + r.message) {
+                            <li class="flex items-start gap-2 text-xs">
+                                <i class="pi mt-0.5"
+                                    [class.pi-check-circle]="r.severity === 'ok'" [class.text-green-600]="r.severity === 'ok'"
+                                    [class.pi-exclamation-triangle]="r.severity === 'warn'" [class.text-amber-600]="r.severity === 'warn'"
+                                    [class.pi-times-circle]="r.severity === 'bad'" [class.text-red-600]="r.severity === 'bad'"></i>
+                                <span class="text-gray-600">{{ r.message }}</span>
+                            </li>
+                            }
+                        </ul>
+                        } @else {
+                        <p class="mt-2 text-xs text-gray-400">{{
+                            "digitalAttestation.drawer.matching.rationaleEmpty" | translate }}</p>
+                        }
+                    </div>
+
+                    @if (matching.fields.length) {
+                    <div class="rounded-lg border border-gray-200 bg-white p-4">
+                        <div class="mb-3 text-xs font-bold uppercase tracking-widest text-gray-500">{{
+                            "digitalAttestation.drawer.matching.calcHeading" | translate }}
+                            <span class="ms-2 text-xs font-normal normal-case tracking-normal text-gray-400">{{
+                                "digitalAttestation.drawer.matching.calcHint" | translate }}</span>
+                        </div>
+                        <div class="overflow-x-auto rounded-lg border border-gray-200">
+                            <div class="grid min-w-130 grid-cols-[minmax(7.5rem,0.9fr)_1fr_1fr_5.5rem] bg-gray-50">
+                                <div class="px-3 py-2.5 text-xs font-bold uppercase tracking-wider text-gray-400">{{
+                                    "digitalAttestation.drawer.matching.colField" | translate }}</div>
+                                <div class="px-3 py-2.5 text-xs font-bold uppercase tracking-wider text-gray-400">{{
+                                    "digitalAttestation.drawer.matching.colApplication" | translate }}</div>
+                                <div class="px-3 py-2.5 text-xs font-bold uppercase tracking-wider text-gray-400">{{
+                                    "digitalAttestation.drawer.matching.colPortal" | translate }}</div>
+                                <div class="px-3 py-2.5 text-end text-xs font-bold uppercase tracking-wider text-gray-400">{{
+                                    "digitalAttestation.drawer.matching.colMatch" | translate }}</div>
+                            </div>
+                            @for (field of matching.fields; track field.fieldName) {
+                            <div class="grid min-w-130 grid-cols-[minmax(7.5rem,0.9fr)_1fr_1fr_5.5rem] border-t border-gray-100"
+                                [class.bg-red-50]="confidenceTone(field.score) === 'low'" [class.bg-amber-50]="confidenceTone(field.score) === 'mid'"
+                                [style.box-shadow]="fieldRowAccent(field.score)">
+                                <div class="flex flex-col items-start justify-center gap-0.5 px-3 py-2.5">
+                                    <span class="text-xs font-semibold text-gray-800">{{ field.label }}</span>
+                                    @if (field.weight) {
+                                    <span class="text-xs text-gray-400">{{ field.weight | number: '1.0-0' }}%</span>
+                                    }
+                                </div>
+                                <div class="flex items-center px-3 py-2.5 text-sm text-gray-700">{{ field.inputValue || '—' }}</div>
+                                <div class="flex items-center px-3 py-2.5 text-sm"
+                                    [class.font-semibold]="confidenceTone(field.score) !== 'high'"
+                                    [class.text-red-700]="confidenceTone(field.score) === 'low'"
+                                    [class.text-amber-700]="confidenceTone(field.score) === 'mid'"
+                                    [class.text-gray-700]="confidenceTone(field.score) === 'high'">{{ field.officialValue || '—' }}</div>
+                                <div class="flex items-center justify-end px-3 py-2.5">
+                                    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-bold"
+                                        [class.bg-emerald-50]="confidenceTone(field.score) === 'high'" [class.text-emerald-700]="confidenceTone(field.score) === 'high'"
+                                        [class.bg-amber-50]="confidenceTone(field.score) === 'mid'" [class.text-amber-700]="confidenceTone(field.score) === 'mid'"
+                                        [class.bg-red-50]="confidenceTone(field.score) === 'low'" [class.text-red-700]="confidenceTone(field.score) === 'low'">{{ field.score }}%</span>
+                                </div>
+                            </div>
+                            }
+                        </div>
+
+                        <div class="mt-3 flex flex-wrap gap-4 text-xs text-gray-500">
+                            <span class="inline-flex items-center gap-1.5"><i class="inline-block h-3 w-3 rounded-sm bg-red-200"></i>{{
+                                "digitalAttestation.drawer.matching.legendMismatch" | translate }}</span>
+                            <span class="inline-flex items-center gap-1.5"><i class="inline-block h-3 w-3 rounded-sm bg-amber-200"></i>{{
+                                "digitalAttestation.drawer.matching.legendMinor" | translate }}</span>
+                            <span class="inline-flex items-center gap-1.5"><i class="inline-block h-3 w-3 rounded-sm border border-gray-300"></i>{{
+                                "digitalAttestation.drawer.matching.legendExact" | translate }}</span>
+                        </div>
+
+                        <div class="mt-3 flex items-center justify-between rounded-lg border border-primary-100 bg-primary-50/50 px-3 py-2.5 text-sm font-bold text-gray-800">
+                            <span>{{ "digitalAttestation.drawer.matching.weightedTotal" | translate }}</span>
+                            <strong class="text-primary-700">{{ matching.overallMatchPercent }}%</strong>
+                        </div>
+
+                        <div class="mt-3 flex flex-wrap gap-3 text-xs text-gray-500">
+                            <span class="inline-flex items-center gap-1.5"><i class="inline-block h-2 w-2 rounded-full bg-emerald-500"></i>{{
+                                "digitalAttestation.drawer.matching.threshApproved" | translate }}</span>
+                            <span class="inline-flex items-center gap-1.5"><i class="inline-block h-2 w-2 rounded-full bg-amber-500"></i>{{
+                                "digitalAttestation.drawer.matching.threshReview" | translate }}</span>
+                            <span class="inline-flex items-center gap-1.5"><i class="inline-block h-2 w-2 rounded-full bg-red-500"></i>{{
+                                "digitalAttestation.drawer.matching.threshRejected" | translate }}</span>
+                        </div>
+                    </div>
+                    }
+
+                    @if (matching.portal) {
+                    <div class="rounded-lg border border-gray-200 bg-white p-4">
+                        <div class="mb-3 text-xs font-bold uppercase tracking-widest text-gray-500">{{
+                            "digitalAttestation.drawer.matching.portalHeading" | translate }}</div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="rounded-lg border border-gray-100 bg-gray-50 px-3 py-2.5">
+                                <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{
+                                    "digitalAttestation.drawer.matching.portalSource" | translate }}</div>
+                                <div class="text-sm font-semibold text-gray-800">{{ matching.portal.source || '—' }}</div>
+                            </div>
+                            <div class="rounded-lg border border-gray-100 bg-gray-50 px-3 py-2.5">
+                                <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{
+                                    "digitalAttestation.drawer.matching.portalVerified" | translate }}</div>
+                                <div class="text-sm font-semibold" [class.text-green-600]="matching.portal.verified === true" [class.text-red-600]="matching.portal.verified === false">
+                                    {{ (matching.portal.verified === true ? "digitalAttestation.drawer.matching.verifiedYes" : matching.portal.verified === false ?
+                                    "digitalAttestation.drawer.matching.verifiedNo" : "—") | translate }}
+                                </div>
+                            </div>
+                            <div class="rounded-lg border border-gray-100 bg-gray-50 px-3 py-2.5">
+                                <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{
+                                    "digitalAttestation.drawer.matching.portalStatus" | translate }}</div>
+                                <div class="text-sm font-semibold text-gray-800">{{ matching.portal.status || '—' }}</div>
+                            </div>
+                            <div class="rounded-lg border border-gray-100 bg-gray-50 px-3 py-2.5">
+                                <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{
+                                    "digitalAttestation.drawer.matching.portalChecked" | translate }}</div>
+                                <div class="text-xs font-semibold text-gray-800">{{ matching.portal.checkedAt ? formatDateTime(matching.portal.checkedAt) : '—' }}</div>
+                            </div>
+                        </div>
+                        <p class="mt-3 text-xs leading-relaxed text-gray-400">{{ "digitalAttestation.drawer.matching.portalNote" | translate }}</p>
+                        @if (matching.portal.portalUrl) {
+                        <a [href]="matching.portal.portalUrl" target="_blank" rel="noopener"
+                            class="mt-3 inline-flex items-center gap-2 rounded-lg border border-primary-200 bg-primary-50 px-3 py-2 text-sm font-semibold text-primary-700 transition-colors hover:bg-primary-100">
+                            <i class="pi pi-external-link"></i>
+                            <span>{{ "digitalAttestation.drawer.matching.portalView" | translate }}</span>
+                        </a>
+                        }
+                    </div>
                     }
                 </div>
                 }

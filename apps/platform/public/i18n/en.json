@@ -5,15 +5,20 @@
     },
     "menu": {
         "executiveSummary": "Executive Summary",
-        "docCompare": "Document Compare",
+        "docCompare": "NX Comparator",
         "hrAgent": "HR Agent",
         "digitalAttestation": "Digital Attestation",
-        "docIntelAgent": "Document Intelligence",
-        "translatorAgent": "Translation Agent",
-        "grammarAgent": "Grammar Check Agent",
-        "contractAnalyzer": "Contract Analyzer",
-        "mofaChatbot": "MOFA Virtual Assistant",
-        "emailComposeAgent": "Email Compose Agent"
+        "docIntelAgent": "NX Doc Intel",
+        "translatorAgent": "NX Translator",
+        "grammarAgent": "NX Grammar Assist",
+        "contractAnalyzer": "NX Contract Analyzer",
+        "mofaChatbot": "NX Virtual Assistant",
+        "emailComposeAgent": "NX Email Assist",
+        "nxFinAi": "NX FIN AI",
+        "nxRfpAnalyzer": "NX RFP Analyzer",
+        "nxQuoteComparator": "NX Quote Comparator",
+        "nxAiAdvisor": "NX AI Advisor",
+        "nxLegalAi": "NX Legal AI"
     },
     "labels": {
         "backToAgents": "Back to agents",
@@ -22,6 +27,7 @@
         "searchPlaceholder": "Search…",
         "loadingPleaseWait": "Loading, please wait…",
         "copyright": "Copyright",
+        "footerOrgName": "NXAI",
         "expandMenu": "Expand menu",
         "collapseMenu": "Collapse menu",
         "preferences": "Preferences",
@@ -43,12 +49,19 @@
         "contractAnalyzerDesc": "Analyze contracts — detect the parties, clarify open questions, assess risk across every category, and ask the agent about the result.",
         "mofaChatbotDesc": "Chat or talk with the MOFA virtual assistant — ask about attestation, passports, and Golden Visa services, with a staff backoffice for the knowledge base, crawl schedule, and moderation.",
         "emailComposeAgentDesc": "Compose new emails from a brief, or draft replies to a thread after answering a few clarifying questions — with tone variants, translation, and a pre-send checklist.",
+        "nxFinAiDesc": "Analyzes financial data to track cash flow, monitor financial metrics/performance, and highlight emerging risks—helping teams strengthen financial planning and make informed decisions.",
+        "nxRfpAnalyzerDesc": "Analyzes RFP documents to extract key requirements, prerequisites criteria, deadlines, deliverables, and evaluation parameters—helping teams prepare complete, aligned proposals.",
+        "nxQuoteComparatorDesc": "Compares vendor quotations across scope, price, specifications, and commercial terms, highlighting differences and exclusions to support purchasing decision making.",
+        "nxAiAdvisorDesc": "An upcoming advisory agent — full capabilities are still in development.",
+        "nxLegalAiDesc": "Reviews contracts and legal documents to summarize key clauses, flag potential risks, and support legal teams with research and drafting with respect to the law of the land.",
         "allAgents": "All agents",
         "categoriesLabel": "Categories",
         "quickAccess": "Quick Access",
         "pinned": "Pinned",
         "noResults": "No agents found",
         "live": "Live",
+        "beta": "Beta",
+        "inLab": "In Lab",
         "agent": "agent",
         "agents": "agents",
         "pin": "Pin",
@@ -56,7 +69,8 @@
         "category": {
             "general": "General",
             "documents": "Documents & Briefings",
-            "compliance": "Compliance & Review"
+            "compliance": "Compliance & Review",
+            "inLab": "In Lab"
         }
     }
 }

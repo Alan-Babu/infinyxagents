@@ -60,3 +60,38 @@ export interface AttestationCase {
 export type CaseDecision = Extract<CaseStatus, 'APPROVED' | 'REJECTED'>;
 
 export type CaseStatusGroup = 'pending' | 'failures' | 'completed';
+
+export interface CaseMatchingField {
+    fieldName: string;
+    label: string;
+    weight: number;
+    inputValue: string;
+    officialValue: string;
+    score: number;
+}
+
+export interface CaseMatchingRationale {
+    fieldName: string;
+    severity: 'ok' | 'warn' | 'bad';
+    message: string;
+}
+
+export interface CaseMatchingPortal {
+    source: string;
+    verified: boolean | null;
+    status: string;
+    checkedAt: number | null;
+    portalUrl: string | null;
+}
+
+export interface CaseMatching {
+    applicantName: string;
+    keyIdentifier: string;
+    fields: CaseMatchingField[];
+    overallMatchPercent: number;
+    decision: string;
+    decisionForced: boolean;
+    decisionReason: string;
+    rationale: CaseMatchingRationale[];
+    portal: CaseMatchingPortal | null;
+}

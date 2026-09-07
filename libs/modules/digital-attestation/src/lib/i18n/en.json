@@ -77,6 +77,7 @@
             "tabs": {
                 "overview": "Overview",
                 "agents": "Agents",
+                "matching": "Matching",
                 "files": "Files"
             },
             "documentType": "Document type",
@@ -119,6 +120,40 @@
                 "loading": "Loading preview...",
                 "loadFailed": "Couldn't load this file.",
                 "previewUnavailable": "This file isn't available for this case."
+            },
+            "matching": {
+                "loading": "Loading match results...",
+                "loadFailed": "Couldn't load the official-source match results.",
+                "empty": "No match data for this case.",
+                "applicant": "Applicant",
+                "keyIdentifier": "Key identifier",
+                "outcome": "Match outcome",
+                "matchLabel": "Match",
+                "forcedTag": "Policy override applied",
+                "rationaleHeading": "Rationale",
+                "rationaleEmpty": "No rationale details were returned.",
+                "calcHeading": "Match calculation",
+                "calcHint": "weighted by field importance",
+                "colField": "Field",
+                "colApplication": "Application (input)",
+                "colPortal": "Remote portal",
+                "colMatch": "Match",
+                "legendMismatch": "Non-matching field",
+                "legendMinor": "Minor variance",
+                "legendExact": "Exact match",
+                "weightedTotal": "Weighted match confidence",
+                "threshApproved": "≥ 97% auto-approved",
+                "threshReview": "85–96% manual review",
+                "threshRejected": "< 85% rejected",
+                "portalHeading": "Remote portal record",
+                "portalSource": "Source",
+                "portalVerified": "Verified",
+                "portalStatus": "Portal status",
+                "portalChecked": "Checked at",
+                "verifiedYes": "Yes",
+                "verifiedNo": "No",
+                "portalNote": "This reflects the portal record used for official-source matching.",
+                "portalView": "View on Official Portal"
             }
         }
     }

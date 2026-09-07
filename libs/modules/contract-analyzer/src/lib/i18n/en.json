@@ -29,7 +29,7 @@
             "qa": "Ask Agent"
         },
         "toolbar": {
-            "eyebrow": "Contract Analyzer Agent",
+            "eyebrow": "NX Contract Analyzer",
             "rateAgent": "Rate Agent",
             "performance": "Performance",
             "reviewQueue": "Review Queue",

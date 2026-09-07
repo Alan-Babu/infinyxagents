@@ -1,7 +1,7 @@
 {
     "docCompare": {
         "eyebrow": "Agent Task",
-        "title": "Document Compare",
+        "title": "NX Comparator",
         "subtitle": "Upload a base document and a document to compare. The agent extracts the text server-side, runs a page-level diff, and summarizes what changed and how risky it looks.",
         "vs": "vs",
         "optional": "optional",
@@ -89,7 +89,7 @@
             "confirm": "Save version"
         },
         "mergeDrawer": {
-            "eyebrow": "Document Compare Agent",
+            "eyebrow": "NX Comparator",
             "title": "Build a merged draft",
             "label": "Draft label",
             "labelPlaceholder": "e.g. Attestation Policy — Merged Draft",

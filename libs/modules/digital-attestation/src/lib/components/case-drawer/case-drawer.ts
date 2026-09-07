@@ -9,7 +9,7 @@ import { ButtonModule } from 'primeng/button';
 import { DrawerModule } from 'primeng/drawer';
 import { TabsModule } from 'primeng/tabs';
 import { TagModule } from 'primeng/tag';
-import { AttestationCase, CaseDecision } from '../../models/digital-attestation.models';
+import { AttestationCase, CaseDecision, CaseMatching } from '../../models/digital-attestation.models';
 import { WorkflowDocumentSource } from '../../models/verification-workflow.models';
 import { DigitalAttestationApiService } from '../../services/digital-attestation-api.service';
 import {
@@ -19,8 +19,13 @@ import {
     statusSeverity,
     toneBadgeClass,
     toneBarClass,
+    toneStrokeClass,
     toneTextClass,
 } from '../../utils/case-display';
+
+/** Matches the reference app's gauge geometry: r=52 circle, so circumference = 2πr. */
+const GAUGE_RADIUS = 52;
+const GAUGE_CIRCUMFERENCE = 2 * Math.PI * GAUGE_RADIUS;
 
 interface DrawerFile {
     id: WorkflowDocumentSource;
@@ -67,6 +72,8 @@ export class CaseDrawerComponent implements OnChanges, OnDestroy {
     readonly toneBadgeClass = toneBadgeClass;
     readonly toneTextClass = toneTextClass;
     readonly toneBarClass = toneBarClass;
+    readonly toneStrokeClass = toneStrokeClass;
+    readonly gaugeCircumference = GAUGE_CIRCUMFERENCE;
 
     readonly fileList: DrawerFile[] = [
         { id: 'uploaded', titleKey: 'digitalAttestation.drawer.files.input' },
@@ -82,6 +89,11 @@ export class CaseDrawerComponent implements OnChanges, OnDestroy {
 
     agentsLoading = false;
     agentsError = false;
+
+    matching: CaseMatching | null = null;
+    matchingLoading = false;
+    matchingError = false;
+    private matchingAttempted = false;
 
     fileViews: Record<WorkflowDocumentSource, FileViewState> = {
         uploaded: blankFileView(),
@@ -111,6 +123,10 @@ export class CaseDrawerComponent implements OnChanges, OnDestroy {
         this.case = null;
         this.agentsLoading = false;
         this.agentsError = false;
+        this.matching = null;
+        this.matchingLoading = false;
+        this.matchingError = false;
+        this.matchingAttempted = false;
         this.revokeObjectUrls();
         this.fileViews = { uploaded: blankFileView(), 'true-copy': blankFileView(), 'attested-copy': blankFileView() };
     }
@@ -123,6 +139,19 @@ export class CaseDrawerComponent implements OnChanges, OnDestroy {
 
     get activeFileTitleKey(): string {
         return this.fileList.find(f => f.id === this.activeFile)?.titleKey ?? '';
+    }
+
+    gaugeOffset(percent: number): number {
+        const pct = Math.max(0, Math.min(100, percent)) / 100;
+        return GAUGE_CIRCUMFERENCE * (1 - pct);
+    }
+
+    /** Left-edge accent bar on a mismatched/minor field-comparison row, matching the reference app. */
+    fieldRowAccent(score: number): string | null {
+        const tone = confidenceTone(score);
+        if (tone === 'low') return 'inset 3px 0 0 #dc2626';
+        if (tone === 'mid') return 'inset 3px 0 0 #d97706';
+        return null;
     }
 
     get failedStepCount(): number {
@@ -143,6 +172,21 @@ export class CaseDrawerComponent implements OnChanges, OnDestroy {
         this.activeTab = String(value ?? 'overview');
         if (this.activeTab === 'agents') await this.loadAgentRuns();
         if (this.activeTab === 'files') await this.loadFilePreview(this.activeFile);
+        if (this.activeTab === 'matching') await this.loadMatching();
+    }
+
+    private async loadMatching(): Promise<void> {
+        if (!this.case || this.matchingAttempted || this.matchingLoading) return;
+        this.matchingLoading = true;
+        this.matchingError = false;
+        try {
+            this.matching = await this.api.getOfficialComparison(this.case.id);
+            this.matchingAttempted = true;
+        } catch {
+            this.matchingError = true;
+        } finally {
+            this.matchingLoading = false;
+        }
     }
 
     private async loadAgentRuns(): Promise<void> {

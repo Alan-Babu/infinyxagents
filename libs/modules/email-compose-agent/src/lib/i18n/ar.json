@@ -46,7 +46,7 @@
             "qa": "سؤال عن المستند (سؤال وجواب)"
         },
         "toolbar": {
-            "eyebrow": "وكيل إنشاء البريد الإلكتروني",
+            "eyebrow": "NX مساعد البريد الإلكتروني",
             "rateAgent": "تقييم الوكيل",
             "performance": "الأداء",
             "reviewQueue": "قائمة المراجعة",
@@ -174,7 +174,7 @@
             "footerNote": "بيانات القياس مخزّنة في قاعدة بيانات Postgres (infinyx_email_compose)"
         },
         "stats": {
-            "eyebrow": "وكيل إنشاء البريد الإلكتروني",
+            "eyebrow": "NX مساعد البريد الإلكتروني",
             "title": "إحصاءات الوكيل",
             "totalEmails": "إجمالي الرسائل",
             "totalComposed": "المُنشأة",
@@ -198,7 +198,7 @@
             "commentPlaceholder": "ما الذي أعجبك، وما الذي يمكن تحسينه…"
         },
         "writingProfile": {
-            "eyebrow": "وكيل إنشاء البريد الإلكتروني",
+            "eyebrow": "NX مساعد البريد الإلكتروني",
             "title": "ملف الكتابة",
             "senderName": "اسمك",
             "senderNamePlaceholder": "مثال: سارة المنصوري",

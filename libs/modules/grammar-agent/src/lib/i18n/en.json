@@ -23,7 +23,7 @@
             "qa": "Ask Document (Q&A)"
         },
         "toolbar": {
-            "eyebrow": "Grammar Check Agent",
+            "eyebrow": "NX Grammar Assist",
             "rateAgent": "Rate Agent",
             "performance": "Performance",
             "reviewQueue": "Review Queue"

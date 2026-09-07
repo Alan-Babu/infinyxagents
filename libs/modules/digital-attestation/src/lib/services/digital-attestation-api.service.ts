@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
-import { AttestationCase, CaseDecision, PipelineStep } from '../models/digital-attestation.models';
+import { AttestationCase, CaseDecision, CaseMatching, PipelineStep } from '../models/digital-attestation.models';
 import {
     AgentExecutionLog,
     AgentExecutionLogsResponse,
+    OfficialComparisonData,
+    OfficialComparisonQueueResponse,
     ReviewDecisionRequest,
     ReviewDecisionResponse,
     VerificationWorkflowEnvelope,
@@ -11,7 +13,7 @@ import {
     WorkflowDocumentAction,
     WorkflowDocumentSource,
 } from '../models/verification-workflow.models';
-import { mapAgentExecutionLogs, mapWorkflowToCase } from '../utils/verification-workflow.mapper';
+import { documentIdFromUnknown, mapAgentExecutionLogs, mapOfficialComparison, mapWorkflowToCase } from '../utils/verification-workflow.mapper';
 import { DigitalAttestationApiBase } from './digital-attestation-api-base';
 
 @Injectable({ providedIn: 'root' })
@@ -69,5 +71,42 @@ export class DigitalAttestationApiService extends DigitalAttestationApiBase {
 
     getDocumentBlob(id: string, source: WorkflowDocumentSource, action: WorkflowDocumentAction): Promise<Blob> {
         return this.getBlob(`/${id}/documents/${source}/${action}`);
+    }
+
+    /**
+     * The workflow's own record doesn't reliably carry `document_id` at a fixed path — mirrors
+     * the reference app's `resolveDocumentId`: search the single-workflow response recursively
+     * first (`documentIdFromUnknown`, since the field can be nested), then fall back to
+     * paginating the `/official-comparisons` queue (up to 3 pages of 100) for a matching
+     * `workflow_id`.
+     */
+    private async resolveDocumentId(workflowId: string): Promise<string | null> {
+        try {
+            const item = await this.unwrap(this.get<VerificationWorkflowEnvelope<unknown>>(`/${workflowId}`));
+            const found = documentIdFromUnknown(item);
+            if (found) return found;
+        } catch {
+            // fall through to the queue fallback below
+        }
+        for (let offset = 0; offset < 300; offset += 100) {
+            const page = await this.unwrap(
+                this.get<VerificationWorkflowEnvelope<OfficialComparisonQueueResponse>>('/official-comparisons', { limit: 100, offset }),
+            );
+            const match = page.items.find(i => i.workflow_id === workflowId && !!i.document_id);
+            if (match) return match.document_id.trim() || null;
+            if (page.items.length < 100) break;
+        }
+        return null;
+    }
+
+    async getOfficialComparison(workflowId: string): Promise<CaseMatching | null> {
+        const documentId = await this.resolveDocumentId(workflowId);
+        if (!documentId) return null;
+        const data = await this.unwrap(
+            this.get<VerificationWorkflowEnvelope<OfficialComparisonData>>(`/${workflowId}/documents/${documentId}/official-comparison`, {
+                revealPii: true,
+            }),
+        );
+        return mapOfficialComparison(data);
     }
 }
