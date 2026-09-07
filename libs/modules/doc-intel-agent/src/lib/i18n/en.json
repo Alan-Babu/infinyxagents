@@ -35,7 +35,7 @@
             "qa": "Ask Document (Q&A)"
         },
         "toolbar": {
-            "eyebrow": "Document Intelligence Agent",
+            "eyebrow": "NX Doc Intel",
             "rateAgent": "Rate Agent",
             "performance": "Performance",
             "reviewQueue": "Review Queue"

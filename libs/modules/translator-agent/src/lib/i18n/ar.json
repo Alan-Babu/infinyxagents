@@ -37,7 +37,7 @@
             "qa": "سؤال عن المستند (سؤال وجواب)"
         },
         "toolbar": {
-            "eyebrow": "وكيل الترجمة",
+            "eyebrow": "NX المترجم",
             "rateAgent": "تقييم الوكيل",
             "performance": "الأداء",
             "reviewQueue": "قائمة المراجعة"

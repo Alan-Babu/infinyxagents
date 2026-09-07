@@ -46,7 +46,7 @@
             "qa": "Ask Document (Q&A)"
         },
         "toolbar": {
-            "eyebrow": "Email Compose Agent",
+            "eyebrow": "NX Email Assist",
             "rateAgent": "Rate Agent",
             "performance": "Performance",
             "reviewQueue": "Review Queue",
@@ -174,7 +174,7 @@
             "footerNote": "Telemetry stored in Postgres (infinyx_email_compose)"
         },
         "stats": {
-            "eyebrow": "Email Compose Agent",
+            "eyebrow": "NX Email Assist",
             "title": "Agent stats",
             "totalEmails": "Total Emails",
             "totalComposed": "Composed",
@@ -198,7 +198,7 @@
             "commentPlaceholder": "What worked well, or what should improve…"
         },
         "writingProfile": {
-            "eyebrow": "Email Compose Agent",
+            "eyebrow": "NX Email Assist",
             "title": "Writing profile",
             "senderName": "Your name",
             "senderNamePlaceholder": "e.g. Sara Al Mansoori",

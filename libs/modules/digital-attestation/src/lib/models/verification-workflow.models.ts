@@ -16,6 +16,7 @@ export interface HumanReviewSummary {
 
 export interface VerificationWorkflowQueueItem {
     workflow_id: string;
+    document_id?: string | null;
     tenant_code?: string;
     verification_mode?: string | null;
     status: string;
@@ -87,3 +88,67 @@ export interface AgentExecutionLogsResponse {
 
 export type WorkflowDocumentSource = 'uploaded' | 'true-copy' | 'attested-copy';
 export type WorkflowDocumentAction = 'view' | 'download';
+
+/** GET .../official-comparison — matches the field-by-field verification result. */
+export interface OfficialComparisonField {
+    field_name: string;
+    label: string;
+    weight: number;
+    input_value?: string | null;
+    official_value?: string | null;
+    score: number;
+    status: string;
+}
+
+export interface OfficialComparisonDecision {
+    decision: string;
+    forced?: boolean;
+    reason?: string | null;
+}
+
+export interface OfficialComparisonRationale {
+    field_name: string;
+    severity: string;
+    message: string;
+}
+
+export interface OfficialComparisonPortal {
+    verification_source?: string | null;
+    is_verified?: boolean | null;
+    portal_status?: string | null;
+    checked_at?: string | null;
+    portal_url?: string | null;
+}
+
+export interface OfficialComparisonData {
+    workflow_id: string;
+    document_id?: string;
+    applicant_name?: string | null;
+    key_identifier?: string | null;
+    fields: OfficialComparisonField[];
+    overall_match_percent: number;
+    decision?: OfficialComparisonDecision | null;
+    rationale?: OfficialComparisonRationale[];
+    portal?: OfficialComparisonPortal | null;
+}
+
+/** GET .../official-comparisons queue — fallback used to resolve a workflow's `document_id`
+ * when the single-workflow response doesn't carry one directly. */
+export interface OfficialComparisonQueueItem {
+    workflow_id: string;
+    document_id: string;
+    applicant_name?: string | null;
+    key_identifier?: string | null;
+    reference_number?: string | null;
+    portal_status?: string | null;
+    match_percent?: number | null;
+    decision?: string | null;
+    updated_at?: string | null;
+}
+
+export interface OfficialComparisonQueueResponse {
+    items: OfficialComparisonQueueItem[];
+    total: number;
+    limit: number;
+    offset: number;
+}

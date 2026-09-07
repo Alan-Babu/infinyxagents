@@ -21,7 +21,9 @@ export interface AgentTile {
     /** i18n key for the category group heading this tile is listed under. */
     categoryKey: string;
     accent?: AgentTileAccent;
-    badge?: string;
+    badge?: 'LIVE' | 'BETA' | 'IN_LAB';
+    /** Still in development — renders as a non-interactive card (no link, no pin) instead of navigating anywhere. */
+    disabled?: boolean;
 }
 
 interface TileCategory {
@@ -35,6 +37,7 @@ const CATEGORY_ICONS: Record<string, string> = {
     'agentsLanding.category.documents': 'pi pi-copy',
     'agentsLanding.category.compliance': 'pi pi-shield',
     'agentsLanding.category.general': 'pi pi-th-large',
+    'agentsLanding.category.inLab': 'pi pi-wrench',
 };
 const DEFAULT_CATEGORY_ICON = 'pi pi-folder';
 
@@ -78,7 +81,7 @@ export const AGENT_TILES: AgentTile[] = [
         descriptionKey: 'agentsLanding.hrAgentDesc',
         categoryKey: 'agentsLanding.category.general',
         accent: 'primary',
-        badge: 'LIVE',
+        badge: 'BETA',
     },
     {
         id: 'doc-intel-agent',
@@ -140,6 +143,61 @@ export const AGENT_TILES: AgentTile[] = [
         accent: 'violet',
         badge: 'LIVE',
     },
+    {
+        id: 'nx-fin-ai',
+        icon: 'pi pi-wallet',
+        link: '',
+        nameKey: 'menu.nxFinAi',
+        descriptionKey: 'agentsLanding.nxFinAiDesc',
+        categoryKey: 'agentsLanding.category.inLab',
+        accent: 'sky',
+        badge: 'IN_LAB',
+        disabled: true,
+    },
+    {
+        id: 'nx-rfp-analyzer',
+        icon: 'pi pi-clipboard',
+        link: '',
+        nameKey: 'menu.nxRfpAnalyzer',
+        descriptionKey: 'agentsLanding.nxRfpAnalyzerDesc',
+        categoryKey: 'agentsLanding.category.inLab',
+        accent: 'violet',
+        badge: 'IN_LAB',
+        disabled: true,
+    },
+    {
+        id: 'nx-quote-comparator',
+        icon: 'pi pi-tags',
+        link: '',
+        nameKey: 'menu.nxQuoteComparator',
+        descriptionKey: 'agentsLanding.nxQuoteComparatorDesc',
+        categoryKey: 'agentsLanding.category.inLab',
+        accent: 'amber',
+        badge: 'IN_LAB',
+        disabled: true,
+    },
+    {
+        id: 'nx-ai-advisor',
+        icon: 'pi pi-compass',
+        link: '',
+        nameKey: 'menu.nxAiAdvisor',
+        descriptionKey: 'agentsLanding.nxAiAdvisorDesc',
+        categoryKey: 'agentsLanding.category.inLab',
+        accent: 'primary',
+        badge: 'IN_LAB',
+        disabled: true,
+    },
+    {
+        id: 'nx-legal-ai',
+        icon: 'pi pi-book',
+        link: '',
+        nameKey: 'menu.nxLegalAi',
+        descriptionKey: 'agentsLanding.nxLegalAiDesc',
+        categoryKey: 'agentsLanding.category.inLab',
+        accent: 'violet',
+        badge: 'IN_LAB',
+        disabled: true,
+    },
 ];
 
 @Component({
@@ -161,10 +219,12 @@ export class AgentsLanding {
     @ViewChild('contentScroll') private contentScroll?: ElementRef<HTMLElement>;
 
     search = '';
-    /** `all` = "All agents", `'pinned'` = the Quick Access section, otherwise a `categoryKey` — tracks which nav item was last clicked, purely for highlighting; it no longer filters what's shown. */
+    /** `all` = "All agents", `'pinned'` = the Quick Access section, otherwise a `categoryKey` — tracks which aside nav item is active/being scrolled to; purely for highlighting, doesn't filter what's shown. */
     selectedFilter = "all";
 
     private readonly pinnedIds = signal<string[]>(this.storage.getItem(LocalStorage.PinnedAgents) ?? []);
+    /** `all` or a `categoryKey` — the hero pill buttons' choice, which actually filters `categories`/`pinnedTiles` (unlike `selectedFilter`). */
+    readonly categoryFilter = signal<string>('all');
 
     get userName(): string {
         return this.auth.user()?.displayName || '';
@@ -193,10 +253,13 @@ export class AgentsLanding {
         return this.pinnedIds().includes(tile.id);
     }
 
-    /** Pinned tiles, search-filtered — shown as their own row above the categories. */
+    /** Pinned tiles, category- and search-filtered — shown as their own row above the categories. */
     get pinnedTiles(): AgentTile[] {
         const q = this.search.trim().toLowerCase();
-        let filtered = this.tiles.filter(t => this.isPinned(t));
+        let filtered = this.tiles.filter(t => this.isPinned(t) && !t.disabled);
+        if (this.categoryFilter() !== 'all') {
+            filtered = filtered.filter(t => t.categoryKey === this.categoryFilter());
+        }
         if (q) {
             filtered = filtered.filter(t => this.translate.instant(t.nameKey).toLowerCase().includes(q));
         }
@@ -206,13 +269,14 @@ export class AgentsLanding {
     togglePin(event: MouseEvent, tile: AgentTile): void {
         event.stopPropagation();
         event.preventDefault();
+        if (tile.disabled) return;
         const current = this.pinnedIds();
         const next = current.includes(tile.id) ? current.filter(id => id !== tile.id) : [...current, tile.id];
         this.pinnedIds.set(next);
         this.storage.setItem(LocalStorage.PinnedAgents, next);
     }
 
-    /** Jumps to the clicked nav item's section instead of filtering the page down to it — every group stays rendered. */
+    /** Aside nav click — jumps to the section instead of filtering the page down to it; every group stays rendered. */
     selectFilter(key: string): void {
         this.selectedFilter = key;
 
@@ -223,6 +287,11 @@ export class AgentsLanding {
 
         const id = key === 'pinned' ? 'section-pinned' : `section-${key}`;
         this.document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    /** Hero pill click — actually filters `categories`/`pinnedTiles` down to the chosen category, no scrolling. */
+    filterByCategory(key: string): void {
+        this.categoryFilter.set(key);
     }
 
     private scrollSpyTicking = false;
@@ -258,6 +327,9 @@ export class AgentsLanding {
         const q = this.search.trim().toLowerCase();
         let filtered = this.tiles;
 
+        if (this.categoryFilter() !== 'all') {
+            filtered = filtered.filter(t => t.categoryKey === this.categoryFilter());
+        }
         if (q) {
             filtered = filtered.filter(t => this.translate.instant(t.nameKey).toLowerCase().includes(q));
         }
@@ -283,6 +355,7 @@ export class AgentsLanding {
      * native new-tab handling, same as `RouterLink` does internally.
      */
     onTileClick(event: MouseEvent, tile: AgentTile): void {
+        if (tile.disabled) return;
         if (event.ctrlKey || event.metaKey || event.shiftKey || event.button !== 0) {
             return;
         }

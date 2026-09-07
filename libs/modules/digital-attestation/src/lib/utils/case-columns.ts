@@ -1,4 +1,4 @@
-import { DataTableAction, DataTableStatusEntry, RowActionsCellComponent, StatusCellComponent } from '@nfinyx/data-table';
+import { DataTableAction, DataTableStatusEntry, FlagCellComponent, RowActionsCellComponent, StatusCellComponent } from '@nfinyx/data-table';
 import type { ColDef } from 'ag-grid-community';
 import { AttestationCase, CaseDecision, CaseStatus } from '../models/digital-attestation.models';
 import { confidenceColorClass, docTypeLabel, timeAgo } from './case-display';
@@ -42,7 +42,7 @@ export function buildCaseColDefs(t: (key: string) => string, onDecide: (id: stri
             cellClass: 'text-xs font-bold text-primary-700',
         },
         { field: 'file', headerName: t('digitalAttestation.table.file'), cellClass: 'text-sm text-gray-400' },
-        { field: 'country', headerName: t('digitalAttestation.table.country'), cellClass: 'text-gray-600' },
+        { field: 'country', headerName: t('digitalAttestation.table.country'), cellRenderer: FlagCellComponent },
         {
             field: 'confidence',
             headerName: t('digitalAttestation.table.confidence'),

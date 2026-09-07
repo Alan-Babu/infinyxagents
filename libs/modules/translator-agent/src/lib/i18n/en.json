@@ -37,7 +37,7 @@
             "qa": "Ask Document (Q&A)"
         },
         "toolbar": {
-            "eyebrow": "Translation Agent",
+            "eyebrow": "NX Translator",
             "rateAgent": "Rate Agent",
             "performance": "Performance",
             "reviewQueue": "Review Queue"
