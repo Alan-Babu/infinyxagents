@@ -1,10 +1,11 @@
 # Streaming through the `agentsapi.nfinyx.ai` gateway
 
-`apps/mofa`'s own container (`Dockerfile` + `nginx.conf` in this folder) reverse-proxies
-`/mofa-chatbot/api/` to the backend with the buffering-off settings `/chat/messages/stream`'s NDJSON
-streaming needs. In production, though, that container's proxy block is bypassed: `apps/mofa/src/environments/environment.ts`
-points `baseURL` at `https://agentsapi.nfinyx.ai` directly, so the **browser** calls that gateway,
-not this container. The gateway's own nginx is what actually needs the streaming-safe settings.
+The app builds to static files (`nx build mofa -c production` → `dist/apps/mofa/browser`) and is
+deployed straight onto the local server's existing nginx -- there's no separate container for this
+app. `apps/mofa/src/environments/environment.ts` points `baseURL` at `https://agentsapi.nfinyx.ai`,
+so the **browser** calls that gateway directly for every `/mofa-chatbot/api/...` request, including
+`/chat/messages/stream`. That gateway's own nginx is therefore the one and only hop that needs the
+streaming-safe settings below.
 
 The current server block for this agent (confirmed against the live config) is:
 
