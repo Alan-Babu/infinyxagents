@@ -11,7 +11,7 @@ import { Subscription } from 'rxjs';
 
 import { ExecSummaryApiService } from '../../services/exec-summary-api.service';
 import { ScheduledJobEntry } from '../../models/executive-summary.models';
-import { formatMediumDate } from '../../utils/format';
+import { formatMediumDate, utcTimeToLocal } from '../../utils/format';
 
 @Component({
     selector: 'lib-scheduled-jobs',
@@ -61,7 +61,8 @@ export class ScheduledJobsPage implements OnInit, OnDestroy {
 
     formatSchedule(j: ScheduledJobEntry): string {
         const freq = j.frequency.charAt(0).toUpperCase() + j.frequency.slice(1);
-        return `${freq} ${j.time_of_day}`;
+        // time_of_day is stored/returned in UTC; show it back in the viewer's own timezone.
+        return `${freq} ${utcTimeToLocal(j.time_of_day)}`;
     }
 
     async cancel(job: ScheduledJobEntry): Promise<void> {
