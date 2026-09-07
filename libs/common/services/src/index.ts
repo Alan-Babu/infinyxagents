@@ -1,5 +1,6 @@
 export * from './lib/api';
 export * from './lib/app-config';
+export * from './lib/guards/require-admin.guard';
 export * from './lib/guards/require-login.guard';
 export * from './lib/loader';
 export * from './lib/local-storage';

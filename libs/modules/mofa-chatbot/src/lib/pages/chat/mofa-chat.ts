@@ -4,11 +4,12 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@an
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { CommonService } from '@nfinyx/services';
+import { AuthService, CommonService } from '@nfinyx/services';
 import { ButtonModule } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
 
+import { ChatHistoryDrawerComponent } from '../../components/chat-history-drawer/chat-history-drawer';
 import { HumanHandoffBannerComponent } from '../../components/human-handoff-banner/human-handoff-banner';
 import { IdleTimeoutBannerComponent } from '../../components/idle-timeout-banner/idle-timeout-banner';
 import { MessageBubbleComponent } from '../../components/message-bubble/message-bubble';
@@ -16,7 +17,7 @@ import { PrivacyNoticeModalComponent } from '../../components/privacy-notice-mod
 import { QuickPromptsComponent } from '../../components/quick-prompts/quick-prompts';
 import { SessionEndRatingModalComponent } from '../../components/session-end-rating-modal/session-end-rating-modal';
 import { VoiceOrbComponent } from '../../components/voice-orb/voice-orb';
-import { ChatMessageOut, VoicePhase } from '../../models/chat.models';
+import { ChatMessageOut, MyChatSession, VoicePhase } from '../../models/chat.models';
 import { MofaChatApiService } from '../../services/mofa-chat-api.service';
 import { VoiceCaptureService } from '../../services/voice-capture.service';
 import { isExitIntent } from '../../utils/exit-intent';
@@ -43,6 +44,7 @@ type EndReason = 'user_exit' | 'idle_timeout' | 'manual';
         IdleTimeoutBannerComponent,
         PrivacyNoticeModalComponent,
         SessionEndRatingModalComponent,
+        ChatHistoryDrawerComponent,
     ],
     providers: [VoiceCaptureService],
     templateUrl: './mofa-chat.html',
@@ -55,6 +57,7 @@ export class MofaChatPage implements OnInit, OnDestroy {
     private readonly common = inject(CommonService);
     private readonly router = inject(Router);
     private readonly locationStrategy = inject(LocationStrategy);
+    private readonly auth = inject(AuthService);
 
     @ViewChild('scrollAnchor') private scrollAnchor?: ElementRef<HTMLDivElement>;
 
@@ -88,6 +91,13 @@ export class MofaChatPage implements OnInit, OnDestroy {
     voicePhase: VoicePhase = 'idle';
     audioLevels: number[] = new Array(32).fill(4);
     private closeAfterSpeak = false;
+
+    // ---- History (this visitor's own past sessions) ----
+    showHistory = false;
+    historyLoading = false;
+    historySessions: MyChatSession[] = [];
+    historySelectedSessionId: string | null = null;
+    historyTranscript: ChatMessageOut[] = [];
 
     private readonly langSub: Subscription;
 
@@ -146,7 +156,7 @@ export class MofaChatPage implements OnInit, OnDestroy {
         this.audioEl?.pause();
 
         try {
-            const res = await this.api.startSession(this.language);
+            const res = await this.api.startSession(this.language, this.auth.user()?.id);
             this.sessionId = res.session_id;
             this.messages = [
                 {
@@ -341,6 +351,44 @@ export class MofaChatPage implements OnInit, OnDestroy {
         } catch (err) {
             this.common.showApiError(err, this.translate.instant('mofaChatbot.chat.toast.saveFailed'));
         }
+    }
+
+    // ---------- History (this visitor's own past sessions) ----------
+    async openHistory(): Promise<void> {
+        this.showHistory = true;
+        this.historySelectedSessionId = null;
+        this.historyTranscript = [];
+        const userId = this.auth.user()?.id;
+        if (!userId) return;
+        this.historyLoading = true;
+        try {
+            this.historySessions = (await this.api.listMySessions(userId)).items;
+        } catch (err) {
+            this.common.showApiError(err);
+        } finally {
+            this.historyLoading = false;
+        }
+    }
+
+    async selectHistorySession(session: MyChatSession): Promise<void> {
+        this.historySelectedSessionId = session.session_id;
+        this.historyLoading = true;
+        try {
+            this.historyTranscript = await this.api.getMessages(session.session_id);
+        } catch (err) {
+            this.common.showApiError(err);
+        } finally {
+            this.historyLoading = false;
+        }
+    }
+
+    backToHistoryList(): void {
+        this.historySelectedSessionId = null;
+        this.historyTranscript = [];
+    }
+
+    closeHistory(): void {
+        this.showHistory = false;
     }
 
     // ---------- Voice input (live conversation) ----------

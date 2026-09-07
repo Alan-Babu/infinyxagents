@@ -4,7 +4,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { DrawerModule } from 'primeng/drawer';
 import { SessionTranscript } from '../../models/admin.models';
 
-/** Read-only session-transcript drawer opened from the admin Risk & Sentiment list. */
+/** Read-only session-transcript drawer -- opened from both the admin Risk & Sentiment list and the general Sessions browser (via `titleKey`). */
 @Component({
     selector: 'lib-risk-session-transcript-drawer',
     standalone: true,
@@ -13,7 +13,7 @@ import { SessionTranscript } from '../../models/admin.models';
         <p-drawer [visible]="!!transcript" position="right" styleClass="p-drawer-md" appendTo="body" [baseZIndex]="1200" (onHide)="closed.emit()">
             <ng-template #header>
                 <div class="flex flex-col">
-                    <span class="text-xs font-bold uppercase tracking-wide text-primary-600">{{ 'mofaChatbot.admin.riskSessions.transcriptTitle' | translate }}</span>
+                    <span class="text-xs font-bold uppercase tracking-wide text-primary-600">{{ titleKey | translate }}</span>
                     @if (transcript) {
                         <span class="font-mono text-xs text-gray-400">{{ transcript.session_id }}</span>
                     }
@@ -56,5 +56,6 @@ import { SessionTranscript } from '../../models/admin.models';
 })
 export class RiskSessionTranscriptDrawerComponent {
     @Input() transcript: SessionTranscript | null = null;
+    @Input() titleKey = 'mofaChatbot.admin.riskSessions.transcriptTitle';
     @Output() closed = new EventEmitter<void>();
 }

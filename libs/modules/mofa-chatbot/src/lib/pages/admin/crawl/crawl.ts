@@ -7,17 +7,20 @@ import { DataTable } from '@nfinyx/data-table';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
 import { Tooltip } from 'primeng/tooltip';
 import type { ColDef } from 'ag-grid-community';
-import { CrawlRun, CrawlSchedule } from '../../../models/admin.models';
+import { CrawledPage, CrawledPageDetail, CrawlRun, CrawlSchedule } from '../../../models/admin.models';
 import { MofaChatbotAdminApiService } from '../../../services/mofa-chatbot-admin-api.service';
+import { CrawledPageDetailDrawerComponent } from '../../../components/crawled-page-detail-drawer/crawled-page-detail-drawer';
 import { buildCrawlRunColDefs } from '../../../utils/crawl-columns';
-import { formatInTimeZone } from '../../../utils/date-format';
+import { buildCrawledPageColDefs } from '../../../utils/crawled-page-columns';
+import { formatInTimeZone, formatTimestamp } from '../../../utils/date-format';
 
 @Component({
     selector: 'lib-admin-crawl',
     standalone: true,
-    imports: [CommonModule, FormsModule, TranslateModule, DataTable, CheckboxModule, InputNumberModule, ButtonModule, Tooltip],
+    imports: [CommonModule, FormsModule, TranslateModule, DataTable, CheckboxModule, InputNumberModule, InputTextModule, ButtonModule, Tooltip, CrawledPageDetailDrawerComponent],
     templateUrl: './crawl.html',
 })
 export class AdminCrawlPage implements OnInit {
@@ -34,6 +37,21 @@ export class AdminCrawlPage implements OnInit {
     crawlRuns: CrawlRun[] = [];
     colDefs: ColDef[] = buildCrawlRunColDefs(key => this.translate.instant(key));
 
+    crawledPages: CrawledPage[] = [];
+    crawledPagesSearch = '';
+    selectedCrawledPage: CrawledPageDetail | null = null;
+    crawledPageColDefs: ColDef[] = buildCrawledPageColDefs(
+        key => this.translate.instant(key),
+        page => this.viewCrawledPage(page),
+    );
+
+    /** The most recent run that actually finished successfully -- what
+     * "the knowledge base was last updated at X" concretely means, distinct
+     * from the next SCHEDULED time. crawlRuns is already ordered newest-first. */
+    get lastSuccessfulRun(): CrawlRun | null {
+        return this.crawlRuns.find(r => r.status === 'completed') ?? null;
+    }
+
     async ngOnInit(): Promise<void> {
         await this.load();
     }
@@ -41,11 +59,16 @@ export class AdminCrawlPage implements OnInit {
     private async load(): Promise<void> {
         this.loading = true;
         try {
-            const [schedule, runs] = await Promise.all([this.api.getCrawlSchedule(), this.api.listCrawlRuns(1, 10)]);
+            const [schedule, runs, pages] = await Promise.all([
+                this.api.getCrawlSchedule(),
+                this.api.listCrawlRuns(1, 10),
+                this.api.listCrawledPages(undefined, 1, 20),
+            ]);
             this.schedule = schedule;
             this.scheduleDraft = { ...schedule };
             this.seedUrlsText = schedule.seed_urls.join('\n');
             this.crawlRuns = runs.items;
+            this.crawledPages = pages.items;
         } catch (err) {
             this.common.showApiError(err);
         } finally {
@@ -66,6 +89,7 @@ export class AdminCrawlPage implements OnInit {
                 mode: this.scheduleDraft.mode,
                 seed_urls: seedUrls,
                 max_pages_per_run: this.scheduleDraft.max_pages_per_run,
+                use_sitemap: this.scheduleDraft.use_sitemap,
                 updated_by: this.auth.user()?.displayName || '',
             });
             this.common.showSuccessMessage(this.translate.instant('mofaChatbot.admin.crawl.saved'));
@@ -93,6 +117,30 @@ export class AdminCrawlPage implements OnInit {
         } catch (err) {
             this.common.showApiError(err);
         }
+    }
+
+    async searchCrawledPages(): Promise<void> {
+        try {
+            this.crawledPages = (await this.api.listCrawledPages(this.crawledPagesSearch || undefined, 1, 20)).items;
+        } catch (err) {
+            this.common.showApiError(err);
+        }
+    }
+
+    async viewCrawledPage(page: CrawledPage): Promise<void> {
+        try {
+            this.selectedCrawledPage = await this.api.getCrawledPage(page.id);
+        } catch (err) {
+            this.common.showApiError(err);
+        }
+    }
+
+    closeCrawledPageDetail(): void {
+        this.selectedCrawledPage = null;
+    }
+
+    formatRunTimestamp(iso: string | null): string {
+        return formatTimestamp(iso);
     }
 
     /**
