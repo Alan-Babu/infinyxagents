@@ -1,6 +1,7 @@
 import { DataTableAction, RowActionsCellComponent } from '@nfinyx/data-table';
 import type { ColDef } from 'ag-grid-community';
 import { UnansweredQuestion } from '../models/admin.models';
+import { formatTimestamp } from './date-format';
 
 /** Column defs for the unanswered-questions `<lib-data-table>` on the admin Feedback & Gaps page. */
 export function buildUnansweredColDefs(t: (key: string) => string, onMarkReviewed: (question: UnansweredQuestion) => void): ColDef[] {
@@ -30,7 +31,7 @@ export function buildUnansweredColDefs(t: (key: string) => string, onMarkReviewe
         {
             field: 'created_at',
             headerName: t('mofaChatbot.admin.feedback.table.asked'),
-            valueFormatter: p => new Date(p.value).toLocaleString(undefined, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }),
+            valueFormatter: p => formatTimestamp(p.value),
             cellClass: 'whitespace-nowrap text-sm text-gray-400',
         },
         {
@@ -69,7 +70,7 @@ export function buildFeedbackColDefs(t: (key: string) => string): ColDef[] {
         {
             field: 'ended_at',
             headerName: t('mofaChatbot.admin.feedback.feedbackTable.when'),
-            valueFormatter: p => (p.value ? new Date(p.value).toLocaleString(undefined, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—'),
+            valueFormatter: p => formatTimestamp(p.value),
             cellClass: 'whitespace-nowrap text-sm text-gray-400',
         },
     ];

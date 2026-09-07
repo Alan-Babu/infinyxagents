@@ -193,11 +193,28 @@ export class MofaChatPage implements OnInit, OnDestroy {
         this.appendMessage(userMsg);
         this.scrollToBottom();
 
+        // Placeholder agent bubble, filled in token-by-token as deltas arrive --
+        // citations/followups/confidence are only known once the stream's
+        // "done" event lands, so this starts with none of those.
+        const placeholderId = `streaming-${Date.now()}`;
+        this.appendMessage({
+            message_id: placeholderId,
+            role: 'agent',
+            content: '',
+            language: this.language,
+            confidence_score: null,
+            citations: [],
+            created_at: new Date().toISOString(),
+        });
+
         try {
-            const agentMsg = await this.api.sendMessage(this.sessionId, text, this.language);
+            const agentMsg = await this.api.sendMessageStream(this.sessionId, text, this.language, delta => {
+                this.patchMessage(placeholderId, { content: (this.messages.find(m => m.message_id === placeholderId)?.content ?? '') + delta });
+                this.scrollToBottom();
+            });
             this.patchMessage(userMsg.message_id, { deliveryStatus: 'delivered' });
             setTimeout(() => this.patchMessage(userMsg.message_id, { deliveryStatus: 'read' }), 200);
-            this.appendMessage(agentMsg);
+            this.patchMessage(placeholderId, agentMsg);
             this.currentHappiness = agentMsg.happiness_score ?? this.currentHappiness;
             this.currentHappinessTrend = agentMsg.happiness_trend ?? this.currentHappinessTrend;
             if (agentMsg.offer_human_handoff) this.showHandoffOffer = true;
@@ -207,6 +224,7 @@ export class MofaChatPage implements OnInit, OnDestroy {
                 this.closeChatAfterReply();
             }
         } catch (err) {
+            this.messages = this.messages.filter(m => m.message_id !== placeholderId);
             this.patchMessage(userMsg.message_id, { deliveryStatus: 'failed' });
             this.common.showApiError(err, this.translate.instant('mofaChatbot.chat.toast.sendFailed'));
         } finally {
@@ -355,6 +373,10 @@ export class MofaChatPage implements OnInit, OnDestroy {
                 onLevels: levels => (this.audioLevels = levels),
                 onAutoStop: () => this.stopRecordingAndSubmit(),
                 onNoSpeechTimeout: () => this.handleNoSpeechTimeout(),
+                // Speech was heard but no silence gap ever arrived (e.g. a
+                // continuously noisy room) -- treat it like a manual stop and
+                // submit whatever was captured rather than waiting forever.
+                onMaxDurationReached: () => this.stopRecordingAndSubmit(),
             });
         } catch {
             this.voicePhase = 'idle';

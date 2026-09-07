@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService, CommonService } from '@nfinyx/services';
 import { NoData } from '@nfinyx/no-data';
+import { format } from 'date-fns';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
@@ -144,7 +145,7 @@ export class AdminKbPage implements OnInit {
 
     fmtDateTime(iso: string | null): string {
         if (!iso) return this.translate.instant('mofaChatbot.admin.common.dash');
-        return new Date(iso).toLocaleString(undefined, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+        return format(new Date(iso), 'dd MMM, HH:mm');
     }
 
     fmtSize(bytes: number): string {

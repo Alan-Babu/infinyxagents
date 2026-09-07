@@ -12,6 +12,7 @@ import type { ColDef } from 'ag-grid-community';
 import { CrawlRun, CrawlSchedule } from '../../../models/admin.models';
 import { MofaChatbotAdminApiService } from '../../../services/mofa-chatbot-admin-api.service';
 import { buildCrawlRunColDefs } from '../../../utils/crawl-columns';
+import { formatInTimeZone } from '../../../utils/date-format';
 
 @Component({
     selector: 'lib-admin-crawl',
@@ -91,6 +92,19 @@ export class AdminCrawlPage implements OnInit {
             this.crawlRuns = (await this.api.listCrawlRuns(1, 10)).items;
         } catch (err) {
             this.common.showApiError(err);
+        }
+    }
+
+    /**
+     * Formats the next-run ISO datetime explicitly in the schedule's OWN
+     * timezone (not the admin's browser timezone, which may differ) --
+     * makes it unambiguous exactly when the next crawl will actually run.
+     */
+    formatNextRunAt(iso: string, timezone: string): string {
+        try {
+            return formatInTimeZone(iso, timezone);
+        } catch {
+            return iso;
         }
     }
 }

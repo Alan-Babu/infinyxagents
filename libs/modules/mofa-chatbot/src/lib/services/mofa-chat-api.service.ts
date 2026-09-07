@@ -20,6 +20,24 @@ export class MofaChatApiService extends MofaChatbotApiBase {
         return normalizeChatMessage(res);
     }
 
+    /**
+     * Same reply as sendMessage(), delivered token-by-token via the shared
+     * postStream() NDJSON helper -- `onDelta` is called with each text piece
+     * as it arrives so the caller can render it live (see MofaChatPage.sendMessage),
+     * and the returned promise resolves with the final normalized message once
+     * the backend's `{"type":"done", ...}` line arrives. Text chat only -- voice
+     * replies stay on sendMessage() since they need a complete answer before TTS
+     * can speak it.
+     */
+    async sendMessageStream(sessionId: string, text: string, language: string, onDelta: (text: string) => void): Promise<ChatMessageOut> {
+        const res = await this.postStream<Record<string, unknown>>(
+            '/chat/messages/stream',
+            { session_id: sessionId, text, language, input_mode: 'text' },
+            onDelta,
+        );
+        return normalizeChatMessage(res);
+    }
+
     async getMessages(sessionId: string): Promise<ChatMessageOut[]> {
         const rows = await this.get<unknown[]>(`/chat/sessions/${sessionId}/messages`);
         return Array.isArray(rows) ? rows.map(normalizeChatMessage) : [];

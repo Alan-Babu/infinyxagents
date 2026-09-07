@@ -134,8 +134,9 @@
             "crawl": {
                 "title": "Crawl Schedule",
                 "enabledLabel": "Nightly refresh enabled",
-                "hourLabel": "Hour (0-23, server time)",
+                "hourLabel": "Hour (0-23, {{tz}})",
                 "minuteLabel": "Minute",
+                "nextRunLabel": "Next run",
                 "modeLabel": "Crawl mode",
                 "modeIncremental": "Incremental",
                 "modeFull": "Full re-crawl",
