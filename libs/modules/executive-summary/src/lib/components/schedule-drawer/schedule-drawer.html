@@ -19,6 +19,7 @@
             <div>
                 <label class="mb-1.5 block text-sm font-semibold text-gray-600" for="scheduleTime">{{ "executiveSummary.insights.timeLocal" | translate }}</label>
                 <input pInputText type="time" id="scheduleTime" class="w-full" [(ngModel)]="model.time" />
+                <p class="mt-1 text-xs text-gray-400">{{ "executiveSummary.insights.timeZoneHint" | translate: { timezone: detectedTimeZone } }}</p>
             </div>
         </div>
     

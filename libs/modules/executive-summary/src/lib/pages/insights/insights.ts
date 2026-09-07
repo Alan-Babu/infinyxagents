@@ -23,7 +23,7 @@ import { ProfileSettingsComponent } from '../../components/profile-settings/prof
 import { ShareTaskDrawerComponent, ShareTaskFormModel, ShareTaskStage } from '../../components/share-task-drawer/share-task-drawer';
 import { ScheduleDrawerComponent, ScheduleFormModel } from '../../components/schedule-drawer/schedule-drawer';
 import { SaveProfileDrawerComponent, SaveProfileFormModel } from '../../components/save-profile-drawer/save-profile-drawer';
-import { localTimeToUtc, shiftDayOfMonth28, shiftPythonWeekday } from '../../utils/format';
+import { detectBrowserTimeZone } from '../../utils/format';
 import {
     ClarifyingQuestion,
     CountryDashboardData,
@@ -886,23 +886,21 @@ export class InsightsPage implements OnInit {
         const freqKey = form.frequency.toLowerCase() as ScheduleJobRequest['frequency'];
         const notifyKey: ScheduleJobRequest['notify_mode'] = form.notifyMode === 'Always send' ? 'always' : 'on_change';
 
-        // The user picks a time (and, for weekly/monthly, a day) in their own
-        // browser timezone, but the backend stores and cron-schedules
-        // everything in UTC — convert here instead of making the user do the
-        // UTC math themselves (that mismatch was firing schedules hours off
-        // from what users in e.g. UAE actually asked for).
-        const { time: utcTime, dayShift } = localTimeToUtc(form.time);
-
+        // The backend now stores an explicit IANA timezone per schedule and
+        // treats time_of_day/day_of_week/day_of_month as wall-clock values
+        // in it (real DST-aware conversion happens server-side) — so we
+        // just send what the user picked, plus their detected timezone,
+        // with no client-side UTC math or day-shifting needed any more.
         const payload: ScheduleJobRequest = {
-            frequency: freqKey, time_of_day: utcTime, recipient_email: form.email.trim(), notify_mode: notifyKey,
+            frequency: freqKey, time_of_day: form.time, timezone: detectBrowserTimeZone(),
+            recipient_email: form.email.trim(), notify_mode: notifyKey,
         };
         if (freqKey === 'weekly') {
-            const localDow = this.dayOfWeekOptions.findIndex(o => o.label === form.dayOfWeek);
-            payload.day_of_week = shiftPythonWeekday(localDow, dayShift);
+            payload.day_of_week = this.dayOfWeekOptions.findIndex(o => o.label === form.dayOfWeek);
         } else if (freqKey === 'monthly') {
-            payload.day_of_month = shiftDayOfMonth28(Number(form.dayOfMonth), dayShift);
+            payload.day_of_month = Number(form.dayOfMonth);
         } else if (freqKey === 'quarterly') {
-            payload.day_of_month = shiftDayOfMonth28(Number(form.dayOfMonth), dayShift);
+            payload.day_of_month = Number(form.dayOfMonth);
             payload.quarterly_start_month = this.monthOptions.findIndex(o => o.label === form.quarterlyMonth) + 1;
         }
 
@@ -910,7 +908,8 @@ export class InsightsPage implements OnInit {
             this.scheduledEntry = await this.api.createSchedule(this.sessionId, payload);
             this.scheduleStage = 'saved';
             this.common.showSuccessMessage(this.translate.instant('executiveSummary.insights.scheduledSummary', {
-                frequency: form.frequency.toLowerCase(), time: form.time, email: this.scheduledEntry.recipient_email,
+                frequency: form.frequency.toLowerCase(), time: form.time, timezone: this.scheduledEntry.timezone,
+                email: this.scheduledEntry.recipient_email,
             }));
         } catch (err) {
             this.common.showApiError(err);

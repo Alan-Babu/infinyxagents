@@ -7,6 +7,8 @@ import { DrawerModule } from 'primeng/drawer';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 
+import { detectBrowserTimeZone } from '../../utils/format';
+
 export interface ScheduleFormModel {
     frequency: string;
     time: string;
@@ -39,4 +41,7 @@ export class ScheduleDrawerComponent {
 
     @Output() closed = new EventEmitter<void>();
     @Output() confirm = new EventEmitter<void>();
+
+    /** Shown next to the time field so the user knows what timezone their pick will be scheduled in. */
+    readonly detectedTimeZone = detectBrowserTimeZone();
 }
