@@ -1,6 +1,7 @@
 import { DataTableAction, RowActionsCellComponent } from '@nfinyx/data-table';
 import type { ColDef } from 'ag-grid-community';
 import { RiskSession } from '../models/admin.models';
+import { formatTimestamp } from './date-format';
 
 /** Column defs for the `<lib-data-table>` on the admin Risk & Sentiment page. */
 export function buildRiskSessionColDefs(t: (key: string) => string, onView: (session: RiskSession) => void): ColDef[] {
@@ -40,7 +41,7 @@ export function buildRiskSessionColDefs(t: (key: string) => string, onView: (ses
         {
             field: 'started_at',
             headerName: t('mofaChatbot.admin.riskSessions.table.started'),
-            valueFormatter: p => (p.value ? new Date(p.value).toLocaleString(undefined, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—'),
+            valueFormatter: p => formatTimestamp(p.value),
             cellClass: 'whitespace-nowrap text-sm text-gray-400',
         },
         {

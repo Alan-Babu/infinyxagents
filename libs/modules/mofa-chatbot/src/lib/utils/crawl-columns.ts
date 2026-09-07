@@ -1,5 +1,6 @@
 import { DataTableStatusEntry, StatusCellComponent } from '@nfinyx/data-table';
 import type { ColDef } from 'ag-grid-community';
+import { formatTimestamp } from './date-format';
 
 /** Column defs for the crawl-runs `<lib-data-table>` on the admin Crawl Schedule page. */
 export function buildCrawlRunColDefs(t: (key: string) => string): ColDef[] {
@@ -26,7 +27,7 @@ export function buildCrawlRunColDefs(t: (key: string) => string): ColDef[] {
         {
             field: 'started_at',
             headerName: t('mofaChatbot.admin.crawl.table.started'),
-            valueFormatter: p => (p.value ? new Date(p.value).toLocaleString(undefined, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—'),
+            valueFormatter: p => formatTimestamp(p.value),
             cellClass: 'whitespace-nowrap text-sm text-gray-400',
         },
     ];

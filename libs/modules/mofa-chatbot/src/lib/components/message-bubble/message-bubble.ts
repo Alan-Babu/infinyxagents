@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { Tooltip } from 'primeng/tooltip';
 import { ChatMessageOut } from '../../models/chat.models';
+import { formatMessageTime } from '../../utils/date-format';
 
 /** Renders a single chat bubble (user or agent), following `hr-agent`'s bubble styling convention. */
 @Component({
@@ -134,6 +135,6 @@ export class MessageBubbleComponent {
     @Output() followupSelect = new EventEmitter<string>();
 
     formatTime(iso: string): string {
-        return new Date(iso).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+        return formatMessageTime(iso);
     }
 }

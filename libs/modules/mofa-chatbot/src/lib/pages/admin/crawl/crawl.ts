@@ -12,6 +12,7 @@ import type { ColDef } from 'ag-grid-community';
 import { CrawlRun, CrawlSchedule } from '../../../models/admin.models';
 import { MofaChatbotAdminApiService } from '../../../services/mofa-chatbot-admin-api.service';
 import { buildCrawlRunColDefs } from '../../../utils/crawl-columns';
+import { formatInTimeZone } from '../../../utils/date-format';
 
 @Component({
     selector: 'lib-admin-crawl',
@@ -101,13 +102,7 @@ export class AdminCrawlPage implements OnInit {
      */
     formatNextRunAt(iso: string, timezone: string): string {
         try {
-            return new Date(iso).toLocaleString(undefined, {
-                timeZone: timezone,
-                day: '2-digit',
-                month: 'short',
-                hour: '2-digit',
-                minute: '2-digit',
-            });
+            return formatInTimeZone(iso, timezone);
         } catch {
             return iso;
         }
