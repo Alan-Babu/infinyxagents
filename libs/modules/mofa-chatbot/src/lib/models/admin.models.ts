@@ -38,6 +38,8 @@ export interface CrawlSchedule {
     mode: 'incremental' | 'full';
     seed_urls: string[];
     max_pages_per_run: number;
+    /** When true, each run also seeds the crawl queue from {seed origin}/sitemap.xml, not just link-following. */
+    use_sitemap: boolean;
     updated_at: string | null;
     updated_by: string | null;
     /** IANA timezone name (e.g. "Asia/Dubai") that `hour`/`minute` are interpreted in -- see the backend's SCHEDULE_TIMEZONE. */
@@ -45,6 +47,31 @@ export interface CrawlSchedule {
     next_run_description: string;
     /** ISO datetime (timezone-aware) of the next scheduled fire, or null if disabled. */
     next_run_at: string | null;
+}
+
+export interface CrawledPage {
+    id: string;
+    url: string;
+    title: string | null;
+    first_crawled_at: string | null;
+    last_crawled_at: string | null;
+    last_changed_at: string | null;
+}
+
+export interface CrawledPageChunk {
+    id: string;
+    chunk_index: number;
+    text: string;
+    language: string | null;
+    is_published: boolean;
+}
+
+export interface CrawledPageDetail extends CrawledPage {
+    language: string | null;
+    raw_text: string | null;
+    http_status: number | null;
+    is_active: boolean;
+    chunks: CrawledPageChunk[];
 }
 
 export interface CrawlRun {
@@ -113,6 +140,20 @@ export interface RiskSession {
     rating: number | null;
     started_at: string;
     ended_at: string | null;
+}
+
+/** Same shape as RiskSession, plus risk_flag -- returned by the general (not risk-only) session listing used by the admin Sessions browser. */
+export interface ChatSessionSummary extends RiskSession {
+    risk_flag: boolean;
+}
+
+export interface SessionListFilters {
+    page?: number;
+    pageSize?: number;
+    language?: string;
+    sentiment?: string;
+    since?: string;
+    until?: string;
 }
 
 export interface SessionTranscriptMessage {

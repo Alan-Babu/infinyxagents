@@ -63,16 +63,43 @@ import { formatMessageTime } from '../../utils/date-format';
                 @if (message.citations && message.citations.length) {
                     <div class="flex flex-wrap gap-1.5">
                         @for (c of message.citations; track c.title) {
-                            <span class="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-gray-50 px-2 py-1 text-xs text-gray-600">
-                                <i class="pi pi-link text-xs"></i>
-                                {{ c.title }}
-                            </span>
+                            <!-- Citations from a crawled page carry a real source_url (external,
+                                 on the ministry's own site) and are clickable; KB-uploaded documents
+                                 have no URL to link to and render as a plain, non-clickable chip. -->
+                            @if (c.url) {
+                                <a
+                                    [href]="c.url"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-gray-50 px-2 py-1 text-xs text-gray-600 transition hover:border-primary-300 hover:text-primary-600"
+                                    [pTooltip]="c.url"
+                                    tooltipPosition="top"
+                                >
+                                    <i class="pi pi-external-link text-xs"></i>
+                                    {{ c.title }}
+                                </a>
+                            } @else {
+                                <span class="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-gray-50 px-2 py-1 text-xs text-gray-600">
+                                    <i class="pi pi-link text-xs"></i>
+                                    {{ c.title }}
+                                </span>
+                            }
                         }
                     </div>
                 }
 
                 @if (message.role === 'agent' && showActions) {
                     <div class="flex items-center gap-3 px-1 text-gray-400">
+                        <button
+                            type="button"
+                            class="cursor-pointer transition hover:text-primary-600"
+                            [class.text-primary-500]="copied"
+                            [pTooltip]="(copied ? 'mofaChatbot.chat.copiedTooltip' : 'mofaChatbot.chat.copyTooltip') | translate"
+                            tooltipPosition="top"
+                            (click)="copyMessage()"
+                        >
+                            <i class="pi" [class.pi-copy]="!copied" [class.pi-check]="copied"></i>
+                        </button>
                         <button
                             type="button"
                             class="cursor-pointer transition hover:text-primary-600"
@@ -134,7 +161,25 @@ export class MessageBubbleComponent {
     @Output() listen = new EventEmitter<void>();
     @Output() followupSelect = new EventEmitter<string>();
 
+    copied = false;
+    private copiedResetTimer?: ReturnType<typeof setTimeout>;
+
     formatTime(iso: string): string {
         return formatMessageTime(iso);
+    }
+
+    async copyMessage(): Promise<void> {
+        try {
+            await navigator.clipboard.writeText(this.message.content);
+        } catch {
+            // Clipboard access can fail (permissions, insecure context) --
+            // there's nothing more to do here since there's no toast service
+            // wired into this leaf component; the icon simply won't flip to
+            // "copied" and the visitor can select/copy the text manually.
+            return;
+        }
+        this.copied = true;
+        clearTimeout(this.copiedResetTimer);
+        this.copiedResetTimer = setTimeout(() => (this.copied = false), 1500);
     }
 }

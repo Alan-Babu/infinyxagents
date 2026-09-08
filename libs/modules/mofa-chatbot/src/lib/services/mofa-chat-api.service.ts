@@ -1,18 +1,24 @@
 import { Injectable } from '@angular/core';
-import { ChatMessageOut, SaveSessionResult, SharedChatResult, SpeakMessageResult, StartSessionResult } from '../models/chat.models';
+import { Paginated } from '../models/admin.models';
+import { ChatMessageOut, MyChatSession, SaveSessionResult, SharedChatResult, SpeakMessageResult, StartSessionResult } from '../models/chat.models';
 import { normalizeChatMessage } from '../utils/message-normalizer';
 import { MofaChatbotApiBase } from './mofa-chatbot-api-base';
 
 /** Public-facing chat, voice, and shared-transcript endpoints. */
 @Injectable({ providedIn: 'root' })
 export class MofaChatApiService extends MofaChatbotApiBase {
-    async startSession(language: string): Promise<StartSessionResult> {
-        const res = await this.post<StartSessionResult>('/chat/sessions', { language });
+    async startSession(language: string, userId?: string): Promise<StartSessionResult> {
+        const res = await this.post<StartSessionResult>('/chat/sessions', { language, user_id: userId ?? null });
         return {
             session_id: res?.session_id ?? '',
             greeting: res?.greeting ?? '',
             language: res?.language ?? language,
         };
+    }
+
+    /** A visitor's own past sessions -- see MyChatSession's docstring for the client-asserted-identity caveat. */
+    listMySessions(userId: string, page = 1, pageSize = 20): Promise<Paginated<MyChatSession>> {
+        return this.get<Paginated<MyChatSession>>('/chat/sessions', { user_id: userId, page, page_size: pageSize });
     }
 
     async sendMessage(sessionId: string, text: string, language: string, inputMode: 'text' | 'voice' = 'text'): Promise<ChatMessageOut> {

@@ -68,6 +68,15 @@
             </button>
             <button
                 type="button"
+                class="grid h-9 w-9 cursor-pointer place-items-center rounded-full text-gray-400 transition hover:bg-gray-100 hover:text-primary-600"
+                [pTooltip]="'mofaChatbot.chat.historyTooltip' | translate"
+                tooltipPosition="bottom"
+                (click)="openHistory()"
+            >
+                <i class="pi pi-history"></i>
+            </button>
+            <button
+                type="button"
                 class="grid h-9 w-9 cursor-pointer place-items-center rounded-full text-primary-600 transition hover:bg-gray-100"
                 [pTooltip]="'mofaChatbot.chat.newChat' | translate"
                 tooltipPosition="bottom"
@@ -171,6 +180,17 @@
 </div>
 
 <lib-privacy-notice-modal [visible]="showPrivacyNotice" (visibleChange)="showPrivacyNotice = $event" />
+
+<lib-chat-history-drawer
+    [visible]="showHistory"
+    [loading]="historyLoading"
+    [sessions]="historySessions"
+    [selectedSessionId]="historySelectedSessionId"
+    [transcript]="historyTranscript"
+    (closed)="closeHistory()"
+    (sessionSelect)="selectHistorySession($event)"
+    (backToList)="backToHistoryList()"
+/>
 
 <lib-session-end-rating-modal
     [visible]="showRatingModal"

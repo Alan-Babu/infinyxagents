@@ -3,6 +3,9 @@ import {
     AnalyticsOverview,
     BlacklistTerm,
     BlacklistTestResult,
+    ChatSessionSummary,
+    CrawledPage,
+    CrawledPageDetail,
     CrawlRun,
     CrawlSchedule,
     FeedbackEntry,
@@ -10,6 +13,7 @@ import {
     KBVersion,
     Paginated,
     RiskSession,
+    SessionListFilters,
     SessionTranscript,
     SimulateResult,
     UnansweredQuestion,
@@ -67,6 +71,14 @@ export class MofaChatbotAdminApiService extends MofaChatbotApiBase {
         return this.get<Paginated<CrawlRun>>('/crawl/runs', { page, page_size: pageSize });
     }
 
+    listCrawledPages(q?: string, page = 1, pageSize = 20): Promise<Paginated<CrawledPage>> {
+        return this.get<Paginated<CrawledPage>>('/crawl/pages', { q, page, page_size: pageSize });
+    }
+
+    getCrawledPage(pageId: string): Promise<CrawledPageDetail> {
+        return this.get<CrawledPageDetail>(`/crawl/pages/${pageId}`);
+    }
+
     // ---- Blacklist ----
     listBlacklistTerms(): Promise<BlacklistTerm[]> {
         return this.get<BlacklistTerm[]>('/blacklist');
@@ -103,6 +115,11 @@ export class MofaChatbotAdminApiService extends MofaChatbotApiBase {
 
     listRiskSessions(page = 1, pageSize = 20): Promise<Paginated<RiskSession>> {
         return this.get<Paginated<RiskSession>>('/analytics/risk-sessions', { page, page_size: pageSize });
+    }
+
+    listSessions(filters: SessionListFilters = {}): Promise<Paginated<ChatSessionSummary>> {
+        const { page = 1, pageSize = 20, language, sentiment, since, until } = filters;
+        return this.get<Paginated<ChatSessionSummary>>('/analytics/sessions', { page, page_size: pageSize, language, sentiment, since, until });
     }
 
     getSessionTranscript(sessionId: string): Promise<SessionTranscript> {

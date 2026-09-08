@@ -37,6 +37,23 @@ export interface StartSessionResult {
     language: string;
 }
 
+/**
+ * One of a visitor's own past sessions, returned by GET /chat/sessions?user_id=...
+ * `user_id` there is whatever the frontend sent when the session was started
+ * (see MofaChatApiService.startSession) -- client-asserted, not verified
+ * against the auth token, matching this app's current trust level everywhere
+ * else. Distinct from admin.models.ts's ChatSessionSummary, which comes from
+ * a different (admin-only) endpoint with a different shape.
+ */
+export interface MyChatSession {
+    session_id: string;
+    language: string;
+    status: string;
+    rating: number | null;
+    started_at: string;
+    ended_at: string | null;
+}
+
 export interface SharedChatMessage {
     role: string;
     content: string;

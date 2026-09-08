@@ -1,6 +1,7 @@
-import { Route } from '@angular/router';
+import { inject } from '@angular/core';
+import { ResolveFn, Route } from '@angular/router';
 import { AgentLayout } from '@nfinyx/layouts';
-import { createModuleI18nResolver } from '@nfinyx/services';
+import { AuthService, createModuleI18nResolver, requireAdminGuard } from '@nfinyx/services';
 import { MenuIcon, MenuModel } from '@nfinyx/types';
 import * as en from './i18n/en.json';
 import * as ar from './i18n/ar.json';
@@ -8,24 +9,35 @@ import * as ar from './i18n/ar.json';
 /** Single resolver instance shared by the authenticated routes below and the unauthenticated shared-chat route. */
 export const mofaChatbotI18nResolver = createModuleI18nResolver({ en, ar });
 
-const MOFA_CHATBOT_NAV: MenuModel[] = [
-    {
-        id: 1,
-        name: 'mofa-chatbot-chat',
-        menu: 'mofaChatbot.nav.chat',
-        activatedRoute: true,
-        icon: MenuIcon.ChatText,
-        link: '/mofa-chatbot',
-    },
-    {
-        id: 2,
-        name: 'mofa-chatbot-admin',
-        menu: 'mofaChatbot.nav.admin',
-        activatedRoute: true,
-        icon: MenuIcon.Settings,
-        link: '/mofa-chatbot/admin',
-    },
-];
+const MOFA_CHATBOT_CHAT_NAV_ITEM: MenuModel = {
+    id: 1,
+    name: 'mofa-chatbot-chat',
+    menu: 'mofaChatbot.nav.chat',
+    activatedRoute: true,
+    icon: MenuIcon.ChatText,
+    link: '/mofa-chatbot',
+};
+
+const MOFA_CHATBOT_ADMIN_NAV_ITEM: MenuModel = {
+    id: 2,
+    name: 'mofa-chatbot-admin',
+    menu: 'mofaChatbot.nav.admin',
+    activatedRoute: true,
+    icon: MenuIcon.Settings,
+    link: '/mofa-chatbot/admin',
+};
+
+/**
+ * Resolved (not static) so the admin nav icon only appears for admins --
+ * AgentLayout itself stays module-agnostic, it just renders whatever
+ * `data['main-nav']` resolves to, same as it did with the old static array.
+ * Route access itself is separately enforced by requireAdminGuard below;
+ * this only controls whether the icon is offered in the first place.
+ */
+const mofaChatbotNavResolver: ResolveFn<MenuModel[]> = () => {
+    const auth = inject(AuthService);
+    return auth.isAdmin() ? [MOFA_CHATBOT_CHAT_NAV_ITEM, MOFA_CHATBOT_ADMIN_NAV_ITEM] : [MOFA_CHATBOT_CHAT_NAV_ITEM];
+};
 
 export const MOFA_CHATBOT_ROUTES: Route[] = [
     {
@@ -33,8 +45,7 @@ export const MOFA_CHATBOT_ROUTES: Route[] = [
         // (see app.routes.ts in each app) — this route is nested under that block.
         path: '',
         component: AgentLayout,
-        data: { 'main-nav': MOFA_CHATBOT_NAV },
-        resolve: { i18n: mofaChatbotI18nResolver },
+        resolve: { i18n: mofaChatbotI18nResolver, 'main-nav': mofaChatbotNavResolver },
         children: [
             {
                 path: '',
@@ -44,6 +55,7 @@ export const MOFA_CHATBOT_ROUTES: Route[] = [
             {
                 path: 'admin',
                 loadComponent: () => import('./pages/admin/admin-shell/admin-shell').then(m => m.AdminShellPage),
+                canActivate: [requireAdminGuard],
                 data: { name: 'mofa-chatbot-admin' },
                 children: [
                     {
@@ -65,6 +77,11 @@ export const MOFA_CHATBOT_ROUTES: Route[] = [
                         path: 'blacklist',
                         loadComponent: () => import('./pages/admin/blacklist/blacklist').then(m => m.AdminBlacklistPage),
                         data: { name: 'mofa-chatbot-admin-blacklist' },
+                    },
+                    {
+                        path: 'sessions',
+                        loadComponent: () => import('./pages/admin/sessions/sessions').then(m => m.AdminSessionsPage),
+                        data: { name: 'mofa-chatbot-admin-sessions' },
                     },
                     {
                         path: 'risk-sessions',
