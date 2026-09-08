@@ -1,0 +1,24 @@
+<div class="flex h-full min-h-0 flex-col">
+    <lib-page-header titleKey="assetIntelligence.settings.title" subtitleKey="assetIntelligence.settings.subtitle" [showBack]="false" />
+
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+        <p-tabs [value]="activeTab" (valueChange)="onTabChange($event)">
+            <p-tablist>
+                <p-tab value="org">{{ "assetIntelligence.settings.tabs.org" | translate }}</p-tab>
+                <p-tab value="users">{{ "assetIntelligence.settings.tabs.users" | translate }}</p-tab>
+                <p-tab value="master">{{ "assetIntelligence.settings.tabs.master" | translate }}</p-tab>
+            </p-tablist>
+            <p-tabpanels>
+                <p-tabpanel value="org">
+                    <lib-org-structure />
+                </p-tabpanel>
+                <p-tabpanel value="users">
+                    <lib-users-roles />
+                </p-tabpanel>
+                <p-tabpanel value="master">
+                    <lib-asset-master />
+                </p-tabpanel>
+            </p-tabpanels>
+        </p-tabs>
+    </div>
+</div>

@@ -1,0 +1,60 @@
+<svg
+    #svg
+    [attr.viewBox]="'0 0 ' + viewBoxWidth + ' ' + viewBoxHeight"
+    class="w-full rounded-lg border border-gray-200 bg-white select-none"
+    style="touch-action: none;"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp()"
+    (pointercancel)="onPointerUp()"
+>
+    <defs>
+        <marker id="ea-arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L0,6 L9,3 z" fill="#9CA3AF" />
+        </marker>
+    </defs>
+
+    @for (edge of edges; track edge.source_key + edge.target_key + edge.kind) {
+        @let line = edgeLine(edge);
+        @if (line) {
+            <line
+                [attr.x1]="line.x1"
+                [attr.y1]="line.y1"
+                [attr.x2]="line.x2"
+                [attr.y2]="line.y2"
+                stroke="#9CA3AF"
+                stroke-width="1.5"
+                [attr.stroke-dasharray]="edgeIsDashed(edge) ? '5,4' : null"
+                marker-end="url(#ea-arrow)"
+            />
+            <text [attr.x]="edgeMidpoint(edge).x" [attr.y]="edgeMidpoint(edge).y - 4" text-anchor="middle" font-size="10" fill="#6B7280">
+                {{ edge.kind }}
+            </text>
+        }
+    }
+
+    @for (node of localNodes; track node.node_key) {
+        <g
+            [attr.transform]="'translate(' + node.x + ',' + node.y + ')'"
+            class="cursor-move"
+            (pointerdown)="onNodePointerDown($event, node)"
+        >
+            <rect
+                [attr.width]="node.width"
+                [attr.height]="node.height"
+                rx="8"
+                [attr.fill]="palette(node.layer).fill"
+                [attr.stroke]="palette(node.layer).stroke"
+                stroke-width="1.5"
+            />
+            <text x="10" y="18" font-size="10" font-weight="600" [attr.fill]="palette(node.layer).stroke">
+                {{ node.layer }} · {{ node.kind }}
+            </text>
+            <text x="10" y="36" font-size="13" font-weight="700" [attr.fill]="palette(node.layer).text">
+                {{ node.name }}
+            </text>
+            <text x="10" y="52" font-size="10" [attr.fill]="palette(node.layer).text">
+                {{ node.subtype }}
+            </text>
+        </g>
+    }
+</svg>

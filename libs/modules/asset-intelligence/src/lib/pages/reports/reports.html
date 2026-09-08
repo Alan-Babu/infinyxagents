@@ -1,0 +1,83 @@
+<div class="flex h-full min-h-0 flex-col">
+    <lib-page-header titleKey="assetIntelligence.reports.title" subtitleKey="assetIntelligence.reports.subtitle" [showBack]="false" />
+
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+        @if (errorMessage) {
+            <p class="mb-4 text-sm text-red-600">{{ errorMessage }}</p>
+        }
+
+        @if (summary) {
+            <div class="mb-6 grid grid-cols-1 gap-3.5 sm:grid-cols-3">
+                <lib-stat-card
+                    [label]="'assetIntelligence.reports.originalCost' | translate"
+                    [value]="(summary.total_original_cost | number: '1.0-0') || '0'"
+                    icon="pi pi-tag"
+                    fgClass="text-primary-600"
+                    bgClass="bg-primary-50"
+                />
+                <lib-stat-card
+                    [label]="'assetIntelligence.reports.bookValue' | translate"
+                    [value]="(summary.total_current_book_value | number: '1.0-0') || '0'"
+                    icon="pi pi-wallet"
+                    fgClass="text-green-600"
+                    bgClass="bg-green-50"
+                />
+                <lib-stat-card
+                    [label]="'assetIntelligence.reports.accumulatedDepr' | translate"
+                    [value]="(summary.total_accumulated_depreciation | number: '1.0-0') || '0'"
+                    icon="pi pi-chart-line"
+                    fgClass="text-amber-600"
+                    bgClass="bg-amber-50"
+                />
+            </div>
+        }
+
+        <div class="mb-6 rounded-lg border border-gray-200 bg-white p-5">
+            <div class="mb-3 flex items-center justify-between">
+                <h2 class="text-sm font-bold text-gray-800">{{ "assetIntelligence.reports.depreciationByDept" | translate }}</h2>
+                <button type="button" pButton severity="secondary" [outlined]="true" size="small" [loading]="downloadingDepreciation" (click)="downloadDepreciationCsv()">
+                    <i class="pi pi-download"></i>
+                    <span>{{ "assetIntelligence.reports.exportCsv" | translate }}</span>
+                </button>
+            </div>
+            @if (summary?.by_department?.length) {
+                <lib-department-bar-chart class="mb-4 block" [data]="summary!.by_department" xKey="department_name" [series]="chartSeries" />
+            }
+            <lib-data-table [rowData]="summary?.by_department || []" [colDefs]="depreciationColDefs" [showSearch]="false" />
+        </div>
+
+        <div class="mb-6 rounded-lg border border-gray-200 bg-white p-5">
+            <div class="mb-3 flex items-center justify-between">
+                <h2 class="text-sm font-bold text-gray-800">{{ "assetIntelligence.reports.costByDept" | translate }}</h2>
+                <button type="button" pButton severity="secondary" [outlined]="true" size="small" [loading]="downloadingCost" (click)="downloadCostByDepartmentCsv()">
+                    <i class="pi pi-download"></i>
+                    <span>{{ "assetIntelligence.reports.exportCsv" | translate }}</span>
+                </button>
+            </div>
+            <lib-data-table [rowData]="costByDepartment" [colDefs]="costColDefs" [showSearch]="false" />
+        </div>
+
+        <div class="rounded-lg border border-gray-200 bg-white p-5">
+            <h2 class="mb-1 text-sm font-bold text-gray-800">{{ "assetIntelligence.reports.utilizationHeatmap" | translate }}</h2>
+            <p class="mb-4 text-xs text-gray-500">{{ "assetIntelligence.reports.utilizationHeatmapDesc" | translate }}</p>
+            @for (group of heatmap; track group.department) {
+                <div class="mb-4 last:mb-0">
+                    <div class="mb-1.5 text-xs font-bold uppercase tracking-wide text-gray-400">{{ group.department }}</div>
+                    <div class="flex flex-wrap gap-2">
+                        @for (asset of group.assets; track asset.asset_id) {
+                            <button
+                                type="button"
+                                class="cursor-pointer rounded-lg border px-2.5 py-1 font-mono text-xs font-semibold"
+                                [ngClass]="utilizationBadgeClass(asset.classification)"
+                                [pTooltip]="asset.classification + ' · ' + asset.avg_utilization_pct + '%'"
+                                (click)="goToAsset(asset.asset_id)"
+                            >
+                                {{ asset.asset_tag }}
+                            </button>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

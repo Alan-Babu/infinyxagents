@@ -1,0 +1,27 @@
+<div class="flex h-full min-h-0 flex-col">
+    <lib-page-header titleKey="assetIntelligence.capabilityMap.title" subtitleKey="assetIntelligence.capabilityMap.subtitle" [showBack]="false">
+        <button type="button" pButton severity="secondary" [outlined]="true" (click)="goToEaModeler()">
+            <span>{{ "assetIntelligence.capabilityMap.openEaModeler" | translate }}</span>
+        </button>
+    </lib-page-header>
+
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+        @if (errorMessage) {
+            <p class="mb-4 text-sm text-red-600">{{ errorMessage }}</p>
+        }
+
+        <div class="mb-4 flex items-center gap-5 text-xs text-gray-500">
+            <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-green-500"></span>{{ "assetIntelligence.capabilityMap.healthy" | translate }}</span>
+            <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-amber-500"></span>{{ "assetIntelligence.capabilityMap.watch" | translate }}</span>
+            <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-red-500"></span>{{ "assetIntelligence.capabilityMap.atRisk" | translate }}</span>
+        </div>
+
+        @if (capabilities.length) {
+            @for (node of capabilities; track node.id) {
+                <lib-capability-node [node]="node" />
+            }
+        } @else if (!loading) {
+            <lib-no-data [message]="'assetIntelligence.capabilityMap.empty' | translate" icon="pi pi-sitemap" />
+        }
+    </div>
+</div>

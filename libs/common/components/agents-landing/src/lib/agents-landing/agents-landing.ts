@@ -198,6 +198,16 @@ export const AGENT_TILES: AgentTile[] = [
         badge: 'IN_LAB',
         disabled: true,
     },
+    {
+        id: 'asset-intelligence',
+        icon: 'pi pi-box',
+        link: '/asset-intelligence',
+        nameKey: 'menu.assetIntelligence',
+        descriptionKey: 'agentsLanding.assetIntelligenceDesc',
+        categoryKey: 'agentsLanding.category.general',
+        accent: 'primary',
+        badge: 'IN_LAB',
+    },
 ];
 
 @Component({

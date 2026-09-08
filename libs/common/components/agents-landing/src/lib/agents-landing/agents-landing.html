@@ -193,6 +193,12 @@
                                 <span class="h-1.5 w-1.5 rounded-full bg-current"></span> {{ 'agentsLanding.beta' |
                                 translate }}
                             </span>
+                            } @else if (tile.badge === 'IN_LAB') {
+                            <span
+                                class="inline-flex items-center gap-1 text-sm font-semibold text-amber-600 bg-amber-100 rounded-lg px-2 py-0.5">
+                                <span class="h-1.5 w-1.5 rounded-full bg-current"></span> {{ 'agentsLanding.inLab' |
+                                translate }}
+                            </span>
                             }
                             <button type="button" (click)="togglePin($event, tile)"
                                 class="cursor-pointer text-gray-300 transition"

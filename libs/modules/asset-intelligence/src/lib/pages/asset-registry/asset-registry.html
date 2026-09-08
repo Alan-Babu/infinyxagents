@@ -1,0 +1,50 @@
+<div class="flex h-full min-h-0 flex-col">
+    <lib-page-header titleKey="assetIntelligence.assetRegistry.title" subtitleKey="assetIntelligence.assetRegistry.subtitle" [showBack]="false" />
+
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+        <div class="flex flex-col gap-4">
+            <div class="flex flex-col gap-1">
+                <div class="flex items-center gap-2 rounded-lg border border-primary-200 bg-white px-3">
+                    <i class="pi pi-qrcode text-primary-500"></i>
+                    <input
+                        type="text"
+                        pInputText
+                        class="w-full border-0! shadow-none!"
+                        [(ngModel)]="scanTag"
+                        [placeholder]="'assetIntelligence.assetRegistry.scanPlaceholder' | translate"
+                        (keydown.enter)="onScan()"
+                    />
+                </div>
+                @if (scanError) {
+                    <p class="text-sm text-red-600">{{ scanError }}</p>
+                }
+            </div>
+
+            @if (errorMessage) {
+                <p class="text-sm text-red-600">{{ errorMessage }}</p>
+            }
+
+            <div class="flex flex-col gap-3 sm:flex-row">
+                <input
+                    type="text"
+                    pInputText
+                    class="sm:flex-1"
+                    [ngModel]="search()"
+                    (ngModelChange)="search.set($event)"
+                    [placeholder]="'assetIntelligence.assetRegistry.searchPlaceholder' | translate"
+                />
+                <p-select
+                    [options]="statusOptions"
+                    [ngModel]="status()"
+                    (ngModelChange)="status.set($event)"
+                    optionLabel="label"
+                    optionValue="value"
+                    appendTo="body"
+                    styleClass="sm:w-56"
+                />
+            </div>
+
+            <lib-data-table [rowData]="assets" [colDefs]="colDefs" (rowClick)="onRowClick($event)" />
+        </div>
+    </div>
+</div>

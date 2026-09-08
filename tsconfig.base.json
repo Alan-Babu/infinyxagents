@@ -20,8 +20,13 @@
       "@nfinyx/agents-landing": [
         "libs/common/components/agents-landing/src/index.ts"
       ],
+      "@nfinyx/asset-intelligence": [
+        "libs/modules/asset-intelligence/src/index.ts"
+      ],
       "@nfinyx/chunk-transfer": ["libs/common/chunk-transfer/src/index.ts"],
-      "@nfinyx/contract-analyzer": ["libs/modules/contract-analyzer/src/index.ts"],
+      "@nfinyx/contract-analyzer": [
+        "libs/modules/contract-analyzer/src/index.ts"
+      ],
       "@nfinyx/data-table": ["libs/common/components/data-table/src/index.ts"],
       "@nfinyx/digital-attestation": [
         "libs/modules/digital-attestation/src/index.ts"
@@ -32,12 +37,14 @@
       "@nfinyx/document-agent": [
         "libs/common/components/document-agent/src/index.ts"
       ],
+      "@nfinyx/email-compose-agent": [
+        "libs/modules/email-compose-agent/src/index.ts"
+      ],
       "@nfinyx/executive-summary": [
         "libs/modules/executive-summary/src/index.ts"
       ],
       "@nfinyx/functions": ["libs/common/functions/src/index.ts"],
       "@nfinyx/grammar-agent": ["libs/modules/grammar-agent/src/index.ts"],
-      "@nfinyx/email-compose-agent": ["libs/modules/email-compose-agent/src/index.ts"],
       "@nfinyx/hr-agent": ["libs/modules/hr-agent/src/index.ts"],
       "@nfinyx/icon": ["libs/common/icon/src/index.ts"],
       "@nfinyx/layouts": ["libs/common/layouts/src/index.ts"],
