@@ -295,6 +295,8 @@ export interface FeedbackEntry {
 export interface ScheduleJobRequest {
     frequency: 'daily' | 'weekly' | 'monthly' | 'quarterly';
     time_of_day: string;
+    /** IANA name (e.g. "Asia/Dubai") that time_of_day/day_of_week/day_of_month are local to. */
+    timezone: string;
     recipient_email: string;
     notify_mode: 'always' | 'on_change';
     day_of_week?: number;
@@ -308,6 +310,7 @@ export interface ScheduledJobEntry {
     topic: string;
     frequency: 'daily' | 'weekly' | 'monthly' | 'quarterly';
     time_of_day: string;
+    timezone: string;
     recipient_email: string;
     notify_mode: 'always' | 'on_change';
     day_of_week?: number | null;

@@ -11,7 +11,7 @@ import { Subscription } from 'rxjs';
 
 import { ExecSummaryApiService } from '../../services/exec-summary-api.service';
 import { ScheduledJobEntry } from '../../models/executive-summary.models';
-import { formatMediumDate, utcTimeToLocal } from '../../utils/format';
+import { formatInTimeZone, formatScheduleTime } from '../../utils/format';
 
 @Component({
     selector: 'lib-scheduled-jobs',
@@ -61,8 +61,10 @@ export class ScheduledJobsPage implements OnInit, OnDestroy {
 
     formatSchedule(j: ScheduledJobEntry): string {
         const freq = j.frequency.charAt(0).toUpperCase() + j.frequency.slice(1);
-        // time_of_day is stored/returned in UTC; show it back in the viewer's own timezone.
-        return `${freq} ${utcTimeToLocal(j.time_of_day)}`;
+        // time_of_day is a wall-clock value in j.timezone (the IANA zone the
+        // owner picked when scheduling), not necessarily the viewer's own —
+        // label it explicitly rather than reinterpreting it.
+        return `${freq} ${formatScheduleTime(j.time_of_day, j.timezone)}`;
     }
 
     async cancel(job: ScheduledJobEntry): Promise<void> {
@@ -117,7 +119,9 @@ export class ScheduledJobsPage implements OnInit, OnDestroy {
             {
                 field: 'next_run_at',
                 headerName: t('executiveSummary.scheduledJobs.nextRun'),
-                valueFormatter: p => (p.value ? formatMediumDate(p.value) : '—'),
+                // Rendered in the schedule's own timezone (not the viewer's)
+                // so it reads consistently no matter who's looking at it.
+                valueFormatter: p => (p.value ? formatInTimeZone(p.value, p.data.timezone) : '—'),
                 cellClass: 'text-gray-500',
             },
             {
