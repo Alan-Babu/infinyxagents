@@ -22,6 +22,8 @@
         "@primeuix/themes": "^1.2.3",
         "@tailwindcss/postcss": "^4.1.13",
         "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+        "ag-charts-angular": "^14.1.0",
+        "ag-charts-community": "^14.1.0",
         "ag-grid-angular": "^35.3.1",
         "ag-grid-community": "^35.3.1",
         "date-fns": "^4.1.0",

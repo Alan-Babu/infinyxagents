@@ -1,0 +1,190 @@
+<div class="flex h-full min-h-0 flex-col">
+    <lib-page-header [titleKey]="asset?.name || 'assetIntelligence.assetRegistry.title'" [showBack]="true" />
+
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+        @if (errorMessage) {
+            <p class="mb-4 text-sm text-red-600">{{ errorMessage }}</p>
+        }
+
+        @if (asset) {
+            <div class="mb-6 flex items-start justify-between gap-4">
+                <div>
+                    <h1 class="text-lg font-bold text-gray-800">{{ asset.name }}</h1>
+                    <p class="mt-1 font-mono text-xs text-gray-500">{{ asset.asset_tag }} · {{ asset.status }} · {{ asset.lifecycle_stage }}</p>
+                </div>
+                @if (barcodeUrl) {
+                    <div class="flex shrink-0 flex-col items-center gap-2 rounded-lg border border-gray-200 p-3">
+                        <img [src]="barcodeUrl" [alt]="asset.asset_tag" class="h-14" />
+                        <span class="text-xs font-mono text-gray-500">{{ asset.asset_tag }}</span>
+                        <button type="button" pButton severity="secondary" [outlined]="true" size="small" (click)="printLabel()">
+                            <span>{{ "assetIntelligence.assetDetail.printLabel" | translate }}</span>
+                        </button>
+                    </div>
+                }
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <div class="rounded-lg border border-gray-200 bg-white p-5">
+                    <h2 class="mb-3 text-sm font-bold text-gray-800">{{ "assetIntelligence.assetDetail.financials.title" | translate }}</h2>
+                    <dl class="flex flex-col gap-2 text-sm">
+                        <div class="flex justify-between"><dt class="text-gray-500">{{ "assetIntelligence.assetDetail.financials.purchaseAmount" | translate }}</dt><dd class="font-semibold text-gray-800">{{ asset.purchase_amount }}</dd></div>
+                        <div class="flex justify-between"><dt class="text-gray-500">{{ "assetIntelligence.assetDetail.financials.purchaseDate" | translate }}</dt><dd class="text-gray-800">{{ asset.purchase_date }}</dd></div>
+                        <div class="flex justify-between"><dt class="text-gray-500">{{ "assetIntelligence.assetDetail.financials.commissioned" | translate }}</dt><dd class="text-gray-800">{{ asset.commissioned_date }}</dd></div>
+                        <div class="flex justify-between"><dt class="text-gray-500">{{ "assetIntelligence.assetDetail.financials.warrantyExpiry" | translate }}</dt><dd class="text-gray-800">{{ asset.warranty_expiry }}</dd></div>
+                        <div class="flex justify-between"><dt class="text-gray-500">{{ "assetIntelligence.assetDetail.financials.plannedRetirement" | translate }}</dt><dd class="text-gray-800">{{ asset.planned_retirement_date }}</dd></div>
+                    </dl>
+                    @if (permissions.can('asset', 'retire')) {
+                        <button type="button" pButton severity="secondary" [outlined]="true" size="small" class="mt-4" (click)="markRetired()">
+                            <span>{{ "assetIntelligence.assetDetail.financials.markRetired" | translate }}</span>
+                        </button>
+                    } @else {
+                        <p class="mt-4 text-xs text-gray-400">{{ "assetIntelligence.assetDetail.financials.noPermission" | translate }}</p>
+                    }
+                </div>
+
+                <div class="rounded-lg border border-gray-200 bg-white p-5">
+                    <h2 class="mb-1 text-sm font-bold text-gray-800">{{ "assetIntelligence.assetDetail.impact.title" | translate }}</h2>
+                    <p class="mb-3 text-xs text-gray-500">{{ "assetIntelligence.assetDetail.impact.description" | translate }}</p>
+                    <button type="button" pButton [loading]="impactLoading" (click)="runImpactAnalysis()">
+                        <span>{{ "assetIntelligence.assetDetail.impact.run" | translate }}</span>
+                    </button>
+                    @if (impact) {
+                        @if (impact.affected_assets.length) {
+                            <ul class="mt-4 flex flex-col gap-1.5 text-sm">
+                                @for (item of impact.affected_assets; track item.asset_id) {
+                                    <li class="flex justify-between border-b border-gray-100 pb-1.5 last:border-0">
+                                        <span class="text-gray-700">{{ item.name }}</span>
+                                        <span class="text-xs text-gray-400">depth {{ item.depth }} · weight {{ item.impact_weight }}</span>
+                                    </li>
+                                }
+                            </ul>
+                        } @else {
+                            <p class="mt-4 text-sm text-gray-500">{{ "assetIntelligence.assetDetail.impact.empty" | translate }}</p>
+                        }
+                    }
+                </div>
+
+                @if (depreciation) {
+                    <div class="rounded-lg border border-gray-200 bg-white p-5">
+                        <h2 class="mb-3 text-sm font-bold text-gray-800">
+                            {{ "assetIntelligence.assetDetail.depreciation.title" | translate: { method: depreciation.method } }}
+                        </h2>
+                        <dl class="mb-4 flex flex-col gap-2 text-sm">
+                            <div class="flex justify-between"><dt class="text-gray-500">{{ "assetIntelligence.assetDetail.depreciation.currentBookValue" | translate }}</dt><dd class="font-semibold text-gray-800">{{ depreciation.current_book_value | number: '1.2-2' }}</dd></div>
+                            <div class="flex justify-between"><dt class="text-gray-500">{{ "assetIntelligence.assetDetail.depreciation.accumulatedDepreciation" | translate }}</dt><dd class="text-gray-800">{{ depreciation.accumulated_depreciation | number: '1.2-2' }}</dd></div>
+                            <div class="flex justify-between"><dt class="text-gray-500">{{ "assetIntelligence.assetDetail.depreciation.elapsedUsefulLife" | translate }}</dt><dd class="text-gray-800">{{ "assetIntelligence.assetDetail.depreciation.months" | translate: { elapsed: depreciation.elapsed_months, total: depreciation.useful_life_months } }}</dd></div>
+                        </dl>
+                        @if (depreciation.schedule.length) {
+                            <div class="mb-1.5 text-xs font-bold uppercase tracking-wide text-gray-400">{{ "assetIntelligence.assetDetail.depreciation.chartCaption" | translate }}</div>
+                            <lib-depreciation-chart [points]="depreciation.schedule" />
+                        } @else {
+                            <lib-no-data [message]="'assetIntelligence.assetDetail.depreciation.notEnoughData' | translate" icon="pi pi-chart-line" />
+                        }
+                    </div>
+                }
+
+                @if (intelligence) {
+                    <div class="rounded-lg border border-gray-200 bg-white p-5 lg:col-span-2">
+                        <div class="mb-3 flex items-center justify-between">
+                            <h2 class="text-sm font-bold text-gray-800">{{ "assetIntelligence.assetDetail.intelligence.title" | translate }}</h2>
+                            <span class="rounded-full border px-2.5 py-0.5 text-xs font-bold" [ngClass]="riskLevelBadgeClass(intelligence.risk_level)">{{ intelligence.risk_level }}</span>
+                        </div>
+                        <p class="text-sm font-semibold text-gray-800">{{ intelligence.recommendation }}</p>
+                        <p class="mt-1 text-sm text-gray-600">{{ intelligence.recommendation_reason }}</p>
+                        <div class="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-xs text-gray-500">
+                            <span>Utilization: <strong class="text-gray-700">{{ intelligence.utilization_status }}</strong></span>
+                            <span>Lifecycle: <strong class="text-gray-700">{{ intelligence.lifecycle_status }}</strong></span>
+                            <span>Confidence: <strong class="text-gray-700">{{ intelligence.confidence }}</strong></span>
+                            <span>Priority: <strong class="text-gray-700">{{ intelligence.priority }}</strong></span>
+                        </div>
+                        @if (intelligence.human_approval_required) {
+                            <p class="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700">
+                                {{ "assetIntelligence.assetDetail.intelligence.approvalRequired" | translate }}
+                            </p>
+                        }
+                        @if (intelligence.issues.length) {
+                            <div class="mt-3">
+                                <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{ "assetIntelligence.assetDetail.intelligence.issues" | translate }}</div>
+                                <ul class="mt-1 list-disc ps-5 text-sm text-gray-700">
+                                    @for (issue of intelligence.issues; track issue) { <li>{{ issue }}</li> }
+                                </ul>
+                            </div>
+                        }
+                        @if (intelligence.optimization_opportunities.length) {
+                            <div class="mt-3">
+                                <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{ "assetIntelligence.assetDetail.intelligence.opportunities" | translate }}</div>
+                                <ul class="mt-1 list-disc ps-5 text-sm text-gray-700">
+                                    @for (item of intelligence.optimization_opportunities; track item) { <li>{{ item }}</li> }
+                                </ul>
+                            </div>
+                        }
+                        @if (intelligence.missing_information.length) {
+                            <div class="mt-3">
+                                <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{ "assetIntelligence.assetDetail.intelligence.missingInformation" | translate }}</div>
+                                <p class="mt-1 text-sm text-gray-500">{{ intelligence.missing_information.join(', ') }}</p>
+                            </div>
+                        }
+                    </div>
+                }
+
+                @if (attributes.length) {
+                    <div class="rounded-lg border border-gray-200 bg-white p-5">
+                        <h2 class="mb-3 text-sm font-bold text-gray-800">{{ "assetIntelligence.assetDetail.attributes.title" | translate }}</h2>
+                        <dl class="flex flex-col gap-2 text-sm">
+                            @for (attr of attributes; track attr.id) {
+                                <div class="flex justify-between"><dt class="text-gray-500">{{ attr.attr_label }}</dt><dd class="text-gray-800">{{ attributeValue(attr) }}</dd></div>
+                            }
+                        </dl>
+                    </div>
+                }
+
+                <div class="rounded-lg border border-gray-200 bg-white p-5">
+                    <h2 class="mb-1 text-sm font-bold text-gray-800">{{ "assetIntelligence.assetDetail.ea.title" | translate }}</h2>
+                    <p class="mb-3 text-xs text-gray-500">{{ "assetIntelligence.assetDetail.ea.description" | translate }}</p>
+                    @if (linkedEaElements.length) {
+                        <ul class="flex flex-col gap-1.5 text-sm text-gray-700">
+                            @for (el of linkedEaElements; track el.id) { <li>{{ el.name }}</li> }
+                        </ul>
+                    } @else {
+                        <p class="text-sm text-gray-500">
+                            {{ "assetIntelligence.assetDetail.ea.empty" | translate }}
+                            <a routerLink="/asset-intelligence/ea-modeler" class="text-primary-600 hover:underline">{{ "assetIntelligence.assetDetail.ea.modelIt" | translate }}</a>
+                        </p>
+                    }
+                </div>
+
+                <div class="rounded-lg border border-gray-200 bg-white p-5">
+                    <h2 class="mb-3 text-sm font-bold text-gray-800">{{ "assetIntelligence.assetDetail.applications.title" | translate }}</h2>
+                    @if (linkedApplications.length) {
+                        <ul class="flex flex-col gap-1.5 text-sm">
+                            @for (app of linkedApplications; track app.application_id) {
+                                <li class="flex justify-between border-b border-gray-100 pb-1.5 last:border-0">
+                                    <span class="text-gray-700">{{ app.name }}</span>
+                                    <span class="text-xs text-gray-400">{{ app.role }} · {{ app.criticality }}</span>
+                                </li>
+                            }
+                        </ul>
+                    } @else {
+                        <p class="text-sm text-gray-500">{{ "assetIntelligence.assetDetail.applications.empty" | translate }}</p>
+                    }
+                </div>
+
+                <div class="rounded-lg border border-gray-200 bg-white p-5">
+                    <h2 class="mb-3 text-sm font-bold text-gray-800">{{ "assetIntelligence.assetDetail.projects.title" | translate }}</h2>
+                    @if (linkedProjects.length) {
+                        <ul class="flex flex-col gap-1.5 text-sm">
+                            @for (project of linkedProjects; track project.project_id) {
+                                <li class="flex justify-between border-b border-gray-100 pb-1.5 last:border-0">
+                                    <span class="text-gray-700">{{ project.name }}</span>
+                                    <span class="text-xs text-gray-400">{{ project.role }} · {{ project.status }}</span>
+                                </li>
+                            }
+                        </ul>
+                    } @else {
+                        <p class="text-sm text-gray-500">{{ "assetIntelligence.assetDetail.projects.empty" | translate }}</p>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>

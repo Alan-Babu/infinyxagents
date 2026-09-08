@@ -1,0 +1,257 @@
+{
+    "assetIntelligence": {
+        "nav": {
+            "dashboard": "Dashboard",
+            "assetRegistry": "Asset Registry",
+            "alerts": "Alerts & Renewals",
+            "eaModeler": "EA Modeler",
+            "capabilityMap": "Capability Map",
+            "agentChat": "Agent",
+            "reports": "Reports",
+            "settings": "Settings"
+        },
+        "status": {
+            "IN_USE": "In Use",
+            "IDLE": "Idle",
+            "IN_REPAIR": "In Repair",
+            "RESERVED": "Reserved",
+            "RETIRED": "Retired"
+        },
+        "criticality": {
+            "LOW": "Low",
+            "MEDIUM": "Medium",
+            "HIGH": "High",
+            "CRITICAL": "Critical"
+        },
+        "table": {
+            "tag": "Tag",
+            "name": "Name",
+            "status": "Status",
+            "criticality": "Criticality",
+            "retirement": "Retirement",
+            "view": "View",
+            "severity": "Severity",
+            "type": "Type",
+            "message": "Message",
+            "due": "Due",
+            "source": "Source",
+            "resolve": "Resolve"
+        },
+        "dashboard": {
+            "title": "Portfolio Overview",
+            "subtitle": "Full lifecycle visibility across IT and non-IT assets.",
+            "banner": {
+                "eyebrow": "Executive Summary: Asset Intelligence Agent"
+            },
+            "stats": {
+                "openAlerts": "Open Alerts",
+                "openAlertsSub": "{{ critical }} critical",
+                "underutilized": "Underutilized Assets",
+                "underutilizedSub": "candidates for reuse-before-buy",
+                "overutilized": "Overutilized Assets",
+                "overutilizedSub": "capacity risk",
+                "deptSpend": "Departmental Spend",
+                "deptSpendSub": "AED allocated this period"
+            },
+            "alertsTitle": "Highest-priority alerts"
+        },
+        "agentChat": {
+            "title": "Agent",
+            "model": "Model",
+            "llmActive": "LLM narration active",
+            "ruleBased": "Rule-based fallback",
+            "placeholder": "Ask things like \"which assets are underutilized in the Finance department?\" or \"what happens if the core switch fails?\"",
+            "composerPlaceholder": "Ask the asset intelligence agent...",
+            "send": "Send",
+            "errorReply": "Sorry, something went wrong answering that. Please try again."
+        },
+        "settings": {
+            "title": "Settings",
+            "subtitle": "Organization structure, users & roles, and asset master data: the reference data everything else in the platform is built on.",
+            "tabs": {
+                "org": "Organization Structure",
+                "users": "Users & Roles",
+                "master": "Asset Master"
+            },
+            "org": {
+                "divisions": "Divisions",
+                "departments": "Departments",
+                "sections": "Sections",
+                "employees": "Employees",
+                "employeesDesc": "The people pool custodians, approvers, business/technical owners, and project managers are drawn from.",
+                "pickDivision": "Select a division.",
+                "pickDivisionFirst": "Pick a division first.",
+                "pickDepartmentFirst": "Pick a department first.",
+                "noSections": "No sections yet.",
+                "newDivisionName": "New division name",
+                "newDepartmentName": "New department name",
+                "newSectionName": "New section name",
+                "addDivision": "Add division",
+                "addDepartment": "Add department",
+                "addSection": "Add section",
+                "add": "Add",
+                "cancel": "Cancel",
+                "fullName": "Full name",
+                "email": "Email",
+                "department": "Department",
+                "role": "Role",
+                "name": "Name",
+                "addEmployee": "Add employee",
+                "confirmDeleteDivision": "Delete division \"{{ name }}\"?",
+                "confirmDeleteDepartment": "Delete department \"{{ name }}\"?",
+                "confirmDeleteSection": "Delete section \"{{ name }}\"?"
+            },
+            "users": {
+                "name": "Name",
+                "email": "Email",
+                "role": "Role",
+                "status": "Status",
+                "active": "Active",
+                "disabled": "Disabled",
+                "disable": "Disable",
+                "enable": "Enable",
+                "provisionNew": "Provision a new user",
+                "fullName": "Full name",
+                "tempPassword": "Temporary password",
+                "createUser": "Create user",
+                "adminOnly": "Only administrators can manage users and roles."
+            },
+            "assetMaster": {
+                "categories": "Asset Categories",
+                "name": "Name",
+                "class": "Class",
+                "classIt": "IT",
+                "classNonIt": "Non-IT",
+                "usefulLife": "Default Useful Life",
+                "months": "months",
+                "calibration": "Calibration Required",
+                "yes": "Yes",
+                "no": "No",
+                "attributes": "Attributes",
+                "close": "Close",
+                "noAttributes": "No attributes defined for this category.",
+                "label": "Label",
+                "key": "Key",
+                "type": "Type",
+                "required": "Required",
+                "categoryName": "Category name",
+                "addCategory": "Add category",
+                "vendors": "Vendors",
+                "vendorName": "Vendor name",
+                "contactEmail": "Contact email",
+                "supportSla": "Support SLA",
+                "addVendor": "Add vendor"
+            }
+        },
+        "eaModeler": {
+            "title": "EA Modeler",
+            "subtitle": "The Application and Technology layers here are NOT hand-drawn. They're your real Applications and their real linked assets, pulled straight from the operational data. Only Business capabilities need manual modeling.",
+            "viewCapabilityMap": "View Capability Map",
+            "selectDiagram": "Select a diagram",
+            "newDiagramName": "New diagram name...",
+            "newDiagram": "New diagram",
+            "capability": "Capability",
+            "autoPopulate": "Auto-populate from application",
+            "pullLinkages": "Pull real linkages onto canvas",
+            "capabilityName": "Capability name",
+            "optionalParent": "Optional parent",
+            "addCapability": "Add capability"
+        },
+        "capabilityMap": {
+            "title": "Capability Heatmap",
+            "subtitle": "Business capability health, rolled up live from the real assets that realize them: open alerts and utilization risk on a linked server or license turn its capability amber or red.",
+            "openEaModeler": "Open EA Modeler",
+            "healthy": "Healthy (≥70)",
+            "watch": "Watch (40-69)",
+            "atRisk": "At risk (<40)",
+            "empty": "No capabilities modeled yet."
+        },
+        "alerts": {
+            "title": "Alerts & Renewals",
+            "subtitle": "Warranty expiry, calibration due, retirement, utilization anomalies, monitoring failures.",
+            "runScan": "Run agent scan"
+        },
+        "reports": {
+            "title": "Reports",
+            "subtitle": "Portfolio depreciation, cost, and utilization: computed live, exportable to CSV.",
+            "department": "Department",
+            "assets": "Assets",
+            "originalCost": "Original Cost",
+            "bookValue": "Current Book Value",
+            "accumulatedDepr": "Accumulated Depreciation",
+            "totalCost": "Total Cost",
+            "depreciationByDept": "Depreciation by Department",
+            "costByDept": "Cost by Department",
+            "exportCsv": "Export CSV",
+            "utilizationHeatmap": "Utilization Heatmap",
+            "utilizationHeatmapDesc": "Every active asset, grouped by department, colored by its live computed utilization classification."
+        },
+        "assetRegistry": {
+            "title": "Asset Registry",
+            "subtitle": "Every IT and non-IT asset, one system of record. Every asset carries a printable barcode tag.",
+            "scanPlaceholder": "Scan or type an asset tag and press Enter...",
+            "searchPlaceholder": "Search by name, tag, serial...",
+            "allStatuses": "All statuses",
+            "scanNotFound": "No asset found for that tag."
+        },
+        "assetDetail": {
+            "financials": {
+                "title": "Financials & Lifecycle",
+                "purchaseAmount": "Purchase amount",
+                "purchaseDate": "Purchase date",
+                "commissioned": "Commissioned",
+                "warrantyExpiry": "Warranty expiry",
+                "plannedRetirement": "Planned retirement",
+                "markRetired": "Mark retired",
+                "noPermission": "You don't have permission to retire this asset."
+            },
+            "impact": {
+                "title": "Impact Analysis",
+                "description": "If this asset fails or is changed, downstream dependents are traced via the graph.",
+                "run": "Run impact analysis",
+                "empty": "No downstream dependents found."
+            },
+            "depreciation": {
+                "title": "Depreciation ({{ method }})",
+                "currentBookValue": "Current book value",
+                "accumulatedDepreciation": "Accumulated depreciation",
+                "elapsedUsefulLife": "Elapsed / useful life",
+                "months": "{{ elapsed }} / {{ total }} months",
+                "chartCaption": "Book value over time",
+                "notEnoughData": "Not enough data to chart depreciation yet."
+            },
+            "intelligence": {
+                "title": "Asset Intelligence",
+                "approvalRequired": "This recommendation requires human approval before acting.",
+                "issues": "Issues",
+                "opportunities": "Optimization opportunities",
+                "missingInformation": "Missing information"
+            },
+            "attributes": {
+                "title": "Category-Specific Attributes"
+            },
+            "ea": {
+                "title": "Linked EA Elements",
+                "description": "Which capabilities this asset's applications realize.",
+                "empty": "Not linked to a capability yet.",
+                "modelIt": "Model it in the EA Modeler."
+            },
+            "applications": {
+                "title": "Linked Applications",
+                "empty": "No application currently runs on this asset."
+            },
+            "projects": {
+                "title": "Linked Projects",
+                "empty": "No project is linked to this asset."
+            },
+            "printLabel": "Print label",
+            "barcode": {
+                "loadFailed": "Barcode unavailable."
+            }
+        },
+        "errors": {
+            "loadFailed": "Something went wrong loading this data.",
+            "actionFailed": "The action could not be completed."
+        }
+    }
+}

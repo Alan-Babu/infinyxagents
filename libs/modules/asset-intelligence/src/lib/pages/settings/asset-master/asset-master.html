@@ -1,0 +1,47 @@
+<div class="rounded-lg border border-gray-200 bg-white">
+    <div class="border-b border-gray-200 px-6 py-4">
+        <div class="flex items-center justify-between gap-10">
+            <div class="flex-1">
+                <div class="mb-0.5 text-xl font-bold text-gray-600">{{ "assetIntelligence.settings.assetMaster.categories" | translate }}</div>
+            </div>
+            @if (permissions.can('asset_master', 'write')) {
+                <div>
+                    <button type="button" pButton outlined="true" size="small" (click)="categoryDrawerOpen = true">
+                        <i class="pi pi-plus"></i>
+                        <span>{{ "assetIntelligence.settings.assetMaster.addCategory" | translate }}</span>
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <lib-data-table [isContained]="true" [rowData]="categories" [colDefs]="categoryColDefs" [showSearch]="false" />
+</div>
+
+<div class="mt-5 rounded-lg border border-gray-200 bg-white">
+    <div class="border-b border-gray-200 px-6 py-4">
+        <div class="flex items-center justify-between gap-10">
+            <div class="flex-1">
+                <div class="mb-0.5 text-xl font-bold text-gray-600">{{ "assetIntelligence.settings.assetMaster.vendors" | translate }}</div>
+            </div>
+            @if (permissions.can('asset_master', 'write')) {
+                <div>
+                    <button type="button" pButton outlined="true" size="small" (click)="vendorDrawerOpen = true">
+                        <i class="pi pi-plus"></i>
+                        <span>{{ "assetIntelligence.settings.assetMaster.addVendor" | translate }}</span>
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <lib-data-table [isContained]="true" [rowData]="vendors" [colDefs]="vendorColDefs" [showSearch]="false" />
+</div>
+
+<lib-category-drawer [(visible)]="categoryDrawerOpen" (save)="addCategory($event)" />
+<lib-vendor-drawer [(visible)]="vendorDrawerOpen" (save)="addVendor($event)" />
+<lib-attributes-drawer
+    [(visible)]="attributesDrawerOpen"
+    [category]="attributesCategory"
+    [attributes]="attributesCategory ? attributesFor(attributesCategory.id) : []"
+/>

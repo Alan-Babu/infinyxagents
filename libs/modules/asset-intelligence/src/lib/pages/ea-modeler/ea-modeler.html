@@ -1,0 +1,74 @@
+<div class="flex h-full min-h-0 flex-col">
+    <lib-page-header titleKey="assetIntelligence.eaModeler.title" subtitleKey="assetIntelligence.eaModeler.subtitle" [showBack]="false">
+        <button type="button" pButton severity="secondary" [outlined]="true" (click)="goToCapabilityMap()">
+            <span>{{ "assetIntelligence.eaModeler.viewCapabilityMap" | translate }}</span>
+        </button>
+    </lib-page-header>
+
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+        @if (errorMessage) {
+            <p class="mb-4 text-sm text-red-600">{{ errorMessage }}</p>
+        }
+
+        <div class="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 bg-white p-4">
+            <p-select
+                [options]="diagrams"
+                [(ngModel)]="selectedDiagramId"
+                (ngModelChange)="onDiagramChange()"
+                optionLabel="name"
+                optionValue="id"
+                [placeholder]="'assetIntelligence.eaModeler.selectDiagram' | translate"
+                appendTo="body"
+                styleClass="w-64"
+            />
+
+            @if (permissions.can('ea_model', 'write')) {
+                <input type="text" pInputText [(ngModel)]="newDiagramName" [placeholder]="'assetIntelligence.eaModeler.newDiagramName' | translate" class="w-56" />
+                <button type="button" pButton severity="secondary" [outlined]="true" (click)="createDiagram()">
+                    <i class="pi pi-plus"></i>
+                    <span>{{ "assetIntelligence.eaModeler.newDiagram" | translate }}</span>
+                </button>
+                <button type="button" pButton severity="secondary" [outlined]="true" (click)="showAddCapability = !showAddCapability">
+                    <i class="pi pi-plus"></i>
+                    <span>{{ "assetIntelligence.eaModeler.capability" | translate }}</span>
+                </button>
+            }
+
+            <span class="mx-2 h-6 border-l border-gray-200"></span>
+
+            <p-select
+                [options]="applications"
+                [(ngModel)]="selectedApplicationId"
+                optionLabel="name"
+                optionValue="id"
+                [placeholder]="'assetIntelligence.eaModeler.autoPopulate' | translate"
+                appendTo="body"
+                styleClass="w-64"
+            />
+            <button type="button" pButton [disabled]="!selectedDiagramId || !selectedApplicationId" (click)="autoPopulate()">
+                <span>{{ "assetIntelligence.eaModeler.pullLinkages" | translate }}</span>
+            </button>
+        </div>
+
+        @if (showAddCapability) {
+            <div class="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-primary-100 bg-primary-50 p-4">
+                <input type="text" pInputText [(ngModel)]="newCapabilityName" [placeholder]="'assetIntelligence.eaModeler.capabilityName' | translate" class="w-56" />
+                <p-select
+                    [options]="elements"
+                    [(ngModel)]="newCapabilityParentId"
+                    optionLabel="name"
+                    optionValue="id"
+                    [placeholder]="'assetIntelligence.eaModeler.optionalParent' | translate"
+                    appendTo="body"
+                    styleClass="w-56"
+                    [showClear]="true"
+                />
+                <button type="button" pButton (click)="createCapability()">
+                    <span>{{ "assetIntelligence.eaModeler.addCapability" | translate }}</span>
+                </button>
+            </div>
+        }
+
+        <lib-ea-canvas [nodes]="nodes" [edges]="edges" (layoutChanged)="onLayoutChanged($event)" />
+    </div>
+</div>

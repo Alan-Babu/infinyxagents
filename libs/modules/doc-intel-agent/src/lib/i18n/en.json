@@ -42,7 +42,7 @@
         },
         "reviewQueue": {
             "title": "Review queue",
-            "empty": "Nothing needs review right now — every document met the confidence and risk bar automatically.",
+            "empty": "Nothing needs review right now. Every document met the confidence and risk bar automatically.",
             "footerNote": "Flagged when confidence is low or risk is high"
         },
         "performance": {
@@ -57,7 +57,7 @@
         },
         "dropzone": {
             "dropTitle": "Drop a document here, or click to browse",
-            "dropSubtitle": "PDF, JPG, or PNG — uploaded in chunks",
+            "dropSubtitle": "PDF, JPG, or PNG, uploaded in chunks",
             "cancel": "Cancel",
             "chunks": "chunks",
             "pages": "page(s)"
@@ -145,11 +145,11 @@
             "insights": "Insights",
             "noInsights": "No insights were generated for this document.",
             "note": "Note",
-            "lowConfidence": "Low-confidence extraction ({{ score }}%) — please verify these fields manually.",
+            "lowConfidence": "Low-confidence extraction ({{ score }}%): please verify these fields manually.",
             "noExpiry": "No expiry",
             "overallRisk": "Overall Risk",
             "noRiskFactors": "No risk factors were identified for this document.",
-            "complianceDisclaimer": "These are the agent's suggestions to guide a reviewer — not a legal determination that this document has been approved, authorized, or attested.",
+            "complianceDisclaimer": "These are the agent's suggestions to guide a reviewer, not a legal determination that this document has been approved, authorized, or attested.",
             "canBeApproved": "Can this be approved?",
             "canBeAuthorized": "Can this be authorized?",
             "uaeEligible": "Eligible for UAE attestation?",
@@ -165,7 +165,7 @@
             "signedBy": "Signed By",
             "referenceNo": "Reference No.",
             "locationUnavailable": "Location on page could not be determined.",
-            "suggestedQuestions": "Suggested questions — click to select",
+            "suggestedQuestions": "Suggested questions: click to select",
             "you": "U",
             "agentInitials": "IX",
             "thinking": "Thinking…",
