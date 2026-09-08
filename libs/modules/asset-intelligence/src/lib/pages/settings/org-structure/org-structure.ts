@@ -6,16 +6,16 @@ import { CommonService } from '@nfinyx/services';
 import { DataTable } from '@nfinyx/data-table';
 import type { ColDef } from 'ag-grid-community';
 import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { SelectModule } from 'primeng/select';
 import { Department, Division, Employee, Section } from '../../../models/org.models';
 import { OrgApiService } from '../../../services/org-api.service';
 import { PermissionsService } from '../../../services/permissions.service';
+import { EmployeeDrawerComponent, EmployeePayload } from './employee-drawer';
+import { NameEntryDrawerComponent } from './name-entry-drawer';
 
 @Component({
     selector: 'lib-org-structure',
     standalone: true,
-    imports: [CommonModule, FormsModule, TranslateModule, DataTable, ButtonModule, InputTextModule, SelectModule],
+    imports: [CommonModule, FormsModule, TranslateModule, DataTable, ButtonModule, NameEntryDrawerComponent, EmployeeDrawerComponent],
     templateUrl: './org-structure.html',
 })
 export class OrgStructurePage implements OnInit {
@@ -28,19 +28,16 @@ export class OrgStructurePage implements OnInit {
     departments: Department[] = [];
     sections: Section[] = [];
     employees: Employee[] = [];
-    /** Full cross-division department list, used by the employee form's department select (separate from the cascading picker above). */
+    /** Full cross-division department list, used by the employee drawer's department select (separate from the cascading picker above). */
     allDepartments: Department[] = [];
 
     selectedDivisionId: string | null = null;
     selectedDepartmentId: string | null = null;
 
-    newDivisionName = '';
-    newDepartmentName = '';
-    newSectionName = '';
-
-    newEmployeeName = '';
-    newEmployeeEmail = '';
-    newEmployeeDepartmentId: string | null = null;
+    divisionDrawerOpen = false;
+    departmentDrawerOpen = false;
+    sectionDrawerOpen = false;
+    employeeDrawerOpen = false;
 
     employeeColDefs: ColDef[] = [];
 
@@ -73,13 +70,11 @@ export class OrgStructurePage implements OnInit {
         this.sections = await this.api.listSections(department.id);
     }
 
-    async addDivision(): Promise<void> {
-        const name = this.newDivisionName.trim();
-        if (!name) return;
+    async addDivision(name: string): Promise<void> {
         try {
             const division = await this.api.createDivision(name);
             this.divisions = [...this.divisions, division];
-            this.newDivisionName = '';
+            this.divisionDrawerOpen = false;
         } catch (err) {
             this.common.showApiError(err);
         }
@@ -106,13 +101,13 @@ export class OrgStructurePage implements OnInit {
         }
     }
 
-    async addDepartment(): Promise<void> {
-        const name = this.newDepartmentName.trim();
-        if (!name || !this.selectedDivisionId) return;
+    async addDepartment(name: string): Promise<void> {
+        if (!this.selectedDivisionId) return;
         try {
             const department = await this.api.createDepartment(name, this.selectedDivisionId);
             this.departments = [...this.departments, department];
-            this.newDepartmentName = '';
+            this.allDepartments = [...this.allDepartments, department];
+            this.departmentDrawerOpen = false;
         } catch (err) {
             this.common.showApiError(err);
         }
@@ -129,6 +124,7 @@ export class OrgStructurePage implements OnInit {
         try {
             await this.api.deleteDepartment(department.id);
             this.departments = this.departments.filter(d => d.id !== department.id);
+            this.allDepartments = this.allDepartments.filter(d => d.id !== department.id);
             if (this.selectedDepartmentId === department.id) {
                 this.selectedDepartmentId = null;
                 this.sections = [];
@@ -138,13 +134,12 @@ export class OrgStructurePage implements OnInit {
         }
     }
 
-    async addSection(): Promise<void> {
-        const name = this.newSectionName.trim();
-        if (!name || !this.selectedDepartmentId) return;
+    async addSection(name: string): Promise<void> {
+        if (!this.selectedDepartmentId) return;
         try {
             const section = await this.api.createSection(name, this.selectedDepartmentId);
             this.sections = [...this.sections, section];
-            this.newSectionName = '';
+            this.sectionDrawerOpen = false;
         } catch (err) {
             this.common.showApiError(err);
         }
@@ -166,16 +161,15 @@ export class OrgStructurePage implements OnInit {
         }
     }
 
-    async addEmployee(): Promise<void> {
-        const name = this.newEmployeeName.trim();
-        const email = this.newEmployeeEmail.trim();
-        if (!name || !email || !this.newEmployeeDepartmentId) return;
+    async addEmployee(payload: EmployeePayload): Promise<void> {
         try {
-            const employee = await this.api.createEmployee({ full_name: name, email, department_id: this.newEmployeeDepartmentId });
+            const employee = await this.api.createEmployee({
+                full_name: payload.fullName,
+                email: payload.email,
+                department_id: payload.departmentId,
+            });
             this.employees = [...this.employees, employee];
-            this.newEmployeeName = '';
-            this.newEmployeeEmail = '';
-            this.newEmployeeDepartmentId = null;
+            this.employeeDrawerOpen = false;
         } catch (err) {
             this.common.showApiError(err);
         }

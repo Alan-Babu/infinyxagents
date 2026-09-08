@@ -2,6 +2,7 @@ import { Component, Input, OnChanges } from '@angular/core';
 import { AgCharts } from 'ag-charts-angular';
 import type { AgCartesianChartOptions } from 'ag-charts-community';
 import { DepreciationSchedulePoint } from '../../models/reports.models';
+import '../../utils/ag-charts-setup';
 
 /** Presentational line chart for a depreciation schedule's book value over time. Caller resolves the caption/labels. */
 @Component({

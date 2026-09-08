@@ -48,7 +48,6 @@ export class EaModelerPage implements OnInit {
     newCapabilityParentId: string | null = null;
 
     async ngOnInit(): Promise<void> {
-        this.permissions.load();
         await this.loadDiagrams();
         await this.loadElements();
         await this.loadApplications();

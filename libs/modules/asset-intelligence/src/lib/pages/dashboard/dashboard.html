@@ -8,12 +8,12 @@
             }
 
             @if (portfolio) {
-                <div class="rounded-lg border border-primary-100 bg-primary-50 p-5">
+                <div class="rounded-lg text-sm border border-primary-100 bg-primary-50 p-5">
                     <div class="text-xs font-bold uppercase tracking-wide text-primary-600">
                         {{ "assetIntelligence.dashboard.banner.eyebrow" | translate }}
                     </div>
-                    <p class="mt-2 text-sm text-gray-700">{{ portfolio.executive_summary }}</p>
-                    <div class="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-600">
+                    <p class="mt-2 text-gray-700">{{ portfolio.executive_summary }}</p>
+                    <div class="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-gray-600">
                         <span><strong class="text-gray-800">{{ portfolio.critical_risk_assets }}</strong> critical risk</span>
                         <span><strong class="text-gray-800">{{ portfolio.high_risk_assets }}</strong> high risk</span>
                         <span><strong class="text-gray-800">{{ portfolio.eol_eos_assets }}</strong> approaching end-of-life</span>
@@ -58,7 +58,7 @@
                 />
             </div>
 
-            <div>
+            <div class="">
                 <div class="mb-2.5 text-xs font-bold uppercase tracking-wide text-gray-400">
                     {{ "assetIntelligence.dashboard.alertsTitle" | translate }}
                 </div>

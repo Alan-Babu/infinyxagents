@@ -206,7 +206,7 @@ export const AGENT_TILES: AgentTile[] = [
         descriptionKey: 'agentsLanding.assetIntelligenceDesc',
         categoryKey: 'agentsLanding.category.general',
         accent: 'primary',
-        badge: 'IN_LAB',
+        badge: 'BETA',
     },
 ];
 

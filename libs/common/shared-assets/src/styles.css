@@ -275,6 +275,10 @@ html.theme-pink {
     @apply border-gray-200;
 }
 
+.p-drawer-content {
+    @apply pt-(--p-overlay-modal-padding);
+}
+
 .p-drawer-content:has(.p-tabs) {
     @apply p-0;
 }
@@ -308,6 +312,10 @@ ag-grid-angular {
     --ag-checkbox-checked-background-color: var(--p-primary-600);
     --ag-checkbox-checked-border-color: var(--p-primary-600);
     --ag-column-hover-color: transparent;
+}
+
+.ag-grid-contained .ag-root-wrapper {
+    --ag-wrapper-border-radius: 0;
 }
 
 .ag-center-cols-container .ag-row:last-child {

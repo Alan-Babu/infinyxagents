@@ -2,23 +2,29 @@
     <lib-page-header titleKey="assetIntelligence.settings.title" subtitleKey="assetIntelligence.settings.subtitle" [showBack]="false" />
 
     <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
-        <p-tabs [value]="activeTab" (valueChange)="onTabChange($event)">
-            <p-tablist>
-                <p-tab value="org">{{ "assetIntelligence.settings.tabs.org" | translate }}</p-tab>
-                <p-tab value="users">{{ "assetIntelligence.settings.tabs.users" | translate }}</p-tab>
-                <p-tab value="master">{{ "assetIntelligence.settings.tabs.master" | translate }}</p-tab>
-            </p-tablist>
-            <p-tabpanels>
-                <p-tabpanel value="org">
-                    <lib-org-structure />
-                </p-tabpanel>
-                <p-tabpanel value="users">
-                    <lib-users-roles />
-                </p-tabpanel>
-                <p-tabpanel value="master">
-                    <lib-asset-master />
-                </p-tabpanel>
-            </p-tabpanels>
-        </p-tabs>
+        <nav class="mb-5 inline-flex rounded-lg border border-gray-200 bg-white p-1" role="tablist">
+            @for (tab of tabs; track tab.id) {
+                <button
+                    type="button"
+                    class="cursor-pointer whitespace-nowrap rounded-md px-6 py-2.5 text-center text-sm transition-colors"
+                    [ngClass]="activeTab === tab.id ? 'bg-primary-500 text-white font-bold' : 'text-gray-500 font-semibold'"
+                    (click)="switchTab(tab.id)"
+                >
+                    {{ tab.labelKey | translate }}
+                </button>
+            }
+        </nav>
+
+        @switch (activeTab) {
+            @case ('org') {
+                <lib-org-structure />
+            }
+            @case ('users') {
+                <lib-users-roles />
+            }
+            @case ('master') {
+                <lib-asset-master />
+            }
+        }
     </div>
 </div>

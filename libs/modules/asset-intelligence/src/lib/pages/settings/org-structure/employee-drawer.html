@@ -1,0 +1,30 @@
+<p-drawer [(visible)]="visible" position="right" styleClass="p-drawer-sm" appendTo="body" [baseZIndex]="1200" (onHide)="visibleChange.emit(false)">
+    <ng-template #header>
+        <div class="flex flex-col">
+            <span class="text-xs font-bold uppercase tracking-wide text-primary-600">{{ "assetIntelligence.settings.org.employees" | translate }}</span>
+            <span class="text-lg font-bold text-gray-800">{{ "assetIntelligence.settings.org.addEmployee" | translate }}</span>
+        </div>
+    </ng-template>
+
+    <div class="flex flex-col gap-4">
+        <div class="flex flex-col gap-1.5">
+            <label class="p-control-label p-control-label-required" for="employeeFullName">{{ "assetIntelligence.settings.org.fullName" | translate }}</label>
+            <input id="employeeFullName" type="text" pInputText class="w-full" [(ngModel)]="fullName" />
+        </div>
+        <div class="flex flex-col gap-1.5">
+            <label class="p-control-label p-control-label-required" for="employeeEmail">{{ "assetIntelligence.settings.org.email" | translate }}</label>
+            <input id="employeeEmail" type="email" pInputText class="w-full" [(ngModel)]="email" />
+        </div>
+        <div class="flex flex-col gap-1.5">
+            <label class="p-control-label p-control-label-required" for="employeeDepartment">{{ "assetIntelligence.settings.org.department" | translate }}</label>
+            <p-select inputId="employeeDepartment" [options]="departments" [(ngModel)]="departmentId" optionLabel="name" optionValue="id" appendTo="body" styleClass="w-full" />
+        </div>
+    </div>
+
+    <ng-template #footer>
+        <div class="flex justify-end gap-2">
+            <button type="button" pButton severity="secondary" [outlined]="true" (click)="close()"><span>{{ "assetIntelligence.settings.org.cancel" | translate }}</span></button>
+            <button type="button" pButton [disabled]="!isValid" (click)="confirm()"><span>{{ "assetIntelligence.settings.org.addEmployee" | translate }}</span></button>
+        </div>
+    </ng-template>
+</p-drawer>

@@ -1,6 +1,7 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { AgCharts } from 'ag-charts-angular';
 import type { AgCartesianChartOptions } from 'ag-charts-community';
+import '../../utils/ag-charts-setup';
 
 export interface DepartmentBarSeries {
     key: string;

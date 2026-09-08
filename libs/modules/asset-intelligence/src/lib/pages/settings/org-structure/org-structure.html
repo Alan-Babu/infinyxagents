@@ -1,93 +1,128 @@
 <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
     <div class="rounded-lg border border-gray-200 bg-white p-4">
-        <h3 class="mb-1 text-sm font-bold text-gray-800">{{ "assetIntelligence.settings.org.divisions" | translate }}</h3>
-        <p class="mb-3 text-xs text-gray-400">{{ selectedDivisionId ? "" : ("assetIntelligence.settings.org.pickDivision" | translate) }}</p>
-        <ul class="mb-3 flex flex-col gap-1">
+        <div class="mb-1 flex items-center justify-between">
+            <h3 class="text-sm font-bold text-gray-800">{{ "assetIntelligence.settings.org.divisions" | translate }}
+            </h3>
+            @if (permissions.can('org_structure', 'write')) {
+            <button type="button" pButton severity="secondary" [outlined]="true" size="small"
+                (click)="divisionDrawerOpen = true">
+                <i class="pi pi-plus"></i>
+            </button>
+            }
+        </div>
+        <p class="mb-3 text-xs text-gray-400">{{ selectedDivisionId ? "" :
+            ("assetIntelligence.settings.org.pickDivision" | translate) }}</p>
+        <ul class="flex flex-col gap-1">
             @for (division of divisions; track division.id) {
-                <li class="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-sm" [class.bg-primary-50]="division.id === selectedDivisionId">
-                    <button type="button" class="flex-1 cursor-pointer text-start" (click)="selectDivision(division)">{{ division.name }}</button>
-                    @if (permissions.can('org_structure', 'write')) {
-                        <button type="button" class="cursor-pointer text-gray-400 hover:text-red-600" (click)="deleteDivision(division)">
-                            <i class="pi pi-times"></i>
-                        </button>
-                    }
-                </li>
+            <li class="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-sm"
+                [class.bg-primary-50]="division.id === selectedDivisionId">
+                <button type="button" class="flex-1 cursor-pointer text-start" (click)="selectDivision(division)">{{
+                    division.name }}</button>
+                @if (permissions.can('org_structure', 'write')) {
+                <button type="button" class="cursor-pointer text-gray-400 hover:text-red-600"
+                    (click)="deleteDivision(division)">
+                    <i class="pi pi-times"></i>
+                </button>
+                }
+            </li>
             }
         </ul>
-        @if (permissions.can('org_structure', 'write')) {
-            <div class="flex gap-2">
-                <input type="text" pInputText class="flex-1" [(ngModel)]="newDivisionName" [placeholder]="'assetIntelligence.settings.org.newDivisionName' | translate" />
-                <button type="button" pButton (click)="addDivision()"><span>{{ "assetIntelligence.settings.org.add" | translate }}</span></button>
-            </div>
-        }
     </div>
 
     <div class="rounded-lg border border-gray-200 bg-white p-4">
-        <h3 class="mb-1 text-sm font-bold text-gray-800">{{ "assetIntelligence.settings.org.departments" | translate }}</h3>
-        <p class="mb-3 text-xs text-gray-400">{{ selectedDivisionId ? "" : ("assetIntelligence.settings.org.pickDivisionFirst" | translate) }}</p>
-        <ul class="mb-3 flex flex-col gap-1">
+        <div class="mb-1 flex items-center justify-between">
+            <h3 class="text-sm font-bold text-gray-800">{{ "assetIntelligence.settings.org.departments" | translate }}
+            </h3>
+            @if (selectedDivisionId && permissions.can('org_structure', 'write')) {
+            <button type="button" pButton severity="secondary" [outlined]="true" size="small"
+                (click)="departmentDrawerOpen = true">
+                <i class="pi pi-plus"></i>
+            </button>
+            }
+        </div>
+        <p class="mb-3 text-xs text-gray-400">{{ selectedDivisionId ? "" :
+            ("assetIntelligence.settings.org.pickDivisionFirst" | translate) }}</p>
+        <ul class="flex flex-col gap-1">
             @for (department of departments; track department.id) {
-                <li class="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-sm" [class.bg-primary-50]="department.id === selectedDepartmentId">
-                    <button type="button" class="flex-1 cursor-pointer text-start" (click)="selectDepartment(department)">{{ department.name }}</button>
-                    @if (permissions.can('org_structure', 'write')) {
-                        <button type="button" class="cursor-pointer text-gray-400 hover:text-red-600" (click)="deleteDepartment(department)">
-                            <i class="pi pi-times"></i>
-                        </button>
-                    }
-                </li>
+            <li class="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-sm"
+                [class.bg-primary-50]="department.id === selectedDepartmentId">
+                <button type="button" class="flex-1 cursor-pointer text-start" (click)="selectDepartment(department)">{{
+                    department.name }}</button>
+                @if (permissions.can('org_structure', 'write')) {
+                <button type="button" class="cursor-pointer text-gray-400 hover:text-red-600"
+                    (click)="deleteDepartment(department)">
+                    <i class="pi pi-times"></i>
+                </button>
+                }
+            </li>
             }
         </ul>
-        @if (selectedDivisionId && permissions.can('org_structure', 'write')) {
-            <div class="flex gap-2">
-                <input type="text" pInputText class="flex-1" [(ngModel)]="newDepartmentName" [placeholder]="'assetIntelligence.settings.org.newDepartmentName' | translate" />
-                <button type="button" pButton (click)="addDepartment()"><span>{{ "assetIntelligence.settings.org.add" | translate }}</span></button>
-            </div>
-        }
     </div>
 
     <div class="rounded-lg border border-gray-200 bg-white p-4">
-        <h3 class="mb-1 text-sm font-bold text-gray-800">{{ "assetIntelligence.settings.org.sections" | translate }}</h3>
-        <p class="mb-3 text-xs text-gray-400">{{ selectedDepartmentId ? "" : ("assetIntelligence.settings.org.pickDepartmentFirst" | translate) }}</p>
+        <div class="mb-1 flex items-center justify-between">
+            <h3 class="text-sm font-bold text-gray-800">{{ "assetIntelligence.settings.org.sections" | translate }}</h3>
+            @if (selectedDepartmentId && permissions.can('org_structure', 'write')) {
+            <button type="button" pButton severity="secondary" [outlined]="true" size="small"
+                (click)="sectionDrawerOpen = true">
+                <i class="pi pi-plus"></i>
+            </button>
+            }
+        </div>
+        <p class="mb-3 text-xs text-gray-400">{{ selectedDepartmentId ? "" :
+            ("assetIntelligence.settings.org.pickDepartmentFirst" | translate) }}</p>
         @if (selectedDepartmentId && !sections.length) {
-            <p class="mb-3 text-sm text-gray-400">{{ "assetIntelligence.settings.org.noSections" | translate }}</p>
+        <p class="mb-3 text-sm text-gray-400">{{ "assetIntelligence.settings.org.noSections" | translate }}</p>
         }
-        <ul class="mb-3 flex flex-col gap-1">
+        <ul class="flex flex-col gap-1">
             @for (section of sections; track section.id) {
-                <li class="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-sm">
-                    <span>{{ section.name }}</span>
-                    @if (permissions.can('org_structure', 'write')) {
-                        <button type="button" class="cursor-pointer text-gray-400 hover:text-red-600" (click)="deleteSection(section)">
-                            <i class="pi pi-times"></i>
-                        </button>
-                    }
-                </li>
+            <li class="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-sm">
+                <span>{{ section.name }}</span>
+                @if (permissions.can('org_structure', 'write')) {
+                <button type="button" class="cursor-pointer text-gray-400 hover:text-red-600"
+                    (click)="deleteSection(section)">
+                    <i class="pi pi-times"></i>
+                </button>
+                }
+            </li>
             }
         </ul>
-        @if (selectedDepartmentId && permissions.can('org_structure', 'write')) {
-            <div class="flex gap-2">
-                <input type="text" pInputText class="flex-1" [(ngModel)]="newSectionName" [placeholder]="'assetIntelligence.settings.org.newSectionName' | translate" />
-                <button type="button" pButton (click)="addSection()"><span>{{ "assetIntelligence.settings.org.add" | translate }}</span></button>
-            </div>
-        }
     </div>
 </div>
 
-<div class="mt-4 rounded-lg border border-gray-200 bg-white p-4">
-    <h3 class="mb-1 text-sm font-bold text-gray-800">{{ "assetIntelligence.settings.org.employees" | translate }}</h3>
-    <p class="mb-3 text-xs text-gray-400">{{ "assetIntelligence.settings.org.employeesDesc" | translate }}</p>
-    <lib-data-table [rowData]="employees" [colDefs]="employeeColDefs" [showSearch]="false" class="mb-4 block" />
-    <div class="flex flex-wrap gap-2">
-        <input type="text" pInputText [(ngModel)]="newEmployeeName" [placeholder]="'assetIntelligence.settings.org.fullName' | translate" class="w-48" />
-        <input type="text" pInputText [(ngModel)]="newEmployeeEmail" [placeholder]="'assetIntelligence.settings.org.email' | translate" class="w-56" />
-        <p-select
-            [options]="allDepartments"
-            [(ngModel)]="newEmployeeDepartmentId"
-            optionLabel="name"
-            optionValue="id"
-            [placeholder]="'assetIntelligence.settings.org.department' | translate"
-            appendTo="body"
-            styleClass="w-48"
-        />
-        <button type="button" pButton (click)="addEmployee()"><span>{{ "assetIntelligence.settings.org.addEmployee" | translate }}</span></button>
+<div class="mt-5 bg-white rounded-lg border border-gray-200">
+
+    <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between gap-10">
+            <div class="flex-1">
+                <div class="text-xl text-gray-600 mb-0.5 font-bold">{{ 'assetIntelligence.settings.org.employees' |
+                    translate }}</div>
+                <div class="text-gray-400 text-sm">{{ "assetIntelligence.settings.org.employeesDesc" | translate }}
+                </div>
+            </div>
+            <div>
+                <button pButton outlined="true" size="small" type="button" (click)="employeeDrawerOpen = true">
+                    <span>{{ "assetIntelligence.settings.org.addEmployee" | translate }}</span>
+                </button>
+            </div>
+        </div>
     </div>
+
+    <lib-data-table [isContained]="true" [rowData]="employees" [colDefs]="employeeColDefs" [showSearch]="false" />
+
 </div>
+
+
+<lib-name-entry-drawer [(visible)]="divisionDrawerOpen" eyebrowKey="assetIntelligence.settings.org.divisions"
+    titleKey="assetIntelligence.settings.org.addDivision" labelKey="assetIntelligence.settings.org.name"
+    placeholderKey="assetIntelligence.settings.org.newDivisionName" (save)="addDivision($event)" />
+
+<lib-name-entry-drawer [(visible)]="departmentDrawerOpen" eyebrowKey="assetIntelligence.settings.org.departments"
+    titleKey="assetIntelligence.settings.org.addDepartment" labelKey="assetIntelligence.settings.org.name"
+    placeholderKey="assetIntelligence.settings.org.newDepartmentName" (save)="addDepartment($event)" />
+
+<lib-name-entry-drawer [(visible)]="sectionDrawerOpen" eyebrowKey="assetIntelligence.settings.org.sections"
+    titleKey="assetIntelligence.settings.org.addSection" labelKey="assetIntelligence.settings.org.name"
+    placeholderKey="assetIntelligence.settings.org.newSectionName" (save)="addSection($event)" />
+
+<lib-employee-drawer [(visible)]="employeeDrawerOpen" [departments]="allDepartments" (save)="addEmployee($event)" />

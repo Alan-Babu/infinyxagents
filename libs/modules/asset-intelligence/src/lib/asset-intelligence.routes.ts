@@ -1,11 +1,17 @@
-import { Route } from '@angular/router';
+import { inject } from '@angular/core';
+import { ResolveFn, Route } from '@angular/router';
 import { AgentLayout } from '@nfinyx/layouts';
 import { createModuleI18nResolver } from '@nfinyx/services';
 import { MenuIcon, MenuModel } from '@nfinyx/types';
 import * as en from './i18n/en.json';
 import * as ar from './i18n/ar.json';
+import { PermissionsService } from './services/permissions.service';
 
 const assetIntelligenceI18nResolver = createModuleI18nResolver({ en, ar });
+
+/** Loads this module's RBAC matrix once before any page renders, so every `permissions.can()`/`hasRole()` check
+ * (gating delete buttons, add forms, etc. across the whole module) works regardless of which page a user lands on first. */
+const assetIntelligencePermissionsResolver: ResolveFn<void> = () => inject(PermissionsService).load();
 
 const ASSET_INTELLIGENCE_NAV: MenuModel[] = [
     {
@@ -79,7 +85,7 @@ export const ASSET_INTELLIGENCE_ROUTES: Route[] = [
         path: '',
         component: AgentLayout,
         data: { 'main-nav': ASSET_INTELLIGENCE_NAV },
-        resolve: { i18n: assetIntelligenceI18nResolver },
+        resolve: { i18n: assetIntelligenceI18nResolver, permissions: assetIntelligencePermissionsResolver },
         children: [
             {
                 path: '',

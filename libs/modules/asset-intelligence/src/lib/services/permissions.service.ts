@@ -1,6 +1,6 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { AssetIntelligenceApiBase } from './asset-intelligence-api-base';
-import { AssetSessionInfo, AssetUserRole, PermissionMatrix } from '../models/permissions.models';
+import { AssetSessionInfo, AssetUserRole } from '../models/permissions.models';
 
 /**
  * Fetches and caches this module's own RBAC matrix, separate from the platform's
@@ -27,13 +27,20 @@ export class PermissionsService extends AssetIntelligenceApiBase {
         return this.loadPromise;
     }
 
-    can(resource: string, action: string): boolean {
-        const matrix: PermissionMatrix | undefined = this._info()?.permissions;
-        return matrix?.[resource]?.[action] === true;
+    // Gating is disabled for now — `/auth/me` isn't confirmed with the backend
+    // team yet, so `can`/`hasRole` were hiding every gated action for every
+    // user. Re-enable the real checks below once that endpoint is confirmed.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    can(_resource: string, _action: string): boolean {
+        return true;
+        // const matrix: PermissionMatrix | undefined = this._info()?.permissions;
+        // return matrix?.[_resource]?.[_action] === true;
     }
 
-    hasRole(...roles: AssetUserRole[]): boolean {
-        const role = this.role();
-        return !!role && roles.includes(role);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    hasRole(..._roles: AssetUserRole[]): boolean {
+        return true;
+        // const role = this.role();
+        // return !!role && _roles.includes(role);
     }
 }

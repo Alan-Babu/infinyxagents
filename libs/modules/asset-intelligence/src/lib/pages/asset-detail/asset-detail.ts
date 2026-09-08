@@ -60,7 +60,6 @@ export class AssetDetailPage implements OnInit, OnDestroy {
 
     async ngOnInit(): Promise<void> {
         this.assetId = this.route.snapshot.paramMap.get('id') ?? '';
-        this.permissions.load();
         await this.refresh();
     }
 

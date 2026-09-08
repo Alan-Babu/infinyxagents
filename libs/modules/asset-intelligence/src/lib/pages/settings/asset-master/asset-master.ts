@@ -1,62 +1,69 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CommonService } from '@nfinyx/services';
+import { DataTable } from '@nfinyx/data-table';
+import type { ColDef } from 'ag-grid-community';
 import { ButtonModule } from 'primeng/button';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { InputTextModule } from 'primeng/inputtext';
-import { SelectModule } from 'primeng/select';
-import { AssetClass, Category, CategoryAttributeDef, Vendor } from '../../../models/asset-master.models';
+import { Subscription } from 'rxjs';
+import { Category, CategoryAttributeDef, Vendor } from '../../../models/asset-master.models';
 import { AssetMasterApiService } from '../../../services/asset-master-api.service';
 import { PermissionsService } from '../../../services/permissions.service';
-
-interface AssetClassOption {
-    label: string;
-    value: AssetClass;
-}
+import { buildCategoryColDefs, buildVendorColDefs } from '../../../utils/asset-master-columns';
+import { AttributesDrawerComponent } from './attributes-drawer';
+import { CategoryDrawerComponent, CategoryPayload } from './category-drawer';
+import { VendorDrawerComponent, VendorPayload } from './vendor-drawer';
 
 @Component({
     selector: 'lib-asset-master',
     standalone: true,
-    imports: [CommonModule, FormsModule, TranslateModule, ButtonModule, InputTextModule, InputNumberModule, SelectModule],
+    imports: [CommonModule, TranslateModule, ButtonModule, DataTable, CategoryDrawerComponent, VendorDrawerComponent, AttributesDrawerComponent],
     templateUrl: './asset-master.html',
 })
-export class AssetMasterPage implements OnInit {
+export class AssetMasterPage implements OnInit, OnDestroy {
     private readonly api = inject(AssetMasterApiService);
-    private readonly translate = inject(TranslateService);
     private readonly common = inject(CommonService);
+    private readonly translate = inject(TranslateService);
     readonly permissions = inject(PermissionsService);
 
     categories: Category[] = [];
     vendors: Vendor[] = [];
 
-    assetClassOptions: AssetClassOption[] = [];
-    newCategoryName = '';
-    newCategoryClass: AssetClass = 'IT';
-    newCategoryUsefulLife: number | null = null;
+    categoryColDefs: ColDef[] = [];
+    vendorColDefs: ColDef[] = [];
 
-    newVendorName = '';
-    newVendorEmail = '';
+    categoryDrawerOpen = false;
+    vendorDrawerOpen = false;
 
-    expandedCategoryId: string | null = null;
+    attributesDrawerOpen = false;
+    attributesCategory: Category | null = null;
     attributesByCategory = new Map<string, CategoryAttributeDef[]>();
 
+    private readonly langSub: Subscription;
+
+    constructor() {
+        this.langSub = this.translate.onLangChange.subscribe(() => this.rebuildColDefs());
+        this.rebuildColDefs();
+    }
+
     async ngOnInit(): Promise<void> {
-        this.assetClassOptions = [
-            { label: this.translate.instant('assetIntelligence.settings.assetMaster.classIt'), value: 'IT' },
-            { label: this.translate.instant('assetIntelligence.settings.assetMaster.classNonIt'), value: 'NON_IT' },
-        ];
         this.categories = await this.api.listCategories();
         this.vendors = await this.api.listVendors();
     }
 
-    async toggleAttributes(category: Category): Promise<void> {
-        if (this.expandedCategoryId === category.id) {
-            this.expandedCategoryId = null;
-            return;
-        }
-        this.expandedCategoryId = category.id;
+    ngOnDestroy(): void {
+        this.langSub.unsubscribe();
+    }
+
+    private rebuildColDefs(): void {
+        const t = (key: string) => this.translate.instant(key);
+        this.categoryColDefs = buildCategoryColDefs(t, category => this.viewAttributes(category));
+        this.vendorColDefs = buildVendorColDefs(t);
+    }
+
+    async viewAttributes(category: Category): Promise<void> {
+        this.attributesCategory = category;
+        this.attributesDrawerOpen = true;
         if (!this.attributesByCategory.has(category.id)) {
             try {
                 const attrs = await this.api.getAttributeSchema(category.id);
@@ -71,32 +78,25 @@ export class AssetMasterPage implements OnInit {
         return this.attributesByCategory.get(categoryId) ?? [];
     }
 
-    async addCategory(): Promise<void> {
-        const name = this.newCategoryName.trim();
-        if (!name || !this.newCategoryUsefulLife) return;
+    async addCategory(payload: CategoryPayload): Promise<void> {
         try {
             const category = await this.api.createCategory({
-                name,
-                asset_class: this.newCategoryClass,
-                default_useful_life_months: this.newCategoryUsefulLife,
+                name: payload.name,
+                asset_class: payload.assetClass,
+                default_useful_life_months: payload.usefulLifeMonths,
             });
             this.categories = [...this.categories, category];
-            this.newCategoryName = '';
-            this.newCategoryUsefulLife = null;
+            this.categoryDrawerOpen = false;
         } catch (err) {
             this.common.showApiError(err);
         }
     }
 
-    async addVendor(): Promise<void> {
-        const name = this.newVendorName.trim();
-        const email = this.newVendorEmail.trim();
-        if (!name || !email) return;
+    async addVendor(payload: VendorPayload): Promise<void> {
         try {
-            const vendor = await this.api.createVendor({ name, contact_email: email });
+            const vendor = await this.api.createVendor({ name: payload.name, contact_email: payload.contactEmail });
             this.vendors = [...this.vendors, vendor];
-            this.newVendorName = '';
-            this.newVendorEmail = '';
+            this.vendorDrawerOpen = false;
         } catch (err) {
             this.common.showApiError(err);
         }
