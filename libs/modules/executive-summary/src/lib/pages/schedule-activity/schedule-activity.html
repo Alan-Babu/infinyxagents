@@ -1,0 +1,71 @@
+<lib-page-header titleKey="executiveSummary.scheduleActivity.title" subtitleKey="executiveSummary.scheduleActivity.subtitle" [showBack]="false" />
+
+<div class="flex flex-col gap-5 p-6">
+    <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-3">
+        <lib-stat-card [label]="'executiveSummary.scheduleActivity.totalRuns' | translate" [value]="runs.length" icon="pi pi-history" fgClass="text-primary-600" bgClass="bg-primary-50" />
+        <lib-stat-card [label]="'executiveSummary.scheduleActivity.emailedLabel' | translate" [value]="emailedCount" icon="pi pi-envelope" fgClass="text-primary-600" bgClass="bg-primary-50" />
+        <lib-stat-card [label]="'executiveSummary.scheduleActivity.failedLabel' | translate" [value]="failedCount"
+            icon="pi pi-exclamation-triangle" [fgClass]="failedCount > 0 ? 'text-red-600' : 'text-gray-800'" [bgClass]="failedCount > 0 ? 'bg-red-50' : 'bg-gray-100'" />
+    </div>
+
+    <lib-data-table [rowData]="runs" [colDefs]="colDefs" [paginator]="true" [searchPlaceholder]="'executiveSummary.search' | translate" (rowClick)="openRun($event)">
+        <span class="font-semibold text-gray-700">{{ runs.length }} {{ "executiveSummary.records" | translate }}</span>
+    </lib-data-table>
+</div>
+
+<p-drawer [(visible)]="detailOpen" position="right" appendTo="body" [baseZIndex]="1200" [style]="{ width: '90vw', maxWidth: '1400px' }" (onHide)="closeDetail()">
+    <ng-template #header>
+        <div>
+            <div class="text-lg font-bold tracking-wide text-gray-800">{{ selectedRun?.topic || ('executiveSummary.scheduleActivity.runDetail' | translate) }}</div>
+            @if (selectedRun) {
+            <div class="text-xs text-gray-500">{{ formatRunAt(selectedRun) }}</div>
+            }
+        </div>
+    </ng-template>
+
+    @if (detailLoading) {
+    <div class="p-6 text-sm text-gray-500">{{ 'executiveSummary.loading' | translate }}</div>
+    } @else if (selectedRun) {
+    <div class="flex flex-col gap-4 p-1">
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+            <span class="rounded-full px-2.5 py-1 font-medium" [class.bg-green-50]="selectedRun.status === 'success'" [class.text-green-700]="selectedRun.status === 'success'"
+                [class.bg-red-50]="selectedRun.status === 'failed'" [class.text-red-700]="selectedRun.status === 'failed'">
+                {{ (selectedRun.status === 'success' ? 'executiveSummary.scheduleActivity.success' : 'executiveSummary.scheduleActivity.failed') | translate }}
+            </span>
+            <span class="rounded-full bg-gray-100 px-2.5 py-1 font-medium text-gray-600">
+                {{ (selectedRun.emailed ? 'executiveSummary.scheduleActivity.emailedYes' : 'executiveSummary.scheduleActivity.emailedNo') | translate }}
+            </span>
+            @if (selectedRun.changed !== null && selectedRun.changed !== undefined) {
+            <span class="rounded-full bg-amber-50 px-2.5 py-1 font-medium text-amber-700">
+                {{ (selectedRun.changed ? 'executiveSummary.scheduleActivity.changedYes' : 'executiveSummary.scheduleActivity.changedNo') | translate }}
+            </span>
+            }
+        </div>
+
+        @if (selectedRun.status === 'failed') {
+        <div class="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+            {{ selectedRun.error_message || ('executiveSummary.scheduleActivity.unknownError' | translate) }}
+        </div>
+        } @else {
+        <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div class="min-w-0 rounded-lg border border-gray-200">
+                <div class="border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs font-semibold text-gray-500">
+                    @if (selectedRun.previous_run_at) {
+                        {{ 'executiveSummary.scheduleActivity.previousVersion' | translate }} — {{ formatPreviousRunAt() }}
+                    } @else {
+                        {{ 'executiveSummary.scheduleActivity.noPreviousRun' | translate }}
+                    }
+                </div>
+                <div class="prose prose-sm max-w-none overflow-y-auto p-3" style="max-height: 65vh" [innerHTML]="previousHtml || ('executiveSummary.scheduleActivity.noPreviousRun' | translate)"></div>
+            </div>
+            <div class="min-w-0 rounded-lg border border-primary-200">
+                <div class="border-b border-primary-200 bg-primary-50 px-3 py-2 text-xs font-semibold text-primary-700">
+                    {{ 'executiveSummary.scheduleActivity.thisVersion' | translate }}
+                </div>
+                <div class="prose prose-sm max-w-none overflow-y-auto p-3" style="max-height: 65vh" [innerHTML]="currentHtml"></div>
+            </div>
+        </div>
+        }
+    </div>
+    }
+</p-drawer>

@@ -325,6 +325,33 @@ export interface ScheduledJobEntry {
     created_at: string;
 }
 
+/** One execution of a ScheduledJobEntry — the Activity feed's list-row shape (no content). */
+export interface ScheduledJobRunEntry {
+    id: number;
+    job_id: number;
+    topic: string;
+    timezone: string;
+    run_at: string;
+    status: 'success' | 'failed';
+    emailed: boolean;
+    changed?: boolean | null;
+    title?: string | null;
+    error_message?: string | null;
+}
+
+/** A single run's full detail, plus the run before it for a side-by-side "what changed" view. */
+export interface ScheduledJobRunDetail extends ScheduledJobRunEntry {
+    content_markdown?: string | null;
+    previous_run_at?: string | null;
+    previous_title?: string | null;
+    previous_content_markdown?: string | null;
+}
+
+export interface ScheduledJobRunListResponse {
+    runs: ScheduledJobRunEntry[];
+    total: number;
+}
+
 export const ALL_FRAMEWORKS = ["PESTLE", "Porter's Five Forces", 'DEEPLIST', 'McKinsey 7-S Model', 'SWOT', 'SOAR'];
 export const ALL_FILE_TYPES = ['html', 'pdf', 'docx', 'pptx'];
 
