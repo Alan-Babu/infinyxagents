@@ -275,6 +275,10 @@ html.theme-pink {
     @apply border-gray-200;
 }
 
+.p-drawer-content {
+    @apply pt-(--p-overlay-modal-padding);
+}
+
 .p-drawer-content:has(.p-tabs) {
     @apply p-0;
 }
@@ -310,6 +314,10 @@ ag-grid-angular {
     --ag-column-hover-color: transparent;
 }
 
+.ag-grid-contained .ag-root-wrapper {
+    --ag-wrapper-border-radius: 0;
+}
+
 .ag-center-cols-container .ag-row:last-child {
     border-bottom: 1px solid #ccc;
 }
@@ -339,4 +347,73 @@ ag-grid-angular {
 .ag-header-cell {
     --ag-checkbox-indeterminate-background-color: var(--p-primary-500);
     --ag-checkbox-indeterminate-border-color: var(--p-primary-500);
+}
+
+.toast-top-right {
+    @apply rtl:right-auto rtl:left-3
+}
+
+.toast-container {
+    @apply z-1000001;
+}
+
+.toast-container .ngx-toastr {
+    --toast-color: var(--p-primary-500);
+    padding-inline-start: 3.5rem !important;
+    background-position: 1.25rem center;
+    background-color: #fff !important;
+    border: 0 !important;
+    border-inline-start: .3rem solid var(--toast-color) !important;
+    box-shadow: 0 .3rem 1rem -.3rem rgb(0 0 0 / 0.2), 0 .25rem 0px -.25rem rgb(0 0 0 / 0.1);
+    color: inherit;
+}
+
+.toast-container .ngx-toastr:hover {
+    box-shadow: 0 .3rem 1rem -.3rem rgb(0 0 0 / 0.4), 0 .25rem 0px -.25rem rgb(0 0 0 / 0.2);
+}
+
+.toast-container .ngx-toastr:before {
+    @apply absolute top-1/2 -translate-y-1/2 w-7 h-7 bg-(--toast-color) inset-s-3;
+    content: "";
+}
+
+.toast-container .ngx-toastr .toast-title {
+    color: var(--toast-color);
+}
+
+.toast-container .ngx-toastr .toast-progress {
+    background: var(--toast-color);
+    opacity: 0.3;
+}
+
+.toast-container .ngx-toastr.toast-error {
+    --toast-color: var(--p-red-600);
+}
+
+.toast-container .ngx-toastr.toast-error:before {
+    -webkit-mask: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22%23000000%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20d%3D%22M236.8%2C188.09%2C149.35%2C36.22h0a24.76%2C24.76%2C0%2C0%2C0-42.7%2C0L19.2%2C188.09a23.51%2C23.51%2C0%2C0%2C0%2C0%2C23.72A24.35%2C24.35%2C0%2C0%2C0%2C40.55%2C224h174.9a24.35%2C24.35%2C0%2C0%2C0%2C21.33-12.19A23.51%2C23.51%2C0%2C0%2C0%2C236.8%2C188.09ZM120%2C104a8%2C8%2C0%2C0%2C1%2C16%2C0v40a8%2C8%2C0%2C0%2C1-16%2C0Zm8%2C88a12%2C12%2C0%2C1%2C1%2C12-12A12%2C12%2C0%2C0%2C1%2C128%2C192Z%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E')
+}
+
+.toast-container .ngx-toastr.toast-success {
+    --toast-color: var(--p-green-600);
+}
+
+.toast-container .ngx-toastr.toast-success:before {
+    -webkit-mask: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22%23000000%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20d%3D%22M128%2C24A104%2C104%2C0%2C1%2C0%2C232%2C128%2C104.11%2C104.11%2C0%2C0%2C0%2C128%2C24Zm45.66%2C85.66-56%2C56a8%2C8%2C0%2C0%2C1-11.32%2C0l-24-24a8%2C8%2C0%2C0%2C1%2C11.32-11.32L112%2C148.69l50.34-50.35a8%2C8%2C0%2C0%2C1%2C11.32%2C11.32Z%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E')
+}
+
+.toast-container .ngx-toastr.toast-warning {
+    --toast-color: var(--p-yellow-600);
+}
+
+.toast-container .ngx-toastr.toast-warning:before {
+    -webkit-mask: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22%23000000%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20d%3D%22M236.8%2C188.09%2C149.35%2C36.22h0a24.76%2C24.76%2C0%2C0%2C0-42.7%2C0L19.2%2C188.09a23.51%2C23.51%2C0%2C0%2C0%2C0%2C23.72A24.35%2C24.35%2C0%2C0%2C0%2C40.55%2C224h174.9a24.35%2C24.35%2C0%2C0%2C0%2C21.33-12.19A23.51%2C23.51%2C0%2C0%2C0%2C236.8%2C188.09ZM120%2C104a8%2C8%2C0%2C0%2C1%2C16%2C0v40a8%2C8%2C0%2C0%2C1-16%2C0Zm8%2C88a12%2C12%2C0%2C1%2C1%2C12-12A12%2C12%2C0%2C0%2C1%2C128%2C192Z%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E')
+}
+
+.toast-container .ngx-toastr.toast-info {
+    --toast-color: var(--p-blue-500);
+}
+
+.toast-container .ngx-toastr.toast-info:before {
+    -webkit-mask: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22%23000000%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20d%3D%22M128%2C24A104%2C104%2C0%2C1%2C0%2C232%2C128%2C104.11%2C104.11%2C0%2C0%2C0%2C128%2C24Zm-4%2C48a12%2C12%2C0%2C1%2C1-12%2C12A12%2C12%2C0%2C0%2C1%2C124%2C72Zm12%2C112a16%2C16%2C0%2C0%2C1-16-16V128a8%2C8%2C0%2C0%2C1%2C0-16%2C16%2C16%2C0%2C0%2C1%2C16%2C16v40a8%2C8%2C0%2C0%2C1%2C0%2C16Z%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E')
 }

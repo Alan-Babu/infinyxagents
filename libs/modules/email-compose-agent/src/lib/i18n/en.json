@@ -40,8 +40,8 @@
         },
         "callTypes": {
             "compose": "Compose Email",
-            "replyQuestions": "Reply — Clarifying Questions",
-            "replyDraft": "Reply — Draft",
+            "replyQuestions": "Reply: Clarifying Questions",
+            "replyDraft": "Reply: Draft",
             "translate": "Translate",
             "qa": "Ask Document (Q&A)"
         },
@@ -59,7 +59,7 @@
             "modeCompose": "New email",
             "modeReply": "Reply to a thread",
             "context": "What do you want to say?",
-            "contextPlaceholder": "Describe the email you want — who it's to, what it's about, and any key points to include…",
+            "contextPlaceholder": "Describe the email you want: who it's to, what it's about, and any key points to include…",
             "recipientHint": "Recipient (optional)",
             "recipientHintPlaceholder": "e.g. a client, my manager, a government office…",
             "tone": "Tone",
@@ -72,11 +72,11 @@
             "threadTextPlaceholder": "Paste the full email thread here…",
             "readThread": "Read thread & continue",
             "threadSummary": "Thread summary",
-            "emotionalToneBannerHeated": "This thread reads as heated — consider a diplomatic tone for your reply.",
-            "emotionalToneBannerFrustrated": "This thread reads as frustrated — consider a diplomatic tone for your reply.",
+            "emotionalToneBannerHeated": "This thread reads as heated. Consider a diplomatic tone for your reply.",
+            "emotionalToneBannerFrustrated": "This thread reads as frustrated. Consider a diplomatic tone for your reply.",
             "useDiplomaticTone": "Use Diplomatic tone",
             "questionsTitle": "A few quick questions before drafting your reply",
-            "questionsEmpty": "No clarifying questions — you're ready to draft the reply.",
+            "questionsEmpty": "No clarifying questions. You're ready to draft the reply.",
             "answerPlaceholder": "Your answer…",
             "tone": "Reply tone",
             "back": "Back",
@@ -84,7 +84,7 @@
         },
         "dropzone": {
             "dropTitle": "Drop the thread here, or click to browse",
-            "dropSubtitle": "PDF, DOCX, or TXT — uploaded in chunks",
+            "dropSubtitle": "PDF, DOCX, or TXT, uploaded in chunks",
             "cancel": "Cancel",
             "chunks": "chunks",
             "pages": "page(s)"
@@ -143,7 +143,7 @@
             "copy": "Copy",
             "copied": "Copied!",
             "checklistTitle": "Pre-send checklist",
-            "checklistAllClear": "All clear — nothing missing or sensitive detected.",
+            "checklistAllClear": "All clear. Nothing missing or sensitive detected.",
             "missingInfo": "Missing information",
             "sensitivePatterns": "Sensitive content detected",
             "readTime": "{{ minutes }} min read",
@@ -161,12 +161,12 @@
             "askEmpty": "Click a suggestion above, or type your own question below.",
             "askPlaceholder": "Ask a question about this email…",
             "send": "Send",
-            "suggestedQuestions": "Suggested questions — click to select",
+            "suggestedQuestions": "Suggested questions: click to select",
             "note": "Note"
         },
         "reviewQueue": {
             "title": "Review queue",
-            "empty": "Nothing needs review right now — every email met the confidence bar automatically.",
+            "empty": "Nothing needs review right now. Every email met the confidence bar automatically.",
             "footerNote": "Flagged when confidence is low or sensitive content is detected"
         },
         "performance": {

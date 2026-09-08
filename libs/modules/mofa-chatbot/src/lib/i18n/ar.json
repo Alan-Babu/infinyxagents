@@ -27,6 +27,14 @@
             ],
             "followUpsLabel": "قد ترغب أيضًا في السؤال عن:",
             "listenTooltip": "استماع",
+            "copyTooltip": "نسخ",
+            "copiedTooltip": "تم النسخ!",
+            "historyTooltip": "سجل المحادثات",
+            "history": {
+                "title": "سجل المحادثات",
+                "empty": "لا توجد محادثات سابقة بعد.",
+                "emptyTranscript": "لا توجد رسائل في هذه المحادثة."
+            },
             "feedbackUpTooltip": "مفيد",
             "feedbackDownTooltip": "غير مفيد",
             "delivery": {
@@ -68,10 +76,10 @@
                 "titleThinking": "جارٍ تجهيز الرد",
                 "titleSpeaking": "المساعد يتحدث",
                 "hintIdle": "اضغط للتحدث أو أنهِ المكالمة",
-                "hintListening": "تحدث بشكل طبيعي — سأُرسل تلقائيًا عندما تتوقف",
+                "hintListening": "تحدث بشكل طبيعي. سأُرسل تلقائيًا عندما تتوقف",
                 "hintTransmitting": "يتم رفع التسجيل وتحويله إلى نص",
                 "hintThinking": "يتم فهم سؤالك وإعداد الإجابة",
-                "hintSpeaking": "استمع للرد — سيُعاد الاستماع بعد ذلك",
+                "hintSpeaking": "استمع للرد. سيُعاد الاستماع بعد ذلك",
                 "stepListen": "استماع",
                 "stepSend": "إرسال",
                 "stepThink": "تفكير",
@@ -106,6 +114,7 @@
                 "crawl": "جدولة الزحف",
                 "kb": "قاعدة المعرفة",
                 "blacklist": "القائمة السوداء",
+                "sessions": "الجلسات",
                 "riskSessions": "المخاطر والمشاعر",
                 "feedback": "الملاحظات والفجوات"
             },
@@ -142,6 +151,8 @@
                 "modeFull": "زحف كامل",
                 "maxPagesLabel": "الحد الأقصى للصفحات لكل تشغيل",
                 "seedUrlsLabel": "روابط البداية (رابط في كل سطر)",
+                "useSitemapLabel": "اكتشاف الصفحات أيضًا عبر sitemap.xml",
+                "useSitemapHint": "يزرع قائمة انتظار الزحف من ملف /sitemap.xml الخاص بكل رابط بداية، بالإضافة إلى تتبع الروابط -- الطريقة الأكثر موثوقية للتأكد من النظر في كل صفحة يعلن عنها الموقع.",
                 "saveButton": "حفظ الجدولة",
                 "saved": "تم حفظ الجدولة",
                 "saveFailed": "تعذر حفظ الجدولة.",
@@ -153,6 +164,9 @@
                 "startFailed": "تعذر بدء الزحف.",
                 "refresh": "تحديث",
                 "recentRunsTitle": "عمليات الزحف الأخيرة",
+                "lastSyncedLabel": "آخر تحديث لقاعدة المعرفة",
+                "lastSyncedNever": "لم تتم المزامنة بعد",
+                "lastSyncedDetail": "{{ changed }} صفحة متغيرة، {{ chunks }} مقطع",
                 "table": {
                     "trigger": "المُشغِّل",
                     "mode": "النمط",
@@ -164,7 +178,21 @@
                     "chunks": "المقاطع",
                     "started": "بدأ في"
                 },
-                "noRuns": "لا توجد عمليات زحف بعد."
+                "noRuns": "لا توجد عمليات زحف بعد.",
+                "crawledPagesTitle": "الصفحات المزحوفة",
+                "crawledPagesSearchPlaceholder": "البحث حسب العنوان...",
+                "crawledPagesTable": {
+                    "title": "العنوان",
+                    "url": "الرابط",
+                    "lastCrawled": "آخر زحف",
+                    "lastChanged": "آخر تغيير"
+                },
+                "viewPage": "عرض",
+                "noCrawledPages": "لم يتم زحف أي صفحات بعد.",
+                "pageDetailTitle": "الصفحة المزحوفة",
+                "rawTextLabel": "النص المستخرج",
+                "chunksLabel": "المقاطع المخزنة للاسترجاع",
+                "noRawText": "لم يتم استخراج أي نص من هذه الصفحة."
             },
             "kb": {
                 "versionsTitle": "إصدارات قاعدة المعرفة",
@@ -175,7 +203,7 @@
                 "createButton": "إنشاء إصدار مسودة",
                 "versionCreated": "تم إنشاء إصدار المسودة",
                 "createFailed": "تعذر إنشاء الإصدار.",
-                "noVersions": "لا توجد إصدارات لقاعدة المعرفة بعد — أنشئ واحدًا أعلاه.",
+                "noVersions": "لا توجد إصدارات لقاعدة المعرفة بعد. أنشئ واحدًا أعلاه.",
                 "documents": "مستند (مستندات)",
                 "chunks": "مقطع",
                 "published": "نُشر في",
@@ -240,6 +268,29 @@
                 "deleteConfirm": "حذف المصطلح \"{{ term }}\"؟",
                 "deleteConfirmHeader": "حذف مصطلح من القائمة السوداء"
             },
+            "sessions": {
+                "title": "جلسات المحادثة",
+                "table": {
+                    "language": "اللغة",
+                    "sentiment": "المشاعر",
+                    "risk": "الخطر",
+                    "status": "الحالة",
+                    "rating": "التقييم",
+                    "started": "بدأت في"
+                },
+                "view": "عرض",
+                "flagged": "مُعلَّمة",
+                "noSessions": "لا توجد جلسات بعد.",
+                "transcriptTitle": "نص المحادثة",
+                "filters": {
+                    "allLanguages": "جميع اللغات",
+                    "allSentiments": "جميع المشاعر",
+                    "positive": "إيجابي",
+                    "neutral": "محايد",
+                    "negative": "سلبي",
+                    "frustrated": "محبط"
+                }
+            },
             "riskSessions": {
                 "title": "الجلسات المُعلَّمة بالخطر",
                 "table": {
@@ -263,7 +314,7 @@
                     "asked": "طُرح في"
                 },
                 "markReviewed": "تمييز كمُراجَع",
-                "noUnanswered": "لا توجد فجوات غير مُراجَعة — عمل رائع.",
+                "noUnanswered": "لا توجد فجوات غير مُراجَعة. عمل رائع.",
                 "recentFeedbackTitle": "الملاحظات الأخيرة",
                 "feedbackTable": {
                     "rating": "التقييم",

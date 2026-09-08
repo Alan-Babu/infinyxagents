@@ -1,0 +1,33 @@
+<p-drawer [(visible)]="visible" position="right" styleClass="p-drawer-lg" appendTo="body" [baseZIndex]="1200" (onHide)="visibleChange.emit(false)">
+    <ng-template #header>
+        <div class="flex flex-col">
+            <span class="text-xs font-bold uppercase tracking-wide text-primary-600">{{ "assetIntelligence.settings.assetMaster.attributes" | translate }}</span>
+            <span class="text-lg font-bold text-gray-800">{{ category?.name }}</span>
+        </div>
+    </ng-template>
+
+    @if (attributes.length) {
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b border-gray-200 text-xs uppercase tracking-wide text-gray-400">
+                    <th class="px-2 py-2 text-start">{{ "assetIntelligence.settings.assetMaster.label" | translate }}</th>
+                    <th class="px-2 py-2 text-start">{{ "assetIntelligence.settings.assetMaster.key" | translate }}</th>
+                    <th class="px-2 py-2 text-start">{{ "assetIntelligence.settings.assetMaster.type" | translate }}</th>
+                    <th class="px-2 py-2 text-start">{{ "assetIntelligence.settings.assetMaster.required" | translate }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (attr of attributes; track attr.id) {
+                    <tr class="border-b border-gray-100 last:border-0">
+                        <td class="px-2 py-2.5 font-semibold text-gray-700">{{ attr.attr_label }}</td>
+                        <td class="px-2 py-2.5 font-mono text-xs text-gray-500">{{ attr.attr_key }}</td>
+                        <td class="px-2 py-2.5 text-gray-500">{{ attr.attr_type }}</td>
+                        <td class="px-2 py-2.5 text-gray-500">{{ (attr.is_required ? "assetIntelligence.settings.assetMaster.yes" : "assetIntelligence.settings.assetMaster.no") | translate }}</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    } @else {
+        <p class="text-sm text-gray-400">{{ "assetIntelligence.settings.assetMaster.noAttributes" | translate }}</p>
+    }
+</p-drawer>

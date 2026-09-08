@@ -1,0 +1,23 @@
+@if (permissions.hasRole('ADMIN')) {
+    <div class="rounded-lg border border-gray-200 bg-white">
+        <div class="border-b border-gray-200 px-6 py-4">
+            <div class="flex items-center justify-between gap-10">
+                <div class="flex-1">
+                    <div class="mb-0.5 text-xl font-bold text-gray-600">{{ "assetIntelligence.settings.tabs.users" | translate }}</div>
+                </div>
+                <div>
+                    <button type="button" pButton outlined="true" size="small" (click)="createUserDrawerOpen = true">
+                        <i class="pi pi-plus"></i>
+                        <span>{{ "assetIntelligence.settings.users.createUser" | translate }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <lib-data-table [isContained]="true" [rowData]="users" [colDefs]="colDefs" [showSearch]="false" />
+    </div>
+} @else {
+    <p class="text-sm text-gray-500">{{ "assetIntelligence.settings.users.adminOnly" | translate }}</p>
+}
+
+<lib-create-user-drawer [(visible)]="createUserDrawerOpen" [roles]="roles" (save)="createUser($event)" />

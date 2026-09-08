@@ -8,7 +8,7 @@
         },
         "dashboard": {
             "title": "Digital Attestation",
-            "subtitle": "Review Hub — inspect agent confidence, documents, and approve or reject attestation cases.",
+            "subtitle": "Review Hub: inspect agent confidence, documents, and approve or reject attestation cases.",
             "stats": {
                 "awaitingReview": "Awaiting review",
                 "awaitingReviewSub": "across {{ total }} total cases",
@@ -34,7 +34,7 @@
         },
         "failures": {
             "title": "Failures",
-            "subtitle": "Cases where the automated pipeline could not complete — usually an upstream source or connectivity issue."
+            "subtitle": "Cases where the automated pipeline could not complete, usually due to an upstream source or connectivity issue."
         },
         "completed": {
             "title": "Completed tasks",

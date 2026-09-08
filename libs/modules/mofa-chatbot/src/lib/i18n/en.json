@@ -27,6 +27,14 @@
             ],
             "followUpsLabel": "You might also want to ask:",
             "listenTooltip": "Listen",
+            "copyTooltip": "Copy",
+            "copiedTooltip": "Copied!",
+            "historyTooltip": "Chat history",
+            "history": {
+                "title": "Chat History",
+                "empty": "No past conversations yet.",
+                "emptyTranscript": "This conversation has no messages."
+            },
             "feedbackUpTooltip": "Helpful",
             "feedbackDownTooltip": "Not helpful",
             "delivery": {
@@ -68,10 +76,10 @@
                 "titleThinking": "Preparing a reply",
                 "titleSpeaking": "Assistant speaking",
                 "hintIdle": "Tap to talk, or end the voice call",
-                "hintListening": "Just talk — I'll send automatically when you pause",
+                "hintListening": "Just talk. I'll send automatically when you pause",
                 "hintTransmitting": "Uploading and transcribing your recording",
                 "hintThinking": "Understanding your question and drafting an answer",
-                "hintSpeaking": "Playing the reply — listening will resume after this",
+                "hintSpeaking": "Playing the reply. Listening will resume after this",
                 "stepListen": "Listen",
                 "stepSend": "Send",
                 "stepThink": "Think",
@@ -106,6 +114,7 @@
                 "crawl": "Crawl Schedule",
                 "kb": "Knowledge Base",
                 "blacklist": "Blacklist",
+                "sessions": "Sessions",
                 "riskSessions": "Risk & Sentiment",
                 "feedback": "Feedback & Gaps"
             },
@@ -142,6 +151,8 @@
                 "modeFull": "Full re-crawl",
                 "maxPagesLabel": "Max pages per run",
                 "seedUrlsLabel": "Seed URLs (one per line)",
+                "useSitemapLabel": "Also discover pages via sitemap.xml",
+                "useSitemapHint": "Seeds the crawl queue from each seed URL's own /sitemap.xml, in addition to following links -- the most reliable way to make sure every page the site declares gets considered.",
                 "saveButton": "Save schedule",
                 "saved": "Schedule saved",
                 "saveFailed": "Could not save the schedule.",
@@ -153,6 +164,9 @@
                 "startFailed": "Could not start the crawl.",
                 "refresh": "Refresh",
                 "recentRunsTitle": "Recent runs",
+                "lastSyncedLabel": "Knowledge base last updated",
+                "lastSyncedNever": "Never synced yet",
+                "lastSyncedDetail": "{{ changed }} pages changed, {{ chunks }} chunks",
                 "table": {
                     "trigger": "Trigger",
                     "mode": "Mode",
@@ -164,7 +178,21 @@
                     "chunks": "Chunks",
                     "started": "Started"
                 },
-                "noRuns": "No crawl runs yet."
+                "noRuns": "No crawl runs yet.",
+                "crawledPagesTitle": "Crawled Pages",
+                "crawledPagesSearchPlaceholder": "Search by title...",
+                "crawledPagesTable": {
+                    "title": "Title",
+                    "url": "URL",
+                    "lastCrawled": "Last crawled",
+                    "lastChanged": "Last changed"
+                },
+                "viewPage": "View",
+                "noCrawledPages": "No pages crawled yet.",
+                "pageDetailTitle": "Crawled Page",
+                "rawTextLabel": "Extracted text",
+                "chunksLabel": "Chunks stored for retrieval",
+                "noRawText": "No text was extracted from this page."
             },
             "kb": {
                 "versionsTitle": "Knowledge Base Versions",
@@ -175,7 +203,7 @@
                 "createButton": "Create draft version",
                 "versionCreated": "Draft version created",
                 "createFailed": "Could not create the version.",
-                "noVersions": "No KB versions yet — create one above.",
+                "noVersions": "No KB versions yet. Create one above.",
                 "documents": "document(s)",
                 "chunks": "chunks",
                 "published": "Published",
@@ -240,6 +268,29 @@
                 "deleteConfirm": "Delete the term \"{{ term }}\"?",
                 "deleteConfirmHeader": "Delete blacklist term"
             },
+            "sessions": {
+                "title": "Chat Sessions",
+                "table": {
+                    "language": "Language",
+                    "sentiment": "Sentiment",
+                    "risk": "Risk",
+                    "status": "Status",
+                    "rating": "Rating",
+                    "started": "Started"
+                },
+                "view": "View",
+                "flagged": "Flagged",
+                "noSessions": "No sessions yet.",
+                "transcriptTitle": "Session Transcript",
+                "filters": {
+                    "allLanguages": "All languages",
+                    "allSentiments": "All sentiments",
+                    "positive": "Positive",
+                    "neutral": "Neutral",
+                    "negative": "Negative",
+                    "frustrated": "Frustrated"
+                }
+            },
             "riskSessions": {
                 "title": "Risk-Flagged Sessions",
                 "table": {
@@ -263,7 +314,7 @@
                     "asked": "Asked"
                 },
                 "markReviewed": "Mark reviewed",
-                "noUnanswered": "No unreviewed gaps — nice.",
+                "noUnanswered": "No unreviewed gaps. Nice.",
                 "recentFeedbackTitle": "Recent Feedback",
                 "feedbackTable": {
                     "rating": "Rating",

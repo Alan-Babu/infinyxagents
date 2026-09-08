@@ -1,0 +1,26 @@
+<p-drawer [(visible)]="visible" position="right" styleClass="p-drawer-sm" appendTo="body" [baseZIndex]="1200" (onHide)="visibleChange.emit(false)">
+    <ng-template #header>
+        <div class="flex flex-col">
+            <span class="text-xs font-bold uppercase tracking-wide text-primary-600">{{ "assetIntelligence.settings.assetMaster.vendors" | translate }}</span>
+            <span class="text-lg font-bold text-gray-800">{{ "assetIntelligence.settings.assetMaster.addVendor" | translate }}</span>
+        </div>
+    </ng-template>
+
+    <div class="flex flex-col gap-4">
+        <div class="flex flex-col gap-1.5">
+            <label class="p-control-label p-control-label-required" for="vendorName">{{ "assetIntelligence.settings.assetMaster.vendorName" | translate }}</label>
+            <input id="vendorName" type="text" pInputText class="w-full" [(ngModel)]="name" />
+        </div>
+        <div class="flex flex-col gap-1.5">
+            <label class="p-control-label p-control-label-required" for="vendorContactEmail">{{ "assetIntelligence.settings.assetMaster.contactEmail" | translate }}</label>
+            <input id="vendorContactEmail" type="email" pInputText class="w-full" [(ngModel)]="contactEmail" />
+        </div>
+    </div>
+
+    <ng-template #footer>
+        <div class="flex justify-end gap-2">
+            <button type="button" pButton severity="secondary" [outlined]="true" (click)="close()"><span>{{ "assetIntelligence.settings.org.cancel" | translate }}</span></button>
+            <button type="button" pButton [disabled]="!isValid" (click)="confirm()"><span>{{ "assetIntelligence.settings.assetMaster.addVendor" | translate }}</span></button>
+        </div>
+    </ng-template>
+</p-drawer>

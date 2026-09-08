@@ -53,6 +53,7 @@ export class DataTable implements OnInit, OnChanges {
     @Input() colDefs: ColDef[] = [];
     @Input() gridOptions: GridOptions = {};
     @Input() showSearch = true;
+    @Input() isContained = false;
     @Input() searchPlaceholder = 'Search...';
     @Input() noRowsMessage = 'No data';
     @Input() paginator = true;

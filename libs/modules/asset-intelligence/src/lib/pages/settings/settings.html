@@ -1,0 +1,30 @@
+<div class="flex h-full min-h-0 flex-col">
+    <lib-page-header titleKey="assetIntelligence.settings.title" subtitleKey="assetIntelligence.settings.subtitle" [showBack]="false" />
+
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+        <nav class="mb-5 inline-flex rounded-lg border border-gray-200 bg-white p-1" role="tablist">
+            @for (tab of tabs; track tab.id) {
+                <button
+                    type="button"
+                    class="cursor-pointer whitespace-nowrap rounded-md px-6 py-2.5 text-center text-sm transition-colors"
+                    [ngClass]="activeTab === tab.id ? 'bg-primary-500 text-white font-bold' : 'text-gray-500 font-semibold'"
+                    (click)="switchTab(tab.id)"
+                >
+                    {{ tab.labelKey | translate }}
+                </button>
+            }
+        </nav>
+
+        @switch (activeTab) {
+            @case ('org') {
+                <lib-org-structure />
+            }
+            @case ('users') {
+                <lib-users-roles />
+            }
+            @case ('master') {
+                <lib-asset-master />
+            }
+        }
+    </div>
+</div>

@@ -584,7 +584,7 @@
             @if (moderationBlocked) {
             <p class="mx-auto mt-1 max-w-3xl text-center text-xs text-red-600">{{ errorMessage }}</p>
             } @else if (quotaExceeded) {
-            <p class="mx-auto mt-1 max-w-3xl text-center text-xs text-amber-600">{{ 'executiveSummary.insights.quotaTitle' | translate }} — {{ errorMessage }}</p>
+            <p class="mx-auto mt-1 max-w-3xl text-center text-xs text-amber-600">{{ 'executiveSummary.insights.quotaTitle' | translate }}: {{ errorMessage }}</p>
             } @else if (!showingRefineComposer && errorMessage) {
             <p class="mx-auto mt-1 max-w-3xl text-center text-xs text-red-600">{{ errorMessage }}</p>
             }

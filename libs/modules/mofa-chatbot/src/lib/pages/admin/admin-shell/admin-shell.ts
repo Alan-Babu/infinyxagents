@@ -15,6 +15,7 @@ const ADMIN_TABS: AdminTabLink[] = [
     { labelKey: 'mofaChatbot.admin.nav.crawl', path: '/mofa-chatbot/admin/crawl', icon: 'pi pi-clock', exact: false },
     { labelKey: 'mofaChatbot.admin.nav.kb', path: '/mofa-chatbot/admin/kb', icon: 'pi pi-book', exact: false },
     { labelKey: 'mofaChatbot.admin.nav.blacklist', path: '/mofa-chatbot/admin/blacklist', icon: 'pi pi-ban', exact: false },
+    { labelKey: 'mofaChatbot.admin.nav.sessions', path: '/mofa-chatbot/admin/sessions', icon: 'pi pi-comments', exact: false },
     { labelKey: 'mofaChatbot.admin.nav.riskSessions', path: '/mofa-chatbot/admin/risk-sessions', icon: 'pi pi-exclamation-triangle', exact: false },
     { labelKey: 'mofaChatbot.admin.nav.feedback', path: '/mofa-chatbot/admin/feedback', icon: 'pi pi-star', exact: false },
 ];

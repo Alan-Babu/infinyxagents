@@ -1,0 +1,30 @@
+<p-drawer [(visible)]="visible" position="right" styleClass="p-drawer-sm" appendTo="body" [baseZIndex]="1200" (onHide)="visibleChange.emit(false)">
+    <ng-template #header>
+        <div class="flex flex-col">
+            <span class="text-xs font-bold uppercase tracking-wide text-primary-600">{{ "assetIntelligence.settings.assetMaster.categories" | translate }}</span>
+            <span class="text-lg font-bold text-gray-800">{{ "assetIntelligence.settings.assetMaster.addCategory" | translate }}</span>
+        </div>
+    </ng-template>
+
+    <div class="flex flex-col gap-4">
+        <div class="flex flex-col gap-1.5">
+            <label class="p-control-label p-control-label-required" for="categoryName">{{ "assetIntelligence.settings.assetMaster.categoryName" | translate }}</label>
+            <input id="categoryName" type="text" pInputText class="w-full" [(ngModel)]="name" />
+        </div>
+        <div class="flex flex-col gap-1.5">
+            <label class="p-control-label p-control-label-required" for="categoryClass">{{ "assetIntelligence.settings.assetMaster.class" | translate }}</label>
+            <p-select inputId="categoryClass" [options]="assetClassOptions" [(ngModel)]="assetClass" optionLabel="label" optionValue="value" appendTo="body" styleClass="w-full" />
+        </div>
+        <div class="flex flex-col gap-1.5">
+            <label class="p-control-label p-control-label-required" for="categoryUsefulLife">{{ "assetIntelligence.settings.assetMaster.usefulLife" | translate }}</label>
+            <p-inputNumber inputId="categoryUsefulLife" [(ngModel)]="usefulLifeMonths" [min]="1" styleClass="w-full" inputStyleClass="w-full" />
+        </div>
+    </div>
+
+    <ng-template #footer>
+        <div class="flex justify-end gap-2">
+            <button type="button" pButton severity="secondary" [outlined]="true" (click)="close()"><span>{{ "assetIntelligence.settings.org.cancel" | translate }}</span></button>
+            <button type="button" pButton [disabled]="!isValid" (click)="confirm()"><span>{{ "assetIntelligence.settings.assetMaster.addCategory" | translate }}</span></button>
+        </div>
+    </ng-template>
+</p-drawer>

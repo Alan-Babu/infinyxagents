@@ -1,0 +1,34 @@
+<p-drawer [(visible)]="visible" position="right" styleClass="p-drawer-sm" appendTo="body" [baseZIndex]="1200" (onHide)="visibleChange.emit(false)">
+    <ng-template #header>
+        <div class="flex flex-col">
+            <span class="text-xs font-bold uppercase tracking-wide text-primary-600">{{ "assetIntelligence.settings.users.provisionNew" | translate }}</span>
+            <span class="text-lg font-bold text-gray-800">{{ "assetIntelligence.settings.users.createUser" | translate }}</span>
+        </div>
+    </ng-template>
+
+    <div class="flex flex-col gap-4">
+        <div class="flex flex-col gap-1.5">
+            <label class="p-control-label p-control-label-required" for="createUserFullName">{{ "assetIntelligence.settings.users.fullName" | translate }}</label>
+            <input id="createUserFullName" type="text" pInputText class="w-full" [(ngModel)]="fullName" />
+        </div>
+        <div class="flex flex-col gap-1.5">
+            <label class="p-control-label p-control-label-required" for="createUserEmail">{{ "assetIntelligence.settings.users.email" | translate }}</label>
+            <input id="createUserEmail" type="email" pInputText class="w-full" [(ngModel)]="email" />
+        </div>
+        <div class="flex flex-col gap-1.5">
+            <label class="p-control-label p-control-label-required" for="createUserPassword">{{ "assetIntelligence.settings.users.tempPassword" | translate }}</label>
+            <p-password inputId="createUserPassword" [(ngModel)]="password" [feedback]="false" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full" />
+        </div>
+        <div class="flex flex-col gap-1.5">
+            <label class="p-control-label p-control-label-required" for="createUserRole">{{ "assetIntelligence.settings.users.role" | translate }}</label>
+            <p-select inputId="createUserRole" [options]="roles" [(ngModel)]="role" appendTo="body" styleClass="w-full" />
+        </div>
+    </div>
+
+    <ng-template #footer>
+        <div class="flex justify-end gap-2">
+            <button type="button" pButton severity="secondary" [outlined]="true" (click)="close()"><span>{{ "assetIntelligence.settings.org.cancel" | translate }}</span></button>
+            <button type="button" pButton [disabled]="!isValid" (click)="confirm()"><span>{{ "assetIntelligence.settings.users.createUser" | translate }}</span></button>
+        </div>
+    </ng-template>
+</p-drawer>

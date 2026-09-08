@@ -1,0 +1,15 @@
+<div class="flex h-full min-h-0 flex-col">
+    <lib-page-header titleKey="assetIntelligence.alerts.title" subtitleKey="assetIntelligence.alerts.subtitle" [showBack]="false">
+        <button type="button" pButton [loading]="scanning" (click)="runScan()">
+            <i class="pi pi-search"></i>
+            <span>{{ "assetIntelligence.alerts.runScan" | translate }}</span>
+        </button>
+    </lib-page-header>
+
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+        @if (errorMessage) {
+            <p class="mb-4 text-sm text-red-600">{{ errorMessage }}</p>
+        }
+        <lib-data-table [rowData]="alerts" [colDefs]="colDefs" />
+    </div>
+</div>
