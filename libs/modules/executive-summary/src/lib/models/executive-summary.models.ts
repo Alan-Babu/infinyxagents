@@ -292,6 +292,34 @@ export interface FeedbackEntry {
     created_at: string;
 }
 
+export interface PaginatedFeedbackResponse {
+    items: FeedbackEntry[];
+    total: number;
+    limit: number;
+    offset: number;
+    has_more: boolean;
+}
+
+export interface FeedbackSearchParams {
+    q?: string;
+    rating?: number;
+    limit: number;
+    offset: number;
+}
+
+export interface RatingBucket {
+    stars: number;
+    count: number;
+    pct: number;
+}
+
+export interface FeedbackStats {
+    average_rating: number;
+    total: number;
+    with_comments: number;
+    distribution: RatingBucket[];
+}
+
 export interface ScheduleJobRequest {
     frequency: 'daily' | 'weekly' | 'monthly' | 'quarterly';
     time_of_day: string;

@@ -125,8 +125,9 @@
             "noRatings": "No ratings submitted yet.",
             "recentFeedback": "Recent feedback",
             "searchComments": "Search comments…",
+            "anyRating": "Any rating",
             "noComment": "No comment left",
-            "noMatch": "No feedback matches \"{{ search }}\".",
+            "noMatch": "No feedback matches your search/filters.",
             "empty": "Nothing here yet. Ratings show up once people rate a generated brief."
         },
         "adminSettings": {

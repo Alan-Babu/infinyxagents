@@ -46,6 +46,14 @@ export interface ConversationSummary {
     preview: string | null;
 }
 
+export interface PaginatedConversationsResponse {
+    items: ConversationSummary[];
+    total: number;
+    limit: number;
+    offset: number;
+    has_more: boolean;
+}
+
 export interface ChatResponse {
     conversation_id: string;
     message_id: string;

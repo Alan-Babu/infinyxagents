@@ -17,6 +17,8 @@ import {
     ExportResponse,
     FeedbackEntry,
     FeedbackRequest,
+    FeedbackSearchParams,
+    FeedbackStats,
     ForkSessionResponse,
     GammaStatusResponse,
     GammaThemeEntry,
@@ -32,6 +34,7 @@ import {
     ModerationFlagEntry,
     OutputFormat,
     PaginatedConversationsResponse,
+    PaginatedFeedbackResponse,
     PaginatedHistoryResponse,
     Provider,
     RefineResponse,
@@ -282,8 +285,14 @@ export class ExecSummaryApiService extends ExecSummaryApiBase {
         );
     }
 
-    listFeedback(): Promise<FeedbackEntry[]> {
-        return this.get<FeedbackEntry[]>(ExecSummaryApiPaths.feedback);
+    searchFeedback(params: FeedbackSearchParams): Promise<PaginatedFeedbackResponse> {
+        return this.get<PaginatedFeedbackResponse>(ExecSummaryApiPaths.feedback, {
+            q: params.q, rating: params.rating, limit: params.limit, offset: params.offset,
+        });
+    }
+
+    getFeedbackStats(): Promise<FeedbackStats> {
+        return this.get<FeedbackStats>(`${ExecSummaryApiPaths.feedback}/stats`);
     }
 
     createSchedule(sessionId: string, payload: ScheduleJobRequest): Promise<ScheduledJobEntry> {
