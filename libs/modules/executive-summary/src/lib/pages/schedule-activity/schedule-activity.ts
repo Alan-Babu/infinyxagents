@@ -1,3 +1,4 @@
+/// <reference path="../../types/htmldiff-js.d.ts" />
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -9,6 +10,7 @@ import { DrawerModule } from 'primeng/drawer';
 import type { ColDef } from 'ag-grid-community';
 import { Subscription } from 'rxjs';
 import { marked } from 'marked';
+import HtmlDiff from 'htmldiff-js';
 
 import { ExecSummaryApiService } from '../../services/exec-summary-api.service';
 import { ScheduledJobRunDetail, ScheduledJobRunEntry } from '../../models/executive-summary.models';
@@ -19,6 +21,22 @@ import { formatInTimeZone } from '../../utils/format';
     standalone: true,
     imports: [CommonModule, TranslateModule, DataTable, StatCardComponent, PageHeaderComponent, DrawerModule],
     templateUrl: './schedule-activity.html',
+    styles: [
+        `
+            ::ng-deep .prose del.diffdel,
+            ::ng-deep .prose del.diffmod {
+                background: #fef2f2;
+                color: #b91c1c;
+                text-decoration: line-through;
+            }
+            ::ng-deep .prose ins.diffins,
+            ::ng-deep .prose ins.diffmod {
+                background: #dcfce7;
+                color: #15803d;
+                text-decoration: none;
+            }
+        `,
+    ],
 })
 export class ScheduleActivityPage implements OnInit, OnDestroy {
     private readonly api = inject(ExecSummaryApiService);
@@ -87,8 +105,16 @@ export class ScheduleActivityPage implements OnInit, OnDestroy {
         try {
             const detail = await this.api.getScheduleRun(entry.id);
             this.selectedRun = detail;
-            this.currentHtml = detail.content_markdown ? (marked.parse(detail.content_markdown) as string) : '';
-            this.previousHtml = detail.previous_content_markdown ? (marked.parse(detail.previous_content_markdown) as string) : '';
+            const currentRawHtml = detail.content_markdown ? (marked.parse(detail.content_markdown) as string) : '';
+            const previousRawHtml = detail.previous_content_markdown ? (marked.parse(detail.previous_content_markdown) as string) : '';
+            if (currentRawHtml && previousRawHtml) {
+                const merged = HtmlDiff.execute(previousRawHtml, currentRawHtml);
+                this.previousHtml = this.stripTag(merged, 'ins');
+                this.currentHtml = this.stripTag(merged, 'del');
+            } else {
+                this.currentHtml = currentRawHtml;
+                this.previousHtml = previousRawHtml;
+            }
         } catch (err) {
             this.common.showApiError(err);
             this.detailOpen = false;
@@ -99,6 +125,12 @@ export class ScheduleActivityPage implements OnInit, OnDestroy {
 
     closeDetail(): void {
         this.detailOpen = false;
+    }
+
+    private stripTag(html: string, tag: 'ins' | 'del'): string {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        doc.body.querySelectorAll(tag).forEach(el => el.remove());
+        return doc.body.innerHTML;
     }
 
     private rebuildColDefs(): void {
