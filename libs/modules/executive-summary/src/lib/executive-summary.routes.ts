@@ -30,6 +30,14 @@ const EXEC_SUMMARY_NAV: MenuModel[] = [
     },
     {
         id: 3,
+        name: 'executive-summary-schedule-activity',
+        menu: 'executiveSummary.scheduleActivity.title',
+        activatedRoute: true,
+        icon: MenuIcon.Invoice,
+        link: '/executive-summary/schedule-activity',
+    },
+    {
+        id: 4,
         name: 'executive-summary-guardrails',
         menu: 'executiveSummary.guardrails.title',
         activatedRoute: true,
@@ -37,7 +45,7 @@ const EXEC_SUMMARY_NAV: MenuModel[] = [
         link: '/executive-summary/guardrails',
     },
     {
-        id: 4,
+        id: 5,
         name: 'executive-summary-my-tasks',
         menu: 'executiveSummary.myTasks.title',
         activatedRoute: true,
@@ -45,7 +53,7 @@ const EXEC_SUMMARY_NAV: MenuModel[] = [
         link: '/executive-summary/my-tasks',
     },
     {
-        id: 5,
+        id: 6,
         name: 'executive-summary-feedback',
         menu: 'executiveSummary.feedback.title',
         activatedRoute: true,
@@ -53,7 +61,7 @@ const EXEC_SUMMARY_NAV: MenuModel[] = [
         link: '/executive-summary/feedback',
     },
     {
-        id: 6,
+        id: 7,
         name: 'executive-summary-analytics',
         menu: 'executiveSummary.analytics.title',
         activatedRoute: true,
@@ -90,6 +98,11 @@ export const EXECUTIVE_SUMMARY_ROUTES: Route[] = [
                 path: 'scheduled-jobs',
                 loadComponent: () => import('./pages/scheduled-jobs/scheduled-jobs').then(m => m.ScheduledJobsPage),
                 data: { name: 'executive-summary-scheduled-jobs' },
+            },
+            {
+                path: 'schedule-activity',
+                loadComponent: () => import('./pages/schedule-activity/schedule-activity').then(m => m.ScheduleActivityPage),
+                data: { name: 'executive-summary-schedule-activity' },
             },
             {
                 path: 'guardrails',

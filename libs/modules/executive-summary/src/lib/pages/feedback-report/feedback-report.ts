@@ -5,57 +5,91 @@ import { TranslateModule } from '@ngx-translate/core';
 import { PageHeaderComponent } from '@nfinyx/page-header';
 import { StatCardComponent } from '@nfinyx/stat-card';
 import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
 
 import { ExecSummaryApiService } from '../../services/exec-summary-api.service';
-import { FeedbackEntry } from '../../models/executive-summary.models';
+import { FeedbackEntry, FeedbackStats } from '../../models/executive-summary.models';
+
+const PAGE_SIZE = 8;
+const ANY = 'Any rating';
+const RATING_OPTIONS = [ANY, '5 stars', '4 stars', '3 stars', '2 stars', '1 star'];
 
 @Component({
     selector: 'lib-feedback-report',
     standalone: true,
-    imports: [CommonModule, FormsModule, TranslateModule, InputTextModule, DatePipe, PageHeaderComponent, StatCardComponent],
+    imports: [CommonModule, FormsModule, TranslateModule, InputTextModule, SelectModule, DatePipe, PageHeaderComponent, StatCardComponent],
     templateUrl: './feedback-report.html',
 })
 export class FeedbackReportPage implements OnInit {
     private readonly api = inject(ExecSummaryApiService);
 
+    readonly anyOption = ANY;
+    readonly ratingOptions = RATING_OPTIONS;
+
     feedback: FeedbackEntry[] = [];
+    total = 0;
+    page = 1;
+    hasMore = false;
     loading = false;
+
+    stats: FeedbackStats | null = null;
+    statsLoading = false;
+
     search = '';
+    ratingFilter = ANY;
+    private searchTimer?: ReturnType<typeof setTimeout>;
 
     async ngOnInit(): Promise<void> {
-        this.loading = true;
-        try {
-            this.feedback = await this.api.listFeedback();
-        } finally {
-            this.loading = false;
-        }
+        await Promise.all([this.loadStats(), this.loadFeedback(1)]);
     }
 
-    get averageRating(): number {
-        if (!this.feedback.length) return 0;
-        return this.feedback.reduce((sum, f) => sum + f.rating, 0) / this.feedback.length;
+    get totalPages(): number {
+        return Math.max(1, Math.ceil(this.total / PAGE_SIZE));
     }
 
     get averageRatingDisplay(): string {
-        return this.feedback.length ? `${this.averageRating.toFixed(1)} / 5` : '—';
+        return this.stats?.total ? `${this.stats.average_rating.toFixed(1)} / 5` : '—';
     }
 
-    get withCommentsCount(): number {
-        return this.feedback.filter(f => f.comment && f.comment.trim()).length;
+    private get ratingValue(): number | undefined {
+        return this.ratingFilter === ANY ? undefined : Number(this.ratingFilter.charAt(0));
     }
 
-    get distribution(): { stars: number; count: number; pct: number }[] {
-        const total = this.feedback.length;
-        return [5, 4, 3, 2, 1].map(stars => {
-            const count = this.feedback.filter(f => f.rating === stars).length;
-            return { stars, count, pct: total ? (count / total) * 100 : 0 };
-        });
+    onSearchChange(value: string): void {
+        this.search = value;
+        clearTimeout(this.searchTimer);
+        this.searchTimer = setTimeout(() => void this.loadFeedback(1), 300);
     }
 
-    get filteredFeedback(): FeedbackEntry[] {
-        const q = this.search.trim().toLowerCase();
-        if (!q) return this.feedback;
-        return this.feedback.filter(f => (f.comment || '').toLowerCase().includes(q));
+    onRatingFilterChange(): void {
+        void this.loadFeedback(1);
+    }
+
+    async loadStats(): Promise<void> {
+        this.statsLoading = true;
+        try {
+            this.stats = await this.api.getFeedbackStats();
+        } finally {
+            this.statsLoading = false;
+        }
+    }
+
+    async loadFeedback(page: number): Promise<void> {
+        this.loading = true;
+        try {
+            const res = await this.api.searchFeedback({
+                q: this.search.trim() || undefined,
+                rating: this.ratingValue,
+                limit: PAGE_SIZE,
+                offset: (page - 1) * PAGE_SIZE,
+            });
+            this.feedback = res.items;
+            this.total = res.total;
+            this.hasMore = res.has_more;
+            this.page = page;
+        } finally {
+            this.loading = false;
+        }
     }
 
     stars(rating: number): number[] {

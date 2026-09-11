@@ -17,6 +17,8 @@ import {
     ExportResponse,
     FeedbackEntry,
     FeedbackRequest,
+    FeedbackSearchParams,
+    FeedbackStats,
     ForkSessionResponse,
     GammaStatusResponse,
     GammaThemeEntry,
@@ -32,6 +34,7 @@ import {
     ModerationFlagEntry,
     OutputFormat,
     PaginatedConversationsResponse,
+    PaginatedFeedbackResponse,
     PaginatedHistoryResponse,
     Provider,
     RefineResponse,
@@ -40,6 +43,8 @@ import {
     SaveReportRequest,
     SaveReportResponse,
     ScheduledJobEntry,
+    ScheduledJobRunDetail,
+    ScheduledJobRunListResponse,
     ScheduleJobRequest,
     ShareResult,
     SourceHit,
@@ -60,6 +65,7 @@ const ExecSummaryApiPaths = {
     tasks: '/tasks',
     feedback: '/feedback',
     schedules: '/schedules',
+    scheduleRuns: '/schedule-runs',
     adminSettings: '/admin/settings',
     instructions: '/instructions',
     moderationFlags: '/moderation/flags',
@@ -279,8 +285,14 @@ export class ExecSummaryApiService extends ExecSummaryApiBase {
         );
     }
 
-    listFeedback(): Promise<FeedbackEntry[]> {
-        return this.get<FeedbackEntry[]>(ExecSummaryApiPaths.feedback);
+    searchFeedback(params: FeedbackSearchParams): Promise<PaginatedFeedbackResponse> {
+        return this.get<PaginatedFeedbackResponse>(ExecSummaryApiPaths.feedback, {
+            q: params.q, rating: params.rating, limit: params.limit, offset: params.offset,
+        });
+    }
+
+    getFeedbackStats(): Promise<FeedbackStats> {
+        return this.get<FeedbackStats>(`${ExecSummaryApiPaths.feedback}/stats`);
     }
 
     createSchedule(sessionId: string, payload: ScheduleJobRequest): Promise<ScheduledJobEntry> {
@@ -296,6 +308,16 @@ export class ExecSummaryApiService extends ExecSummaryApiBase {
 
     cancelSchedule(jobId: number): Promise<ScheduledJobEntry> {
         return this.delete<ScheduledJobEntry>(`${ExecSummaryApiPaths.schedules}/${jobId}`);
+    }
+
+    listScheduleRuns(params: { jobId?: number; limit?: number; offset?: number } = {}): Promise<ScheduledJobRunListResponse> {
+        return this.get<ScheduledJobRunListResponse>(ExecSummaryApiPaths.scheduleRuns, {
+            job_id: params.jobId, limit: params.limit, offset: params.offset,
+        });
+    }
+
+    getScheduleRun(runId: number): Promise<ScheduledJobRunDetail> {
+        return this.get<ScheduledJobRunDetail>(`${ExecSummaryApiPaths.scheduleRuns}/${runId}`);
     }
 
     getAdminSettings(): Promise<AdminSettingsResponse> {

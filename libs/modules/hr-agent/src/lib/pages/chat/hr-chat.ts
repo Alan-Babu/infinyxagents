@@ -28,6 +28,10 @@ interface ConversationGroup {
     items: ConversationSummary[];
 }
 
+/** Conversations shown per page in the history sidebar — keeps a heavy
+ * chat history from dumping every past conversation into the DOM at once. */
+const HISTORY_PAGE_SIZE = 10;
+
 @Component({
     selector: 'lib-hr-chat',
     standalone: true,
@@ -53,6 +57,9 @@ export class HrChatPage implements OnInit {
 
     conversations: ConversationSummary[] = [];
     loadingHistory = false;
+    historyPage = 1;
+    historyTotal = 0;
+    historyHasMore = false;
 
     readonly quickActions = QUICK_ACTIONS;
 
@@ -74,6 +81,10 @@ export class HrChatPage implements OnInit {
         await this.refreshConversations();
     }
 
+    get totalHistoryPages(): number {
+        return Math.max(1, Math.ceil(this.historyTotal / HISTORY_PAGE_SIZE));
+    }
+
     get groupedConversations(): ConversationGroup[] {
         const startOfToday = new Date();
         startOfToday.setHours(0, 0, 0, 0);
@@ -84,6 +95,7 @@ export class HrChatPage implements OnInit {
             { labelKey: 'hrAgent.history.older', items: [] },
         ];
 
+        // `conversations` is already just the current server-fetched page.
         for (const conversation of this.conversations) {
             const created = new Date(conversation.created_at);
             const dayDiff = Math.floor((startOfToday.getTime() - created.setHours(0, 0, 0, 0)) / 86_400_000);
@@ -93,6 +105,14 @@ export class HrChatPage implements OnInit {
         }
 
         return groups.filter(group => group.items.length > 0);
+    }
+
+    async prevHistoryPage(): Promise<void> {
+        if (this.historyPage > 1) await this.loadConversationsPage(this.historyPage - 1);
+    }
+
+    async nextHistoryPage(): Promise<void> {
+        if (this.historyHasMore) await this.loadConversationsPage(this.historyPage + 1);
     }
 
     get currentTitle(): string {
@@ -282,7 +302,12 @@ export class HrChatPage implements OnInit {
         this.loadingHistory = true;
         try {
             await this.chat.deleteConversation(conversation.id);
-            this.conversations = this.conversations.filter(c => c.id !== conversation.id);
+            // Reload from the server — deleting an item shifts every later
+            // page's contents, so a local splice can't keep
+            // historyTotal/pagination correct on its own. Step back a page
+            // if this delete just emptied the last one.
+            const page = this.conversations.length === 1 ? Math.max(1, this.historyPage - 1) : this.historyPage;
+            await this.loadConversationsPage(page);
             if (this.conversationId === conversation.id) this.newChat();
         } finally {
             this.loadingHistory = false;
@@ -309,11 +334,24 @@ export class HrChatPage implements OnInit {
         await this.send();
     }
 
+    /** Reloads from page 1 — used after sending the first message of a new
+     * conversation, since that conversation belongs at the top. */
     private async refreshConversations(): Promise<void> {
+        await this.loadConversationsPage(1);
+    }
+
+    private async loadConversationsPage(page: number): Promise<void> {
+        this.loadingHistory = true;
         try {
-            this.conversations = await this.chat.listConversations();
+            const res = await this.chat.listConversations(HISTORY_PAGE_SIZE, (page - 1) * HISTORY_PAGE_SIZE);
+            this.conversations = res.items;
+            this.historyTotal = res.total;
+            this.historyHasMore = res.has_more;
+            this.historyPage = page;
         } catch {
             // Non-fatal: the history panel just stays empty.
+        } finally {
+            this.loadingHistory = false;
         }
     }
 

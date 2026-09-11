@@ -27,7 +27,10 @@
             "today": "Today",
             "previous7Days": "Previous 7 Days",
             "older": "Older",
-            "delete": "Delete conversation"
+            "delete": "Delete conversation",
+            "previousPage": "Previous",
+            "nextPage": "Next",
+            "pageLabel": "Page {{page}} of {{total}}"
         },
         "actions": {
             "readAloud": "Read aloud",

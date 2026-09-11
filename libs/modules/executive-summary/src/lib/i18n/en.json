@@ -43,6 +43,30 @@
             "confirmCancel": "Cancel the recurring job for \"{{ topic }}\"?",
             "cancelFailed": "Could not cancel this job. Please try again."
         },
+        "scheduleActivity": {
+            "title": "Schedule Activity",
+            "subtitle": "Every time a recurring report ran, what was sent, and what changed since last time.",
+            "totalRuns": "Total runs",
+            "emailedLabel": "Emailed",
+            "failedLabel": "Failed",
+            "job": "Job",
+            "mailedAt": "Run at",
+            "status": "Status",
+            "emailed": "Emailed",
+            "changed": "Changed",
+            "success": "Success",
+            "failed": "Failed",
+            "emailedYes": "Emailed",
+            "emailedNo": "Not emailed",
+            "changedYes": "Changed",
+            "changedNo": "No change",
+            "empty": "No runs yet. Once a scheduled report runs, it will show up here.",
+            "runDetail": "Run detail",
+            "unknownError": "An unknown error occurred.",
+            "previousVersion": "Previous version",
+            "thisVersion": "This version",
+            "noPreviousRun": "No previous run to compare — this was the first run."
+        },
         "guardrails": {
             "title": "Audit & Compliance",
             "subtitle": "Blocked and flagged searches: content the agent refused, kept for review.",
@@ -101,8 +125,9 @@
             "noRatings": "No ratings submitted yet.",
             "recentFeedback": "Recent feedback",
             "searchComments": "Search comments…",
+            "anyRating": "Any rating",
             "noComment": "No comment left",
-            "noMatch": "No feedback matches \"{{ search }}\".",
+            "noMatch": "No feedback matches your search/filters.",
             "empty": "Nothing here yet. Ratings show up once people rate a generated brief."
         },
         "adminSettings": {

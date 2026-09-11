@@ -27,7 +27,10 @@
             "today": "اليوم",
             "previous7Days": "آخر 7 أيام",
             "older": "أقدم",
-            "delete": "حذف المحادثة"
+            "delete": "حذف المحادثة",
+            "previousPage": "السابق",
+            "nextPage": "التالي",
+            "pageLabel": "صفحة {{page}} من {{total}}"
         },
         "actions": {
             "readAloud": "قراءة بصوت عالٍ",

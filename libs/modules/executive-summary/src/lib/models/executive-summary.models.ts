@@ -292,6 +292,34 @@ export interface FeedbackEntry {
     created_at: string;
 }
 
+export interface PaginatedFeedbackResponse {
+    items: FeedbackEntry[];
+    total: number;
+    limit: number;
+    offset: number;
+    has_more: boolean;
+}
+
+export interface FeedbackSearchParams {
+    q?: string;
+    rating?: number;
+    limit: number;
+    offset: number;
+}
+
+export interface RatingBucket {
+    stars: number;
+    count: number;
+    pct: number;
+}
+
+export interface FeedbackStats {
+    average_rating: number;
+    total: number;
+    with_comments: number;
+    distribution: RatingBucket[];
+}
+
 export interface ScheduleJobRequest {
     frequency: 'daily' | 'weekly' | 'monthly' | 'quarterly';
     time_of_day: string;
@@ -323,6 +351,33 @@ export interface ScheduledJobEntry {
     last_error_message?: string | null;
     next_run_at?: string | null;
     created_at: string;
+}
+
+/** One execution of a ScheduledJobEntry — the Activity feed's list-row shape (no content). */
+export interface ScheduledJobRunEntry {
+    id: number;
+    job_id: number;
+    topic: string;
+    timezone: string;
+    run_at: string;
+    status: 'success' | 'failed';
+    emailed: boolean;
+    changed?: boolean | null;
+    title?: string | null;
+    error_message?: string | null;
+}
+
+/** A single run's full detail, plus the run before it for a side-by-side "what changed" view. */
+export interface ScheduledJobRunDetail extends ScheduledJobRunEntry {
+    content_markdown?: string | null;
+    previous_run_at?: string | null;
+    previous_title?: string | null;
+    previous_content_markdown?: string | null;
+}
+
+export interface ScheduledJobRunListResponse {
+    runs: ScheduledJobRunEntry[];
+    total: number;
 }
 
 export const ALL_FRAMEWORKS = ["PESTLE", "Porter's Five Forces", 'DEEPLIST', 'McKinsey 7-S Model', 'SWOT', 'SOAR'];

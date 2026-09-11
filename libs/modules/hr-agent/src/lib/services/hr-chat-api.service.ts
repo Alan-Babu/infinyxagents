@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiService, AuthService } from '@nfinyx/services';
-import { AttachmentRef, ChatMessage, ChatResponse, ConversationSummary } from '../models/hr-agent.models';
+import { AttachmentRef, ChatMessage, ChatResponse, PaginatedConversationsResponse } from '../models/hr-agent.models';
 
 export interface StreamHandlers {
     onStatus: (text: string) => void;
@@ -93,8 +93,8 @@ export class HrChatApiService extends ApiService {
         return this.get<ChatMessage[]>(`${HrChatApiPaths.conversations}/${conversationId}/messages`);
     }
 
-    listConversations(): Promise<ConversationSummary[]> {
-        return this.get<ConversationSummary[]>(HrChatApiPaths.conversations);
+    listConversations(limit: number, offset: number): Promise<PaginatedConversationsResponse> {
+        return this.get<PaginatedConversationsResponse>(HrChatApiPaths.conversations, { limit, offset });
     }
 
     deleteConversation(conversationId: string): Promise<void> {
