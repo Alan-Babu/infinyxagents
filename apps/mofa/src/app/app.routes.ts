@@ -55,6 +55,11 @@ export const appRoutes: Route[] = [
                     import('@nfinyx/digital-attestation').then(m => m.DIGITAL_ATTESTATION_ROUTES),
             },
             {
+                path: 'user-profile',
+                loadChildren: () =>
+                    import('@nfinyx/user-profile').then(m => m.USER_PROFILE_ROUTES),
+            },
+            {
                 path: 'asset-intelligence',
                 loadChildren: () =>
                     import('@nfinyx/asset-intelligence').then(m => m.ASSET_INTELLIGENCE_ROUTES),

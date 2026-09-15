@@ -1,0 +1,152 @@
+<lib-page-header [titleKey]="'userProfile.activity.title'" [subtitleKey]="'userProfile.activity.subtitle'" [showBack]="false"></lib-page-header>
+
+<div class="flex flex-col gap-5 p-5">
+    <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-5">
+        <lib-stat-card
+            [label]="'userProfile.activity.stats.total' | translate"
+            [value]="totalActivities"
+            [sub]="'userProfile.activity.stats.totalSub' | translate: { count: agentsUsedCount }"
+            icon="pi pi-list"
+            fgClass="text-primary-600"
+            bgClass="bg-primary-50"
+        />
+        <lib-stat-card
+            [label]="'userProfile.activity.stats.agentsUsed' | translate"
+            [value]="agentsUsedCount"
+            [sub]="'userProfile.activity.stats.agentsUsedSub' | translate: { total: realAgentTiles.length }"
+            icon="pi pi-sitemap"
+            fgClass="text-sky-600"
+            bgClass="bg-sky-50"
+        />
+        <lib-stat-card
+            [label]="'userProfile.activity.stats.avgPerDay' | translate"
+            [value]="avgPerDay"
+            [sub]="'userProfile.activity.stats.avgPerDaySub' | translate"
+            icon="pi pi-calendar"
+            fgClass="text-gray-600"
+            bgClass="bg-gray-100"
+        />
+        <lib-stat-card
+            [label]="'userProfile.activity.stats.needsReview' | translate"
+            [value]="needsReviewCount"
+            [sub]="'userProfile.activity.stats.needsReviewSub' | translate"
+            icon="pi pi-exclamation-triangle"
+            [fgClass]="needsReviewCount ? 'text-amber-600' : 'text-gray-600'"
+            [bgClass]="needsReviewCount ? 'bg-amber-50' : 'bg-gray-100'"
+        />
+        <lib-stat-card
+            [label]="'userProfile.activity.stats.mostUsed' | translate"
+            [value]="mostUsedAgentName"
+            [sub]="'userProfile.activity.stats.mostUsedSub' | translate"
+            icon="pi pi-star"
+            fgClass="text-primary-600"
+            bgClass="bg-primary-50"
+        />
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2.5">
+        <span class="relative min-w-56 flex-1">
+            <i class="pi pi-search absolute start-3 top-1/2 -translate-y-1/2 text-xs text-gray-400"></i>
+            <input
+                pInputText
+                type="text"
+                class="w-full ps-8"
+                [placeholder]="'userProfile.activity.filters.searchPlaceholder' | translate"
+                [(ngModel)]="search"
+                (ngModelChange)="applyFilters()"
+            />
+        </span>
+        <p-select [options]="agentOptions" [(ngModel)]="agentFilter" optionLabel="label" optionValue="value" styleClass="min-w-48" appendTo="body" (ngModelChange)="applyFilters()" />
+        <p-select [options]="statusOptions" [(ngModel)]="statusFilter" optionLabel="label" optionValue="value" styleClass="min-w-44" appendTo="body" (ngModelChange)="applyFilters()" />
+        <p-select [options]="rangeOptions" [(ngModel)]="range" optionLabel="label" optionValue="value" styleClass="min-w-40" appendTo="body" (ngModelChange)="applyFilters()" />
+    </div>
+
+    <div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <div class="rounded-lg border border-gray-200 bg-white p-5">
+            @if (filteredActivities.length === 0) {
+                <lib-no-data [message]="'userProfile.activity.empty.message' | translate" [subMessage]="'userProfile.activity.empty.subMessage' | translate" icon="pi pi-search" />
+            } @else {
+                @for (group of groupedFeed; track group.day) {
+                    <div class="mb-2 mt-5 text-xs font-bold uppercase tracking-wide text-gray-400 first:mt-0">{{ group.day }}</div>
+                    @for (activity of group.items; track activity.id) {
+                        <button
+                            type="button"
+                            class="flex w-full cursor-pointer items-start gap-3 rounded-lg p-3 text-start hover:bg-gray-50"
+                            (click)="openDrawer(activity)"
+                        >
+                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-50">
+                                <i class="text-lg text-primary-600" [ngClass]="agentTile(activity.agentId)?.icon"></i>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex flex-wrap items-baseline gap-2">
+                                    <span class="text-sm font-semibold text-gray-800">{{ agentNameKey(activity.agentId) | translate }}</span>
+                                    <span class="text-xs text-gray-400">{{ agentTile(activity.agentId)?.categoryKey | translate }}</span>
+                                </div>
+                                <div class="mt-0.5 text-sm text-gray-600">{{ activity.action }}</div>
+                                <div class="mt-1.5 flex flex-wrap items-center gap-2">
+                                    <span class="text-xs text-gray-400">{{ formatTime(activity.ts) }}</span>
+                                    <p-tag [value]="statusLabelKey[activity.status] | translate" [severity]="statusSeverity[activity.status]" />
+                                </div>
+                            </div>
+                        </button>
+                    }
+                }
+            }
+        </div>
+
+        <div class="flex flex-col gap-5">
+            <div class="rounded-lg border border-gray-200 bg-white p-5">
+                <div class="text-sm font-semibold text-gray-800">{{ 'userProfile.activity.panels.resumeTitle' | translate }}</div>
+                <div class="mb-3 text-xs text-gray-400">{{ 'userProfile.activity.panels.resumeSub' | translate }}</div>
+                @for (activity of resumeCards; track activity.id) {
+                    <button type="button" class="flex w-full cursor-pointer items-center gap-3 rounded-lg p-2 text-start hover:bg-gray-50" (click)="openDrawer(activity)">
+                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary-50">
+                            <i class="text-sm text-primary-600" [ngClass]="agentTile(activity.agentId)?.icon"></i>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="truncate text-sm font-semibold text-gray-800">{{ agentNameKey(activity.agentId) | translate }}</div>
+                            <div class="text-xs text-gray-400">{{ resumeSubtitle(activity) }}</div>
+                        </div>
+                        <i class="pi pi-arrow-right text-xs text-gray-400"></i>
+                    </button>
+                }
+            </div>
+
+            <div class="rounded-lg border border-gray-200 bg-white p-5">
+                <div class="text-sm font-semibold text-gray-800">{{ 'userProfile.activity.panels.usageTitle' | translate }}</div>
+                <div class="mb-3 text-xs text-gray-400">{{ 'userProfile.activity.panels.usageSub' | translate }}</div>
+                @for (entry of usageByAgent; track entry.agentId) {
+                    <button type="button" class="flex w-full cursor-pointer items-center gap-2.5 rounded-lg p-1.5 text-start hover:bg-gray-50" (click)="setAgentFilter(entry.agentId)">
+                        <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary-50">
+                            <i class="text-xs text-primary-600" [ngClass]="agentTile(entry.agentId)?.icon"></i>
+                        </div>
+                        <div class="w-28 truncate text-xs font-semibold text-gray-800">{{ agentNameKey(entry.agentId) | translate }}</div>
+                        <div class="h-1.5 min-w-10 flex-1 overflow-hidden rounded-full bg-gray-100">
+                            <div class="h-full rounded-full bg-primary-500" [style.width.%]="(entry.count / maxUsageCount) * 100"></div>
+                        </div>
+                        <div class="w-5 shrink-0 text-end text-xs text-gray-400">{{ entry.count }}</div>
+                    </button>
+                }
+            </div>
+
+            <div class="rounded-lg border border-gray-200 bg-white p-5">
+                <div class="text-sm font-semibold text-gray-800">{{ 'userProfile.activity.panels.categoryTitle' | translate }}</div>
+                <div class="mb-3 text-xs text-gray-400">{{ 'userProfile.activity.panels.categorySub' | translate }}</div>
+                <div class="mb-3 flex h-2.5 overflow-hidden rounded-full">
+                    @for (segment of categoryMix; track segment.categoryKey) {
+                        <div [ngClass]="segment.colorClass" [style.width.%]="(segment.count / categoryTotal) * 100"></div>
+                    }
+                </div>
+                @for (segment of categoryMix; track segment.categoryKey) {
+                    <div class="flex items-center gap-2 py-1.5 text-xs text-gray-600">
+                        <span class="h-2 w-2 shrink-0 rounded-sm" [ngClass]="segment.colorClass"></span>
+                        <span>{{ segment.categoryKey | translate }}</span>
+                        <span class="ms-auto font-semibold text-gray-800">{{ segment.count }}</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<lib-activity-detail-drawer [activity]="selectedActivity" (closed)="closeDrawer()"></lib-activity-detail-drawer>

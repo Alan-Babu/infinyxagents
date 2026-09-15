@@ -1,0 +1,57 @@
+<div class="border-b border-gray-200 bg-white">
+    <div class="relative h-24 bg-linear-to-br from-primary-700 via-primary-500 to-primary-400">
+        <div class="absolute -bottom-6 start-6 flex h-14 w-14 items-center justify-center rounded-full border-2 border-white bg-primary-100 text-primary-600">
+            <i class="pi pi-user text-xl"></i>
+        </div>
+    </div>
+    @if (user(); as u) {
+        <div class="px-6 pb-6 pt-9">
+            <div class="text-lg font-semibold text-primary-700">{{ u.displayName || u.email }}</div>
+            <div class="mt-4 space-y-3 text-sm">
+                @if (u.role) {
+                    <div>
+                        <div class="text-gray-500">{{ 'userProfile.card.role' | translate }}</div>
+                        <div class="font-medium text-gray-800">{{ u.role }}</div>
+                    </div>
+                }
+                @if (u.email) {
+                    <div>
+                        <div class="text-gray-500">{{ 'userProfile.card.email' | translate }}</div>
+                        <div class="font-medium text-gray-800">{{ u.email }}</div>
+                    </div>
+                }
+                @if (u.department) {
+                    <div>
+                        <div class="text-gray-500">{{ 'userProfile.card.department' | translate }}</div>
+                        <div class="font-medium text-gray-800">{{ u.department }}</div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<nav class="p-3">
+    @for (section of navSections; track section.headingKey) {
+        <div class="px-2 pb-1.5 pt-2.5 text-xs font-medium uppercase tracking-wider text-gray-400 first:pt-0">
+            {{ section.headingKey | translate }}
+        </div>
+        @for (item of section.items; track item.path) {
+            <a
+                [routerLink]="['/user-profile', item.path]"
+                routerLinkActive="bg-primary-50 text-primary-600"
+                #rla="routerLinkActive"
+                [routerLinkActiveOptions]="{ exact: false }"
+                class="group flex cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium text-gray-600 transition-all duration-150 hover:bg-primary-50 hover:text-primary-600"
+            >
+                <span
+                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors"
+                    [ngClass]="rla.isActive ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-600 group-hover:bg-primary-200 group-hover:text-primary-600'"
+                >
+                    <i class="text-sm" [ngClass]="item.icon"></i>
+                </span>
+                <span>{{ item.labelKey | translate }}</span>
+            </a>
+        }
+    }
+</nav>

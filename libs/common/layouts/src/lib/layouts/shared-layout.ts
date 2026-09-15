@@ -32,7 +32,6 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { Subscription, filter } from 'rxjs';
 import { PopoverModule } from 'primeng/popover';
 import { AGENT_TILES, AgentTile } from '@nfinyx/agents-landing';
-import { ThemeOption, ThemeOptions } from '@nfinyx/services';
 
 @Component({
     selector: 'lib-shared-layout',
@@ -59,13 +58,6 @@ export class SharedLayout implements OnInit, OnDestroy {
     /** True once navigated away from the agents-landing dashboard, to show the header's "back to agents" pill. */
     showBackToAgents = false;
     currentAgent: AgentTile | undefined;
-    readonly languageOptions = [
-        { value: 'en', label: 'EN' },
-        { value: 'ar', label: 'AR' },
-    ];
-    readonly themeOptions = ThemeOptions;
-    currentLanguage = 'en';
-    currentTheme = '';
     private navEndSub?: Subscription;
     public thisYear: number = new Date().getFullYear();
     public version: string = '';
@@ -99,21 +91,8 @@ export class SharedLayout implements OnInit, OnDestroy {
             (event: LangChangeEvent) => {
                 this.mainNavPosition = event.lang == "ar" ? "right" : "left";
                 this.common.updateSidebarPosition(event.lang);
-                this.currentLanguage = event.lang;
             }
         );
-
-        this.currentLanguage = this.common.getLanguage();
-        this.currentTheme = this.common.getThemes();
-    }
-
-    setLanguage(lang: string): void {
-        this.common.switchLanguage(lang);
-    }
-
-    setTheme(theme: ThemeOption | ''): void {
-        this.currentTheme = theme;
-        this.common.setThemes(theme);
     }
 
     async ngOnInit(): Promise<void> {

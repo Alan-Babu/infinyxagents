@@ -61,7 +61,8 @@
       "@nfinyx/translator-agent": [
         "libs/modules/translator-agent/src/index.ts"
       ],
-      "@nfinyx/types": ["libs/common/types/src/index.ts"]
+      "@nfinyx/types": ["libs/common/types/src/index.ts"],
+      "@nfinyx/user-profile": ["libs/common/user-profile/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
