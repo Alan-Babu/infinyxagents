@@ -11,6 +11,87 @@
     --font-arabic: 'Noto Kufi Arabic', sans-serif;
 }
 
+/*
+ * UAE Design System 2.0 — functional colours (https://designsystem.gov.ae/guidelines/colour-system).
+ * Brand gold is supplied per app by the PrimeNG preset (`primary-*`); these are the semantic scales:
+ *   error  = ae-red      success     = ae-green
+ *   warning = ae-camel / ae-desert      information = ae-sea / ae-tech
+ * Text pairs verified for WCAG 2.1 AA: `-700`/`-800` text on `-50` backgrounds, white on `-700`.
+ */
+@theme {
+    --color-ae-green-50: #F3FAF4;
+    --color-ae-green-100: #E4F4E7;
+    --color-ae-green-200: #CAE8CF;
+    --color-ae-green-300: #A0D5AB;
+    --color-ae-green-400: #6FB97F;
+    --color-ae-green-500: #4A9D5C;
+    --color-ae-green-600: #3F8E50;
+    --color-ae-green-700: #2F663C;
+    --color-ae-green-800: #2A5133;
+    --color-ae-green-900: #24432B;
+    --color-ae-green-950: #0F2415;
+
+    --color-ae-red-50: #FEF2F2;
+    --color-ae-red-100: #FDE4E3;
+    --color-ae-red-200: #FDCDCB;
+    --color-ae-red-300: #FAAAA7;
+    --color-ae-red-400: #F47A75;
+    --color-ae-red-500: #EA4F49;
+    --color-ae-red-600: #D83731;
+    --color-ae-red-700: #B52520;
+    --color-ae-red-800: #95231F;
+    --color-ae-red-900: #7C2320;
+    --color-ae-red-950: #430E0C;
+
+    --color-ae-camel-50: #FFFBEB;
+    --color-ae-camel-100: #FDF4C8;
+    --color-ae-camel-200: #FBE68C;
+    --color-ae-camel-300: #FAD44F;
+    --color-ae-camel-400: #F8C027;
+    --color-ae-camel-500: #F29F0E;
+    --color-ae-camel-600: #D67909;
+    --color-ae-camel-700: #B2550B;
+    --color-ae-camel-800: #904110;
+    --color-ae-camel-900: #773610;
+    --color-ae-camel-950: #441B04;
+
+    --color-ae-desert-50: #FEF5EE;
+    --color-ae-desert-100: #FCE9D8;
+    --color-ae-desert-200: #F9CFAF;
+    --color-ae-desert-300: #F5AC7C;
+    --color-ae-desert-400: #EF8048;
+    --color-ae-desert-500: #EB5F24;
+    --color-ae-desert-600: #E54B1D;
+    --color-ae-desert-700: #B73417;
+    --color-ae-desert-800: #922B1A;
+    --color-ae-desert-900: #762518;
+    --color-ae-desert-950: #3F100B;
+
+    --color-ae-sea-50: #EFFAFF;
+    --color-ae-sea-100: #DEF3FF;
+    --color-ae-sea-200: #B6EAFF;
+    --color-ae-sea-300: #75DBFF;
+    --color-ae-sea-400: #2CCAFF;
+    --color-ae-sea-500: #00ABEB;
+    --color-ae-sea-600: #0090D4;
+    --color-ae-sea-700: #0073AB;
+    --color-ae-sea-800: #00608D;
+    --color-ae-sea-900: #065074;
+    --color-ae-sea-950: #04334D;
+
+    --color-ae-tech-50: #E7F5FF;
+    --color-ae-tech-100: #D3EDFF;
+    --color-ae-tech-200: #B0DBFF;
+    --color-ae-tech-300: #81C1FF;
+    --color-ae-tech-400: #4F98FF;
+    --color-ae-tech-500: #286CFF;
+    --color-ae-tech-600: #043DFF;
+    --color-ae-tech-700: #003CFF;
+    --color-ae-tech-800: #002DC2;
+    --color-ae-tech-900: #0B32A4;
+    --color-ae-tech-950: #071C5F;
+}
+
 @font-face {
   font-display: swap;
   font-family: 'Inter';

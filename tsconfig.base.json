@@ -48,6 +48,7 @@
       "@nfinyx/hr-agent": ["libs/modules/hr-agent/src/index.ts"],
       "@nfinyx/icon": ["libs/common/icon/src/index.ts"],
       "@nfinyx/layouts": ["libs/common/layouts/src/index.ts"],
+      "@nfinyx/legal-ai": ["libs/modules/legal-ai/src/index.ts"],
       "@nfinyx/loader": ["libs/common/components/loader/src/index.ts"],
       "@nfinyx/main-menu": ["libs/common/main-menu/src/index.ts"],
       "@nfinyx/mofa-chatbot": ["libs/modules/mofa-chatbot/src/index.ts"],

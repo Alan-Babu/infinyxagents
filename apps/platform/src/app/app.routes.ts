@@ -70,6 +70,11 @@ export const appRoutes: Route[] = [
                     import('@nfinyx/contract-analyzer').then(m => m.CONTRACT_ANALYZER_ROUTES),
             },
             {
+                path: 'legal-ai',
+                loadChildren: () =>
+                    import('@nfinyx/legal-ai').then(m => m.LEGAL_AI_ROUTES),
+            },
+            {
                 path: 'translator-agent',
                 loadChildren: () =>
                     import('@nfinyx/translator-agent').then(m => m.TRANSLATOR_AGENT_ROUTES),

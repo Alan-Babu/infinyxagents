@@ -1,0 +1,63 @@
+<p-drawer [visible]="ui.uploadOpen()" position="right" appendTo="body" [baseZIndex]="1200" styleClass="p-drawer-md" [closeOnEscape]="!upload.busy()" [dismissible]="!upload.busy()" (onHide)="close()">
+    <ng-template #header>
+        <div class="flex flex-col">
+            <span class="text-lg font-semibold text-gray-800">{{ 'legalAi.uploadTitle' | translate }}</span>
+            <span class="text-xs text-gray-500">{{ 'legalAi.uploadSub' | translate }}</span>
+        </div>
+    </ng-template>
+
+    <div class="flex flex-col gap-5">
+        @if (upload.file(); as file) {
+        <div class="border-primary-200 bg-primary-50 flex items-center gap-3 rounded-lg border p-3">
+            <i class="pi pi-file text-primary-600 text-2xl" aria-hidden="true"></i>
+            <div class="min-w-0 flex-1">
+                <p class="truncate text-sm font-semibold text-gray-800">{{ file.name }}</p>
+                <p class="text-xs text-gray-500 tabular-nums">{{ size(file.size) }}</p>
+            </div>
+            <button type="button" class="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-gray-500 hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
+                [attr.aria-label]="'legalAi.removeFile' | translate" [disabled]="upload.busy()" (click)="upload.clear()">
+                <i class="pi pi-times text-sm" aria-hidden="true"></i>
+            </button>
+        </div>
+        } @else {
+        <label for="legal-ai-upload-file"
+            class="hover:border-primary-400 hover:bg-primary-50 focus-within:border-primary-400 flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed px-4 py-12 text-center transition-colors"
+            [class]="dropping() ? 'border-primary-400 bg-primary-50' : 'border-gray-200'"
+            (dragover)="onDrag($event, true)" (dragleave)="onDrag($event, false)" (drop)="onDrop($event)">
+            <span class="bg-primary-100 text-primary-600 inline-flex h-12 w-12 items-center justify-center rounded-full"><i class="pi pi-upload text-lg" aria-hidden="true"></i></span>
+            <span class="max-w-xs text-sm font-semibold text-gray-700">{{ dropping() ? ('legalAi.dropActive' | translate) : ('legalAi.dropText' | translate) }}</span>
+            <input id="legal-ai-upload-file" class="sr-only" type="file" name="file" accept=".pdf,.docx,.txt" [attr.aria-label]="'legalAi.fileLabel' | translate" (change)="onPick($event)" />
+        </label>
+        }
+
+        @if (upload.busy()) {
+        <p-progressbar mode="indeterminate" styleClass="h-1.5!" [attr.aria-label]="'legalAi.analyzing' | translate" />
+        }
+        <div aria-live="polite" class="flex flex-col gap-2">
+            @if (upload.error(); as message) {
+            <p class="flex items-start gap-2 rounded-lg border border-ae-red-200 bg-ae-red-50 px-3 py-2 text-sm text-ae-red-700" role="alert"><i class="pi pi-exclamation-circle mt-0.5" aria-hidden="true"></i>{{ message }}</p>
+            }
+            @if (upload.notice(); as notice) {
+            <p class="flex items-start gap-2 rounded-lg border border-ae-sea-200 bg-ae-sea-50 px-3 py-2 text-sm text-ae-sea-800"><i class="pi pi-info-circle mt-0.5" aria-hidden="true"></i>{{ notice }}</p>
+            }
+        </div>
+
+        <div>
+            <h3 class="text-sm font-semibold text-gray-800">{{ 'legalAi.pipelineTitle' | translate }}</h3>
+            <ul class="mt-2 flex flex-col gap-2 text-sm text-gray-600">
+                <li class="flex gap-2"><i class="pi pi-check-circle mt-0.5 text-ae-green-700" aria-hidden="true"></i>{{ 'legalAi.pipeline1' | translate }}</li>
+                <li class="flex gap-2"><i class="pi pi-check-circle mt-0.5 text-ae-green-700" aria-hidden="true"></i>{{ 'legalAi.pipeline2' | translate }}</li>
+                <li class="flex gap-2"><i class="pi pi-check-circle mt-0.5 text-ae-green-700" aria-hidden="true"></i>{{ 'legalAi.pipeline3' | translate }}</li>
+            </ul>
+        </div>
+    </div>
+
+    <ng-template #footer>
+        <div class="flex w-full justify-end gap-2">
+            <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="upload.busy()" (click)="close()"><span>{{ 'legalAi.cancel' | translate }}</span></button>
+            <button type="button" pButton size="small" [disabled]="!upload.file() || upload.busy()" (click)="upload.submit()">
+                @if (upload.busy()) { <i class="pi pi-spinner pi-spin" aria-hidden="true"></i><span>{{ 'legalAi.analyzing' | translate }}</span> } @else { <span>{{ 'legalAi.runAnalysis' | translate }}</span> }
+            </button>
+        </div>
+    </ng-template>
+</p-drawer>
