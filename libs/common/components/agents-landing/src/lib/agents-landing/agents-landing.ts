@@ -188,15 +188,15 @@ export const AGENT_TILES: AgentTile[] = [
         disabled: true,
     },
     {
-        id: 'nx-legal-ai',
+        // Route id must equal the first URL segment (AgentLayout resolves the current tile from it).
+        id: 'legal-ai',
         icon: 'pi pi-book',
-        link: '',
+        link: '/legal-ai',
         nameKey: 'menu.nxLegalAi',
         descriptionKey: 'agentsLanding.nxLegalAiDesc',
-        categoryKey: 'agentsLanding.category.inLab',
+        categoryKey: 'agentsLanding.category.compliance',
         accent: 'violet',
-        badge: 'IN_LAB',
-        disabled: true,
+        badge: 'BETA',
     },
     {
         id: 'asset-intelligence',

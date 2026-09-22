@@ -1,0 +1,96 @@
+<p-drawer [visible]="store.selectedFinding() !== null" position="right" appendTo="body" [baseZIndex]="1200" styleClass="p-drawer-md" (onHide)="store.closeFinding()">
+    <ng-template #header>
+        <div class="flex flex-col">
+            <span class="text-lg font-semibold text-gray-800">{{ 'legalAi.findingDetail' | translate }} — {{ 'legalAi.clauseWord' | translate }} {{ view()?.clause_number }}</span>
+            <span class="text-xs text-gray-500">{{ view()?.legal_topic }}</span>
+        </div>
+    </ng-template>
+
+    @if (view(); as f) {
+    <div class="flex flex-col gap-5">
+        <div class="flex flex-col gap-2">
+            <span class="text-sm font-semibold text-gray-800">{{ 'legalAi.status' | translate }} &amp; {{ 'legalAi.severity' | translate }}</span>
+            <div class="flex flex-wrap items-center gap-2">
+                <lib-legal-ai-status-tag [status]="f.status" />
+                <lib-legal-ai-severity-tag [severity]="f.severity" />
+                <span class="text-xs text-gray-500 tabular-nums">{{ 'legalAi.confidence' | translate }}: {{ i18n.num(confidencePct()) }}%</span>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <span class="text-sm font-semibold text-gray-800">{{ 'legalAi.origText' | translate }}</span>
+            <div class="border-primary-500 wrap-anywhere whitespace-pre-wrap rounded-lg border-s-4 bg-gray-50 p-4 text-sm leading-relaxed text-gray-700" dir="auto">{{ f.clause_text }}</div>
+        </div>
+
+        @if (f.law_number) {
+        <div class="flex flex-col gap-1">
+            <span class="text-sm font-semibold text-gray-800">{{ 'legalAi.retrievedLaw' | translate }}</span>
+            <p class="text-sm font-semibold text-gray-700">{{ f.law_number }} — {{ f.law_title }}</p>
+            <p class="text-primary-700 text-sm">{{ 'legalAi.article' | translate }} {{ f.article_number }}{{ f.article_title ? ': ' + f.article_title : '' }}</p>
+        </div>
+        }
+
+        <div class="flex flex-col gap-2">
+            <span class="text-sm font-semibold text-gray-800">{{ 'legalAi.evidenceReasoning' | translate }}</span>
+            <p class="wrap-anywhere text-sm leading-relaxed text-gray-700">{{ f.reasoning }}</p>
+            @if (f.evidence) { <p class="wrap-anywhere text-sm leading-relaxed text-gray-500">{{ f.evidence }}</p> }
+        </div>
+
+        @if (f.recommendation) {
+        <div class="flex flex-col gap-2">
+            <span class="text-sm font-semibold text-gray-800">{{ 'legalAi.legalRec' | translate }}</span>
+            <p class="border-primary-200 bg-primary-50 rounded-lg border p-4 text-sm leading-relaxed text-gray-700">{{ f.recommendation }}</p>
+        </div>
+        }
+
+        @if (f.source_url) {
+        <div class="flex flex-col gap-2">
+            <span class="text-sm font-semibold text-gray-800">{{ 'legalAi.authSource' | translate }}</span>
+            <a class="text-primary-700 inline-flex items-center gap-1.5 text-sm font-semibold hover:underline" [href]="f.source_url" target="_blank" rel="noopener noreferrer">
+                {{ 'legalAi.openOfficial' | translate }} ({{ f.law_number }}) <i class="pi pi-external-link text-xs" aria-hidden="true"></i>
+            </a>
+        </div>
+        }
+
+        @if (pending()) {
+        <div class="flex flex-col gap-3 rounded-lg border border-ae-camel-200 bg-ae-camel-50 p-4">
+            <span class="text-sm font-semibold text-ae-camel-800">{{ 'legalAi.humanReview' | translate }}</span>
+            <p class="text-sm text-ae-camel-800">{{ 'legalAi.reviewPending' | translate }}</p>
+            <div class="flex flex-col gap-1.5">
+                <label class="text-sm font-semibold text-gray-800" for="legal-ai-review-note">{{ 'legalAi.reviewNote' | translate }}</label>
+                <textarea id="legal-ai-review-note" name="review_note" rows="3" autocomplete="off" class="w-full rounded-lg border border-gray-300 bg-white p-2 text-sm"
+                    [placeholder]="'legalAi.reviewNoteHint' | translate" [ngModel]="note()" (ngModelChange)="note.set($event)"></textarea>
+            </div>
+            <div class="flex flex-col gap-1.5">
+                <label class="text-sm font-semibold text-gray-800" for="legal-ai-review-status">{{ 'legalAi.rejectStatus' | translate }}</label>
+                <p-select inputId="legal-ai-review-status" [options]="statusOptions()" optionLabel="label" optionValue="value" [ngModel]="status()" (ngModelChange)="status.set($event)" appendTo="body" styleClass="w-full" size="small" />
+            </div>
+            @if (store.reviewError(); as message) { <p class="text-sm text-ae-red-700" role="alert">{{ message }}</p> }
+        </div>
+        } @else if (f.review_status === 'APPROVED' || f.review_status === 'REJECTED') {
+        <div class="flex flex-col gap-2">
+            <span class="text-sm font-semibold text-gray-800">{{ 'legalAi.humanReview' | translate }}</span>
+            <div class="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+                <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 font-semibold"
+                    [class]="f.review_status === 'APPROVED' ? 'border-ae-green-200 bg-ae-green-50 text-ae-green-700' : 'border-ae-red-200 bg-ae-red-50 text-ae-red-700'">
+                    {{ f.review_status === 'APPROVED' ? ('legalAi.reviewApproved' | translate) : ('legalAi.reviewRejected' | translate) }}
+                </span>
+                @if (f.reviewer) { <span>{{ f.reviewer }}</span> }
+                @if (f.reviewed_at) { <span class="tabular-nums">{{ i18n.date(f.reviewed_at, true) }}</span> }
+            </div>
+            @if (f.review_note) { <p class="border-primary-200 bg-primary-50 rounded-lg border p-3 text-sm text-gray-700">{{ f.review_note }}</p> }
+        </div>
+        }
+    </div>
+    }
+
+    <ng-template #footer>
+        <div class="flex w-full flex-wrap justify-end gap-2">
+            @if (pending()) {
+            <button type="button" pButton size="small" severity="danger" [disabled]="store.reviewBusy()" (click)="submit('reject')"><span>{{ store.reviewBusy() ? ('legalAi.reviewing' | translate) : ('legalAi.reject' | translate) }}</span></button>
+            <button type="button" pButton size="small" [disabled]="store.reviewBusy()" (click)="submit('approve')"><span>{{ store.reviewBusy() ? ('legalAi.reviewing' | translate) : ('legalAi.approve' | translate) }}</span></button>
+            }
+            <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="store.closeFinding()"><span>{{ 'legalAi.close' | translate }}</span></button>
+        </div>
+    </ng-template>
+</p-drawer>

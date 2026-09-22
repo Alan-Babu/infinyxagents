@@ -1,0 +1,87 @@
+<p-drawer [visible]="qa.open()" position="right" appendTo="body" [baseZIndex]="1200" styleClass="p-drawer-md" (onHide)="qa.hide()">
+    <ng-template #header>
+        <div class="flex flex-col">
+            <span class="text-lg font-semibold text-gray-800">{{ 'legalAi.askLegalTitle' | translate }}</span>
+            <span class="text-xs text-gray-500">{{ 'legalAi.askLegalSub' | translate }}</span>
+        </div>
+    </ng-template>
+
+    <div class="flex h-full min-h-0 flex-col gap-4">
+        <div class="flex flex-wrap items-center gap-2 border-b border-gray-100 pb-3">
+            <label class="text-xs font-semibold text-gray-500" for="legal-ai-qa-history">{{ 'legalAi.qaHistory' | translate }}</label>
+            <p-select inputId="legal-ai-qa-history" [options]="sessionOptions()" optionLabel="label" optionValue="value" [ngModel]="qa.sessionId()"
+                (ngModelChange)="qa.openSession($event)" appendTo="body" styleClass="min-w-40 flex-1" size="small" />
+            <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="qa.newChat()">
+                <i class="pi pi-plus text-xs" aria-hidden="true"></i><span>{{ 'legalAi.qaNewChat' | translate }}</span>
+            </button>
+            @if (qa.contextDocName(); as name) {
+            <span class="flex w-full items-center gap-1.5 text-xs text-ae-sea-800"><i class="pi pi-file text-xs" aria-hidden="true"></i>{{ i18n.t('qaWithDoc', { doc: name }) }}</span>
+            }
+        </div>
+
+        @if (!qa.hasMessages() && !qa.loading()) {
+        <div class="flex flex-col items-center gap-4 px-2 py-8 text-center text-sm text-gray-500">
+            <span class="bg-primary-100 text-primary-600 inline-flex h-12 w-12 items-center justify-center rounded-full"><i class="pi pi-comments text-xl" aria-hidden="true"></i></span>
+            <p>{{ 'legalAi.qaEmpty' | translate }}</p>
+            <div class="flex w-full flex-col gap-2">
+                <p class="text-xs font-semibold text-gray-400">{{ 'legalAi.qaExamples' | translate }}</p>
+                @for (q of examples(); track q) {
+                <button type="button" class="hover:border-primary-400 hover:bg-primary-50 cursor-pointer rounded-lg border border-gray-200 bg-white px-4 py-3 text-start text-sm text-gray-700 transition-colors" (click)="qa.ask(q)">{{ q }}</button>
+                }
+            </div>
+        </div>
+        }
+
+        <div class="flex flex-col gap-4" role="log" aria-live="polite" [attr.aria-label]="'legalAi.qaConversation' | translate">
+            @for (m of qa.messages(); track m.id) {
+            <article class="flex max-w-[92%] flex-col gap-1.5 rounded-xl border p-3 text-sm leading-relaxed"
+                [class]="m.role === 'user' ? 'border-primary-200 bg-primary-50 self-end' : 'border-gray-200 border-s-4 border-s-ae-tech-500 bg-white self-start'">
+                <span class="text-xs font-semibold text-gray-400">
+                    {{ m.role === 'user' ? ('legalAi.qaYou' | translate) : ('legalAi.qaAssistant' | translate) }}
+                    @if (m.documentName) { · {{ i18n.t('qaWithDoc', { doc: m.documentName }) }} }
+                </span>
+                <p class="wrap-anywhere whitespace-pre-wrap" dir="auto" [innerHTML]="m.text | legalAiMd"></p>
+                @if (m.flagged) { <p class="text-xs font-semibold text-ae-red-700">{{ 'legalAi.qaFlagged' | translate }}</p> }
+                @if (m.role === 'assistant' && m.source) {
+                <p class="text-xs text-gray-400">{{ m.source === 'llm' ? ('legalAi.qaViaLlm' | translate) : ('legalAi.qaViaRetrieval' | translate) }}</p>
+                }
+                @if (m.citations?.length) {
+                <div class="mt-1 flex flex-col gap-2 border-t border-dashed border-gray-300 pt-3">
+                    <h3 class="text-xs font-semibold text-gray-400">{{ 'legalAi.qaCitation' | translate }}</h3>
+                    @for (c of m.citations; track $index) {
+                    <p class="text-xs text-gray-600">
+                        <b class="text-ae-tech-800 tabular-nums">{{ c.law_number }} · {{ 'legalAi.articleAbbr' | translate }} {{ c.article_number }}</b>@if (c.article_title) { — {{ c.article_title }} }
+                        @if (c.source_url) {
+                        <br /><a class="text-primary-700 font-semibold hover:underline" [href]="c.source_url" target="_blank" rel="noopener noreferrer">{{ 'legalAi.officialSourceShort' | translate }} <i class="pi pi-external-link text-[0.65rem]" aria-hidden="true"></i></a>
+                        }
+                    </p>
+                    }
+                </div>
+                }
+            </article>
+            }
+            @if (qa.loading()) {
+            <div class="flex max-w-[92%] flex-col gap-1 self-start rounded-xl border border-s-4 border-gray-200 border-s-ae-tech-500 bg-white p-3 text-sm" role="status">
+                <span class="text-xs font-semibold text-gray-400">{{ 'legalAi.qaThinking' | translate }}</span>
+                <span class="flex gap-1" aria-hidden="true"><i class="h-1.5 w-1.5 animate-bounce rounded-full bg-ae-tech-500"></i><i class="h-1.5 w-1.5 animate-bounce rounded-full bg-ae-tech-500 [animation-delay:150ms]"></i><i class="h-1.5 w-1.5 animate-bounce rounded-full bg-ae-tech-500 [animation-delay:300ms]"></i></span>
+            </div>
+            }
+            <div #end></div>
+        </div>
+    </div>
+
+    <ng-template #footer>
+        <form class="flex w-full flex-col gap-2" (submit)="send($event)">
+            <div class="focus-within:border-primary-400 flex items-end gap-2 rounded-xl border border-gray-300 bg-white p-1.5 ps-3">
+                <label class="sr-only" for="legal-ai-qa-input">{{ 'legalAi.qaPlaceholder' | translate }}</label>
+                <textarea id="legal-ai-qa-input" name="question" rows="1" autocomplete="off" class="max-h-36 min-w-0 flex-1 resize-none border-0 bg-transparent py-2 text-sm outline-none [field-sizing:content]"
+                    [placeholder]="'legalAi.qaPlaceholder' | translate" [ngModel]="qa.draft()" (ngModelChange)="qa.draft.set($event)" [disabled]="qa.loading()"
+                    (keydown.enter)="onEnter($event)"></textarea>
+                <button type="submit" pButton size="small" [attr.aria-label]="'legalAi.qaSend' | translate" [disabled]="qa.loading() || !qa.draft().trim()">
+                    <i class="pi pi-send rtl:-scale-x-100" aria-hidden="true"></i>
+                </button>
+            </div>
+            <p class="text-xs leading-snug text-gray-400">{{ 'legalAi.qaDisclaimer' | translate }}</p>
+        </form>
+    </ng-template>
+</p-drawer>

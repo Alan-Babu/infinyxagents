@@ -1,0 +1,105 @@
+<div class="flex h-full min-h-0 flex-col">
+    <lib-page-header titleKey="legalAi.agentTitle" subtitleKey="legalAi.agentSub" [showBack]="false">
+        <lib-legal-ai-toolbar />
+    </lib-page-header>
+
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+        <div class="flex flex-col gap-6">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <lib-stat-card [label]="'legalAi.statTotalDocs' | translate" [value]="i18n.num(docs.stats().total)" [sub]="'legalAi.statTotalDocsSub' | translate"
+                    icon="pi pi-file" fgClass="text-primary-600" bgClass="bg-primary-50" />
+                <lib-stat-card [label]="'legalAi.statClean' | translate" [value]="i18n.num(docs.stats().clean)" [sub]="'legalAi.statCleanSub' | translate"
+                    icon="pi pi-shield" fgClass="text-ae-green-700" bgClass="bg-ae-green-50" />
+                <lib-stat-card [label]="'legalAi.statHighRisk' | translate" [value]="i18n.num(docs.stats().high)" [sub]="'legalAi.statHighRiskSub' | translate"
+                    icon="pi pi-exclamation-triangle" fgClass="text-ae-red-700" bgClass="bg-ae-red-50" />
+                <lib-stat-card [label]="'legalAi.statLaws' | translate" [value]="i18n.num(laws.laws().length)" [sub]="i18n.t('statLawsSub', { articles: i18n.num(laws.totalArticles()) })"
+                    icon="pi pi-book" fgClass="text-ae-tech-800" bgClass="bg-ae-tech-50" />
+            </div>
+
+            <section class="overflow-hidden rounded-lg border border-gray-200 bg-white" [attr.aria-label]="'legalAi.colDoc' | translate">
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 p-4">
+                    <nav class="flex flex-wrap gap-2" [attr.aria-label]="'legalAi.filterDocs' | translate">
+                        @for (f of filters; track f.id) {
+                        <a class="rounded-full border px-4 py-1.5 text-sm font-medium no-underline transition-colors"
+                            routerLink="." [queryParams]="{ filter: f.id === 'all' ? null : f.id, page: null }" queryParamsHandling="merge"
+                            [class]="activeFilter() === f.id ? 'border-primary-200 bg-primary-50 text-primary-700' : 'border-gray-200 bg-white text-gray-600 hover:border-primary-400'"
+                            [attr.aria-current]="activeFilter() === f.id ? 'true' : null">{{ f.key | translate }}@if (f.id === 'all') { <span class="tabular-nums"> ({{ i18n.num(docs.stats().total) }})</span> }</a>
+                        }
+                    </nav>
+                    <div class="relative min-w-56 max-w-sm flex-1">
+                        <i class="pi pi-search absolute start-3 top-1/2 -translate-y-1/2 text-xs text-gray-400" aria-hidden="true"></i>
+                        <label class="sr-only" for="legal-ai-doc-search">{{ 'legalAi.searchPlaceholder' | translate }}</label>
+                        <input id="legal-ai-doc-search" pInputText type="search" name="q" autocomplete="off" spellcheck="false" class="w-full rounded-lg border border-gray-300 py-2 ps-8 pe-3 text-sm"
+                            [placeholder]="'legalAi.searchPlaceholder' | translate" [value]="q()" (input)="onSearch($event)" />
+                    </div>
+                </div>
+
+                <div aria-live="polite">
+                    @if (!docs.loaded()) {
+                    <div aria-busy="true">
+                        @for (row of skeletonRows; track row) {
+                        <div class="grid animate-pulse grid-cols-4 gap-6 border-b border-gray-100 px-4 py-4">
+                            <span class="h-3.5 w-4/5 rounded bg-gray-200"></span><span class="h-3.5 w-3/5 rounded bg-gray-200"></span><span class="h-3.5 w-3/4 rounded bg-gray-200"></span><span class="h-3.5 w-1/2 rounded bg-gray-200"></span>
+                        </div>
+                        }
+                    </div>
+                    } @else if (docs.error() && !docs.documents().length) {
+                    <lib-no-data icon="pi pi-exclamation-circle" [message]="'legalAi.loadError' | translate" [subMessage]="docs.error() ?? ''" />
+                    <div class="flex justify-center pb-8"><button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="reload()"><i class="pi pi-refresh" aria-hidden="true"></i><span>{{ 'legalAi.retry' | translate }}</span></button></div>
+                    } @else if (paged().total === 0) {
+                    @if (docs.documents().length === 0) {
+                    <lib-no-data icon="pi pi-file" [message]="'legalAi.noDocsTitle' | translate" [subMessage]="'legalAi.noDocsBody' | translate" />
+                    <div class="flex justify-center pb-8"><button type="button" pButton size="small" (click)="ui.openUpload()"><i class="pi pi-upload" aria-hidden="true"></i><span>{{ 'legalAi.uploadBtn' | translate }}</span></button></div>
+                    } @else {
+                    <lib-no-data icon="pi pi-search" [message]="'legalAi.noMatchTitle' | translate" [subMessage]="'legalAi.noMatchBody' | translate" />
+                    }
+                    } @else {
+                    <div class="overflow-x-auto">
+                        <table class="w-full min-w-[720px] text-sm">
+                            <thead class="bg-gray-50 text-xs text-gray-500">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3 text-start font-semibold">{{ 'legalAi.colDoc' | translate }}</th>
+                                    <th scope="col" class="px-4 py-3 text-start font-semibold">{{ 'legalAi.colType' | translate }}</th>
+                                    <th scope="col" class="px-4 py-3 text-start font-semibold">{{ 'legalAi.colJurisdiction' | translate }}</th>
+                                    <th scope="col" class="px-4 py-3 text-start font-semibold">{{ 'legalAi.colDate' | translate }}</th>
+                                    <th scope="col" class="px-4 py-3 text-start font-semibold">{{ 'legalAi.colFindings' | translate }}</th>
+                                    <th scope="col" class="px-4 py-3 text-start font-semibold">{{ 'legalAi.colRisk' | translate }}</th>
+                                    <th scope="col" class="px-4 py-3 text-start font-semibold">{{ 'legalAi.colStatus' | translate }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (doc of paged().slice; track doc.id) {
+                                <tr class="hover:bg-primary-50 cursor-pointer border-t border-gray-100 transition-colors" (click)="open($event, doc.id)">
+                                    <td class="px-4 py-3">
+                                        <span class="flex max-w-xs items-center gap-3">
+                                            <span class="bg-primary-50 text-primary-600 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md" aria-hidden="true"><i class="pi pi-file"></i></span>
+                                            <a class="truncate font-semibold text-gray-800 no-underline hover:underline" [routerLink]="[base, 'documents', doc.id]">{{ doc.original_name || doc.filename }}</a>
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 text-gray-600">{{ doc.contract_type }}</td>
+                                    <td class="px-4 py-3"><span [class]="jurisdictionClass" class="notranslate">{{ doc.jurisdiction }}</span></td>
+                                    <td class="px-4 py-3 text-gray-600 tabular-nums">{{ i18n.date(doc.uploaded_at) }}</td>
+                                    <td class="px-4 py-3 text-gray-600 tabular-nums">{{ i18n.t('clausesCount', { n: i18n.num(doc.findings_count) }) }}</td>
+                                    <td class="px-4 py-3">
+                                        @if (doc.high_risk) {
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-ae-red-700 px-2.5 py-0.5 text-xs font-semibold text-white"><i class="pi pi-shield" aria-hidden="true"></i>{{ 'legalAi.riskHigh' | translate }}</span>
+                                        } @else {
+                                        <span class="inline-flex items-center gap-1 rounded-full border border-ae-green-200 bg-ae-green-50 px-2.5 py-0.5 text-xs font-semibold text-ae-green-700"><i class="pi pi-check-circle" aria-hidden="true"></i>{{ 'legalAi.riskLow' | translate }}</span>
+                                        }
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <lib-legal-ai-status-tag [status]="rowStatus(doc)" />
+                                        @if (progressPct(doc) !== null) { <span class="ms-2 text-xs text-gray-400 tabular-nums">{{ progressPct(doc) }}%</span> }
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <lib-legal-ai-pager [page]="paged().page" [pages]="paged().pages" [from]="paged().from" [to]="paged().to" [total]="paged().total" />
+                    }
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
