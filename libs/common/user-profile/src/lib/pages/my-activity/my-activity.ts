@@ -11,8 +11,9 @@ import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
 import { Subscription } from 'rxjs';
 import { ActivityDetailDrawer } from '../../components/activity-detail-drawer/activity-detail-drawer';
-import { ActivityLogEntry, ActivityStatus, CategoryMixSegment, UsageByAgentEntry } from '../../models/user-profile-activity.models';
-import { buildMockActivities } from '../../utils/activity-mock';
+import { ActivityLogEntry, ActivityStatus, CategoryMixSegment, MyActivityApiRow, UsageByAgentEntry } from '../../models/user-profile-activity.models';
+import { MyActivityApi } from '../../services/my-activity-api';
+import { mapActivityStatus, tileIdForSourceService } from '../../utils/activity-source-mapping';
 import { CATEGORY_COLOR_CLASS, DEFAULT_CATEGORY_COLOR_CLASS, STATUS_LABEL_KEY, STATUS_SEVERITY, dayKey, formatTime, timeAgo } from '../../utils/activity-display';
 
 interface SelectOption {
@@ -44,6 +45,7 @@ interface FeedGroup {
 })
 export class MyActivityPage implements OnDestroy {
     private readonly translate = inject(TranslateService);
+    private readonly api = inject(MyActivityApi);
 
     readonly statusSeverity = STATUS_SEVERITY;
     readonly statusLabelKey = STATUS_LABEL_KEY;
@@ -51,7 +53,10 @@ export class MyActivityPage implements OnDestroy {
     readonly timeAgo = timeAgo;
 
     readonly realAgentTiles: AgentTile[] = AGENT_TILES.filter(tile => !tile.disabled);
-    private readonly allActivities: ActivityLogEntry[] = buildMockActivities(this.realAgentTiles);
+    private allActivities: ActivityLogEntry[] = [];
+
+    loading = true;
+    loadError = false;
 
     search = '';
     agentFilter = 'all';
@@ -77,12 +82,45 @@ export class MyActivityPage implements OnDestroy {
 
     constructor() {
         this.buildFilterOptions();
-        this.resumeCards = this.computeResumeCards();
-        this.applyFilters();
+        this.loadActivities();
     }
 
     ngOnDestroy(): void {
         this.langChangeSub.unsubscribe();
+    }
+
+    async loadActivities(): Promise<void> {
+        this.loading = true;
+        this.loadError = false;
+        try {
+            const page = await this.api.getMyActivity({ limit: 200 });
+            this.allActivities = page.items
+                .map(row => this.toActivityLogEntry(row))
+                .filter((entry): entry is ActivityLogEntry => entry !== null);
+        } catch {
+            this.loadError = true;
+            this.allActivities = [];
+        } finally {
+            this.loading = false;
+            this.resumeCards = this.computeResumeCards();
+            this.applyFilters();
+        }
+    }
+
+    private toActivityLogEntry(row: MyActivityApiRow): ActivityLogEntry | null {
+        // Rows from a source_service this frontend doesn't recognize yet are
+        // dropped rather than shown with a broken agent-tile lookup -- see
+        // the checklist in activity-source-mapping.ts for wiring up a new agent.
+        const agentId = tileIdForSourceService(row.source_service);
+        if (!agentId) return null;
+        return {
+            id: row.id,
+            agentId,
+            action: row.action,
+            detail: row.output_snippet ?? row.input_snippet ?? '',
+            status: mapActivityStatus(row.status, row.compliance_flag),
+            ts: new Date(row.event_ts).getTime(),
+        };
     }
 
     get totalActivities(): number {

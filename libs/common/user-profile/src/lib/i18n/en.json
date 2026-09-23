@@ -74,6 +74,12 @@
                 "message": "No activity matches these filters.",
                 "subMessage": "Try adjusting your search or filters."
             },
+            "loading": "Loading your activity…",
+            "error": {
+                "message": "Couldn't load your activity.",
+                "subMessage": "Something went wrong reaching the server.",
+                "retry": "Try again"
+            },
             "drawer": {
                 "whatHappened": "What happened",
                 "agent": "Agent",
