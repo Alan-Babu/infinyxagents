@@ -1,0 +1,94 @@
+{
+    "userProfile": {
+        "nav": {
+            "sections": {
+                "activity": "النشاط",
+                "preferences": "التفضيلات"
+            },
+            "myActivity": "نشاطي",
+            "preferences": "التفضيلات"
+        },
+        "card": {
+            "role": "الدور",
+            "email": "البريد الإلكتروني",
+            "department": "القسم"
+        },
+        "preferences": {
+            "title": "التفضيلات",
+            "subtitle": "تخصيص إعدادات العرض واللغة الخاصة بك",
+            "appearanceSection": "المظهر",
+            "themeCardTitle": "لون المظهر",
+            "languageSection": "اللغة",
+            "languageCardTitle": "لغة الواجهة",
+            "themeNames": {
+                "default": "افتراضي",
+                "red": "أحمر",
+                "green": "أخضر",
+                "grey": "رمادي",
+                "pink": "وردي"
+            }
+        },
+        "activity": {
+            "title": "نشاطي",
+            "subtitle": "كل ما قمت به عبر وكلاء الذكاء الاصطناعي، في مكان واحد.",
+            "day": {
+                "today": "اليوم",
+                "yesterday": "أمس"
+            },
+            "stats": {
+                "total": "إجمالي الأنشطة",
+                "totalSub": "عبر {{ count }} وكيل تم استخدامهم",
+                "agentsUsed": "الوكلاء المستخدمون",
+                "agentsUsedSub": "من أصل {{ total }} متاح",
+                "avgPerDay": "المتوسط اليومي",
+                "avgPerDaySub": "خلال الفترة المحددة",
+                "needsReview": "بحاجة إلى مراجعتك",
+                "needsReviewSub": "في انتظار اهتمامك",
+                "mostUsed": "الوكيل الأكثر استخدامًا",
+                "mostUsedSub": "خلال هذه الفترة"
+            },
+            "filters": {
+                "searchPlaceholder": "ابحث في النشاط أو الوكيل...",
+                "allAgents": "كل الوكلاء",
+                "allStatuses": "كل الحالات",
+                "today": "اليوم",
+                "last7": "آخر 7 أيام",
+                "last14": "آخر 14 يومًا",
+                "allTime": "كل الأوقات"
+            },
+            "status": {
+                "completed": "مكتمل",
+                "needsReview": "بحاجة إلى مراجعتك",
+                "failed": "فشل",
+                "inProgress": "قيد التنفيذ"
+            },
+            "panels": {
+                "resumeTitle": "تابع من حيث توقفت",
+                "resumeSub": "عد إلى أحدث جلساتك",
+                "usageTitle": "الاستخدام حسب الوكيل",
+                "usageSub": "انقر على وكيل لتصفية القائمة",
+                "categoryTitle": "حسب الفئة",
+                "categorySub": "أين يتركز نشاطك"
+            },
+            "empty": {
+                "message": "لا يوجد نشاط يطابق عوامل التصفية هذه.",
+                "subMessage": "جرّب تعديل البحث أو عوامل التصفية."
+            },
+            "loading": "جارٍ تحميل نشاطك…",
+            "error": {
+                "message": "تعذر تحميل نشاطك.",
+                "subMessage": "حدث خطأ أثناء الاتصال بالخادم.",
+                "retry": "إعادة المحاولة"
+            },
+            "drawer": {
+                "whatHappened": "ماذا حدث",
+                "agent": "الوكيل",
+                "category": "الفئة",
+                "status": "الحالة",
+                "when": "الوقت",
+                "close": "إغلاق",
+                "openIn": "فتح في {{ agent }}"
+            }
+        }
+    }
+}

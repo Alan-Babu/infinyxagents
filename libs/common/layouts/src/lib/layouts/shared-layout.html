@@ -27,22 +27,14 @@
     </div>
 
     <div class="flex items-center gap-3">
-        @if (showBackToAgents && currentAgent) {
+        @if (showBackToAgents) {
         <a routerLink="/dashboard"
             class="inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-primary-200 bg-primary-50 px-3 text-sm font-semibold text-primary-700 transition-colors hover:bg-primary-100"
             [attr.aria-label]="'labels.backToAgents' | translate">
             <i class="pi pi-th-large text-xs"></i>
-            <span>{{ currentAgent.nameKey | translate }}</span>
+            <span>{{ currentAgent ? (currentAgent.nameKey | translate) : ('labels.backToAgents' | translate) }}</span>
         </a>
         }
-        <div class="relative">
-            <button type="button"
-                class="inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg p-0 text-primary-500 transition-colors hover:text-primary-700"
-                (click)="preferencesDropdown.toggle($event)" [attr.aria-label]="'labels.preferences' | translate">
-                <i class="pi pi-cog text-lg"></i>
-            </button>
-        </div>
-
         <div class="relative">
             <button type="button"
                 class="inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg p-0 text-primary-500 transition-colors hover:text-primary-700"
@@ -58,45 +50,6 @@
     </div>
 </header>
 
-<p-popover #preferencesDropdown appendTo="body" [baseZIndex]="1300" styleClass="preferences-dropdown">
-    <div class="w-64 p-3">
-        <div class="mb-2 text-xs font-bold uppercase tracking-wide text-gray-400">{{ "labels.language" | translate }}</div>
-        <div class="mb-4 flex gap-2">
-            @for (option of languageOptions; track option.value) {
-            <button type="button"
-                class="flex-1 cursor-pointer rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors"
-                [class.border-primary-500]="currentLanguage === option.value"
-                [class.bg-primary-50]="currentLanguage === option.value"
-                [class.text-primary-700]="currentLanguage === option.value"
-                [class.border-gray-200]="currentLanguage !== option.value"
-                [class.text-gray-600]="currentLanguage !== option.value"
-                (click)="setLanguage(option.value)">
-                {{ option.label }}
-            </button>
-            }
-        </div>
-
-        <div class="mb-2 text-xs font-bold uppercase tracking-wide text-gray-400">{{ "labels.theme" | translate }}</div>
-        <div class="flex gap-2">
-            <button type="button"
-                class="h-7 w-7 cursor-pointer rounded-full border-2 bg-white transition-colors"
-                [class.border-gray-800]="!currentTheme"
-                [class.border-transparent]="!!currentTheme"
-                [attr.aria-label]="'labels.themeDefault' | translate" [title]="'labels.themeDefault' | translate"
-                (click)="setTheme('')"></button>
-            @for (option of themeOptions; track option) {
-            <button type="button"
-                class="h-7 w-7 cursor-pointer rounded-full border-2 transition-colors"
-                [class.border-gray-800]="currentTheme === option"
-                [class.border-transparent]="currentTheme !== option"
-                [ngClass]="'theme-swatch-' + option"
-                [attr.aria-label]="option" [title]="option"
-                (click)="setTheme(option)"></button>
-            }
-        </div>
-    </div>
-</p-popover>
-
 <p-popover #userDropdown [styleClass]="'user-account-dropdown'" appendTo="body" styleClass="user-account-dropdown">
     <div class="flex items-center gap-2 border-b border-gray-100 p-3 px-5">
         <div class="bg-primary-500 inline-flex h-12 w-12 items-center justify-center rounded-full text-white">
@@ -108,6 +61,13 @@
         </div>
     </div>
     <ul class="min-w-60 p-2">
+        <li>
+            <a routerLink="/user-profile" (click)="userDropdown.hide()"
+                class="inline-flex w-full items-center cursor-pointer gap-3 px-3 py-2 hover:bg-gray-100">
+                <i class="pi pi-user text-lg"></i>
+                <span>{{ "labels.myprofile" | translate }}</span>
+            </a>
+        </li>
         <li>
             <button (click)="logout()" class="inline-flex w-full items-center cursor-pointer gap-3 px-3 py-2 hover:bg-gray-100">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 256 256">

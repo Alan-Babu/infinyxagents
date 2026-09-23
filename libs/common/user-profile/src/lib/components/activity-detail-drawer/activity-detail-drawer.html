@@ -1,0 +1,58 @@
+<p-drawer [visible]="!!activity" position="right" appendTo="body" [baseZIndex]="1200" (onHide)="closed.emit()" styleClass="p-drawer-md">
+    <ng-template #header>
+        @if (activity && agent) {
+            <div class="flex flex-1 items-start gap-3 pe-4">
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary-50">
+                    <i class="text-xl text-primary-600" [ngClass]="agent.icon"></i>
+                </div>
+                <div>
+                    <div class="text-base font-semibold text-gray-800">{{ agent.nameKey | translate }}</div>
+                    <div class="text-xs text-gray-500">{{ agent.categoryKey | translate }} &middot; {{ timeAgo(activity.ts) }}</div>
+                </div>
+            </div>
+        }
+    </ng-template>
+
+    @if (activity && agent) {
+        <div class="mb-4">
+            <p-tag [value]="statusLabelKey[activity.status] | translate" [severity]="statusSeverity[activity.status]" />
+        </div>
+
+        <div class="mb-2 text-xs font-bold uppercase tracking-wide text-gray-400">{{ 'userProfile.activity.drawer.whatHappened' | translate }}</div>
+        <div class="mb-3 text-sm font-semibold text-gray-800">{{ activity.action }}</div>
+        <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm leading-relaxed text-gray-700">{{ activity.detail }}</div>
+
+        <div class="mt-5 grid grid-cols-2 gap-3">
+            <div class="rounded-lg border border-gray-200 bg-white p-3">
+                <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{ 'userProfile.activity.drawer.agent' | translate }}</div>
+                <div class="text-sm font-semibold text-gray-800">{{ agent.nameKey | translate }}</div>
+            </div>
+            <div class="rounded-lg border border-gray-200 bg-white p-3">
+                <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{ 'userProfile.activity.drawer.category' | translate }}</div>
+                <div class="text-sm font-semibold text-gray-800">{{ agent.categoryKey | translate }}</div>
+            </div>
+            <div class="rounded-lg border border-gray-200 bg-white p-3">
+                <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{ 'userProfile.activity.drawer.status' | translate }}</div>
+                <div class="text-sm font-semibold text-gray-800">{{ statusLabelKey[activity.status] | translate }}</div>
+            </div>
+            <div class="rounded-lg border border-gray-200 bg-white p-3">
+                <div class="text-xs font-bold uppercase tracking-wide text-gray-400">{{ 'userProfile.activity.drawer.when' | translate }}</div>
+                <div class="text-sm font-semibold text-gray-800">{{ formatDateTime(activity.ts) }}</div>
+            </div>
+        </div>
+    }
+
+    <ng-template #footer>
+        @if (activity && agent) {
+            <div class="flex items-center gap-2">
+                <button type="button" pButton severity="secondary" [outlined]="true" (click)="closed.emit()">
+                    <span>{{ 'userProfile.activity.drawer.close' | translate }}</span>
+                </button>
+                <button type="button" pButton class="ms-auto" [routerLink]="agent.link" (click)="closed.emit()">
+                    <span>{{ 'userProfile.activity.drawer.openIn' | translate: { agent: (agent.nameKey | translate) } }}</span>
+                    <i class="pi pi-arrow-right"></i>
+                </button>
+            </div>
+        }
+    </ng-template>
+</p-drawer>

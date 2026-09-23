@@ -30,11 +30,7 @@
         "copyright": "Copyright",
         "footerOrgName": "Ministry of Foreign Affairs",
         "expandMenu": "Expand menu",
-        "collapseMenu": "Collapse menu",
-        "preferences": "Preferences",
-        "language": "Language",
-        "theme": "Theme",
-        "themeDefault": "Default"
+        "collapseMenu": "Collapse menu"
     },
     "agentsLanding": {
         "greeting": "Welcome, {{ name }}",

@@ -30,11 +30,7 @@
         "copyright": "حقوق النشر",
         "footerOrgName": "NXAI",
         "expandMenu": "توسيع القائمة",
-        "collapseMenu": "طي القائمة",
-        "preferences": "التفضيلات",
-        "language": "اللغة",
-        "theme": "المظهر",
-        "themeDefault": "افتراضي"
+        "collapseMenu": "طي القائمة"
     },
     "agentsLanding": {
         "greeting": "مرحباً، {{ name }}",

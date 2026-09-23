@@ -1,0 +1,94 @@
+{
+    "userProfile": {
+        "nav": {
+            "sections": {
+                "activity": "ACTIVITY",
+                "preferences": "PREFERENCES"
+            },
+            "myActivity": "My Activity",
+            "preferences": "Preferences"
+        },
+        "card": {
+            "role": "Role",
+            "email": "Email",
+            "department": "Department"
+        },
+        "preferences": {
+            "title": "Preferences",
+            "subtitle": "Customize your display and language settings",
+            "appearanceSection": "APPEARANCE",
+            "themeCardTitle": "Theme color",
+            "languageSection": "LANGUAGE",
+            "languageCardTitle": "Interface language",
+            "themeNames": {
+                "default": "Default",
+                "red": "Red",
+                "green": "Green",
+                "grey": "Grey",
+                "pink": "Pink"
+            }
+        },
+        "activity": {
+            "title": "My Activity",
+            "subtitle": "Everything you have done across your AI agents, in one place.",
+            "day": {
+                "today": "Today",
+                "yesterday": "Yesterday"
+            },
+            "stats": {
+                "total": "Total activities",
+                "totalSub": "across {{ count }} agents used",
+                "agentsUsed": "Agents used",
+                "agentsUsedSub": "of {{ total }} available",
+                "avgPerDay": "Avg per day",
+                "avgPerDaySub": "over selected range",
+                "needsReview": "Needs your review",
+                "needsReviewSub": "awaiting your attention",
+                "mostUsed": "Most used agent",
+                "mostUsedSub": "this range"
+            },
+            "filters": {
+                "searchPlaceholder": "Search activity or agent...",
+                "allAgents": "All agents",
+                "allStatuses": "All statuses",
+                "today": "Today",
+                "last7": "Last 7 days",
+                "last14": "Last 14 days",
+                "allTime": "All time"
+            },
+            "status": {
+                "completed": "Completed",
+                "needsReview": "Needs your review",
+                "failed": "Failed",
+                "inProgress": "In progress"
+            },
+            "panels": {
+                "resumeTitle": "Continue where you left off",
+                "resumeSub": "Jump back into your most recent sessions",
+                "usageTitle": "Usage by agent",
+                "usageSub": "Click an agent to filter the feed",
+                "categoryTitle": "By category",
+                "categorySub": "Where your activity is concentrated"
+            },
+            "empty": {
+                "message": "No activity matches these filters.",
+                "subMessage": "Try adjusting your search or filters."
+            },
+            "loading": "Loading your activity…",
+            "error": {
+                "message": "Couldn't load your activity.",
+                "subMessage": "Something went wrong reaching the server.",
+                "retry": "Try again"
+            },
+            "drawer": {
+                "whatHappened": "What happened",
+                "agent": "Agent",
+                "category": "Category",
+                "status": "Status",
+                "when": "When",
+                "close": "Close",
+                "openIn": "Open in {{ agent }}"
+            }
+        }
+    }
+}
