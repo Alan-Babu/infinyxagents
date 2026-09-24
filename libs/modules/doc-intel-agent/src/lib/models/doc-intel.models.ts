@@ -140,3 +140,38 @@ export interface DocUpload {
     pageCount: number;
     uploadRef?: string;
 }
+
+/** One admin-editable backend setting, as returned by GET /admin/settings. Secrets never carry their real value: `value` is a masked hint. */
+export interface DocIntelSettingField {
+    key: string;
+    label: string;
+    type: 'str' | 'int' | 'bool' | 'url' | 'dsn' | 'list';
+    description: string;
+    is_secret: boolean;
+    is_set: boolean;
+    value: string | number | boolean | string[] | null;
+    restart_required: boolean;
+    /** Persisted to .env but the running process still uses the previous value. */
+    pending_restart: boolean;
+    /** Also set as a real environment variable, which wins over .env. */
+    pinned_by_env: boolean;
+    min: number | null;
+    max: number | null;
+}
+
+export interface DocIntelSettingsGroup {
+    id: string;
+    name: string;
+    fields: DocIntelSettingField[];
+}
+
+export interface DocIntelSettings {
+    groups: DocIntelSettingsGroup[];
+    env_file: string;
+}
+
+export interface DocIntelSettingsUpdateResult extends DocIntelSettings {
+    applied_keys: string[];
+    restart_required_keys: string[];
+    ineffective_keys: string[];
+}

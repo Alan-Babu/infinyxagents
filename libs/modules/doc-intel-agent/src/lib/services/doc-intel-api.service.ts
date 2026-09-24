@@ -6,6 +6,8 @@ import {
     DocumentDetail,
     DocumentListFilters,
     DocumentPageImage,
+    DocIntelSettings,
+    DocIntelSettingsUpdateResult,
     DocumentSummary,
     FeedbackEntry,
     LogFilters,
@@ -23,6 +25,7 @@ const DocIntelApiPaths = {
     searchHistory: '/stats/search-history',
     performance: '/stats/performance',
     logs: '/stats/logs',
+    settings: '/admin/settings',
 };
 
 @Injectable({ providedIn: 'root' })
@@ -114,5 +117,15 @@ export class DocIntelApiService extends DocIntelApiBase {
             page: filters.page ?? 1,
             page_size: filters.pageSize ?? 20,
         });
+    }
+
+    /** Admin only: the backend answers 401/403 for anyone else. */
+    getSettings(): Promise<DocIntelSettings> {
+        return this.get<DocIntelSettings>(DocIntelApiPaths.settings);
+    }
+
+    /** Admin only. Send just the changed keys; a blank secret keeps its current value. */
+    updateSettings(values: Record<string, string | number | boolean | null>): Promise<DocIntelSettingsUpdateResult> {
+        return this.put<DocIntelSettingsUpdateResult>(DocIntelApiPaths.settings, { values });
     }
 }

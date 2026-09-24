@@ -2,7 +2,8 @@
     "docIntelAgent": {
         "nav": {
             "analyze": "Analyze",
-            "myDocuments": "My Documents"
+            "myDocuments": "My Documents",
+            "settings": "Settings"
         },
         "common": {
             "unclassified": "Unclassified",
@@ -197,6 +198,39 @@
             "reviewFailed": "Could not record the review decision.",
             "feedbackSubmitted": "Thanks for rating the agent!",
             "feedbackFailed": "Could not submit feedback. Please try again."
+        },
+        "settings": {
+            "title": "Settings",
+            "subtitle": "Backend configuration for the Document Intelligence agent. Admins only.",
+            "adminOnly": "Only administrators can view or change these settings.",
+            "loading": "Loading settings…",
+            "retry": "Retry",
+            "save": "Save changes",
+            "reset": "Discard",
+            "keepCurrent": "Leave blank to keep the current value",
+            "current": "Current",
+            "footerNote": "Changes are written to {{file}} on the server. Most apply immediately; items marked “Restart required” apply after the backend restarts.",
+            "badge": {
+                "restart": "Restart required",
+                "pending": "Awaiting restart",
+                "pinned": "Set by environment"
+            },
+            "banner": {
+                "restartRequired": "Saved. These settings take effect after the backend restarts:",
+                "ineffective": "Saved to the file, but these are also set as environment variables, which take priority, so they have no effect:"
+            },
+            "confirm": {
+                "header": "Save settings",
+                "message": "You are changing a secret or a setting that needs a restart. Save these changes?",
+                "warning": "A wrong database URL or CORS value can stop the backend from starting after its next restart."
+            },
+            "toast": {
+                "saved": "Settings saved",
+                "invalid": "Some values are invalid. Check the highlighted fields.",
+                "notAuthorised": "You are not authorised to manage these settings, or your session has expired.",
+                "loadFailed": "Could not load settings.",
+                "saveFailed": "Could not save settings. Please try again."
+            }
         }
     }
 }

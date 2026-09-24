@@ -1,0 +1,98 @@
+<div class="flex h-full min-h-0 flex-col">
+    <lib-page-header titleKey="docIntelAgent.settings.title" subtitleKey="docIntelAgent.settings.subtitle" [showBack]="false">
+        @if (isAdmin()) {
+        <div class="flex items-center gap-2">
+            <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="!hasChanges || saving" (click)="reset()">
+                <span>{{ 'docIntelAgent.settings.reset' | translate }}</span>
+            </button>
+            <button type="button" pButton size="small" [disabled]="!hasChanges || saving" [loading]="saving" (click)="save()">
+                <span>{{ 'docIntelAgent.settings.save' | translate }}</span>
+            </button>
+        </div>
+        }
+    </lib-page-header>
+
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+        @if (!isAdmin()) {
+        <div class="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            {{ 'docIntelAgent.settings.adminOnly' | translate }}
+        </div>
+        } @else if (loading) {
+        <div class="text-sm text-gray-500">{{ 'docIntelAgent.settings.loading' | translate }}</div>
+        } @else if (loadFailed) {
+        <div class="flex items-center gap-3 text-sm text-gray-600">
+            <span>{{ 'docIntelAgent.settings.toast.loadFailed' | translate }}</span>
+            <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="load()">
+                <span>{{ 'docIntelAgent.settings.retry' | translate }}</span>
+            </button>
+        </div>
+        } @else {
+        <div class="flex max-w-4xl flex-col gap-6">
+            @if (restartRequiredLabels.length) {
+            <div class="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                <div class="font-medium">{{ 'docIntelAgent.settings.banner.restartRequired' | translate }}</div>
+                <div>{{ restartRequiredLabels.join(', ') }}</div>
+            </div>
+            }
+            @if (ineffectiveLabels.length) {
+            <div class="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800">
+                <div class="font-medium">{{ 'docIntelAgent.settings.banner.ineffective' | translate }}</div>
+                <div>{{ ineffectiveLabels.join(', ') }}</div>
+            </div>
+            }
+
+            @for (group of groups; track group.id) {
+            <section class="rounded-xl border border-gray-200 bg-white p-5">
+                <h2 class="mb-4 text-sm font-semibold text-gray-800">{{ group.name }}</h2>
+                <div class="grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2">
+                    @for (field of group.fields; track field.key) {
+                    <div class="flex flex-col gap-1.5" [ngClass]="{ 'md:col-span-2': isWide(field) }">
+                        <label class="p-control-label flex flex-wrap items-center gap-2" [attr.for]="'setting-' + field.key">
+                            <span>{{ field.label }}</span>
+                            @if (field.restart_required) {
+                            <span class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-600">{{ 'docIntelAgent.settings.badge.restart' | translate }}</span>
+                            }
+                            @if (field.pending_restart) {
+                            <span class="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-800">{{ 'docIntelAgent.settings.badge.pending' | translate }}</span>
+                            }
+                            @if (field.pinned_by_env) {
+                            <span class="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-medium text-red-800">{{ 'docIntelAgent.settings.badge.pinned' | translate }}</span>
+                            }
+                        </label>
+
+                        @if (field.type === 'bool') {
+                        <div class="flex items-center gap-2">
+                            <p-checkbox [inputId]="'setting-' + field.key" [binary]="true" [ngModel]="draft[field.key]" (ngModelChange)="draft[field.key] = $event; clearError(field.key)" />
+                        </div>
+                        } @else if (field.is_secret) {
+                        <p-password [inputId]="'setting-' + field.key" [ngModel]="draft[field.key]" (ngModelChange)="draft[field.key] = $event; clearError(field.key)"
+                            [toggleMask]="true" [feedback]="false" styleClass="w-full" inputStyleClass="w-full"
+                            [placeholder]="'docIntelAgent.settings.keepCurrent' | translate" />
+                        @if (field.is_set) {
+                        <span class="text-xs text-gray-500">{{ 'docIntelAgent.settings.current' | translate }}: {{ field.value }}</span>
+                        }
+                        } @else if (field.type === 'int') {
+                        <input pInputText class="w-full" type="number" [id]="'setting-' + field.key"
+                            [attr.min]="field.min" [attr.max]="field.max"
+                            [ngModel]="draft[field.key]" (ngModelChange)="draft[field.key] = $event; clearError(field.key)" />
+                        } @else {
+                        <input pInputText class="w-full" type="text" [id]="'setting-' + field.key"
+                            [ngModel]="draft[field.key]" (ngModelChange)="draft[field.key] = $event; clearError(field.key)" />
+                        }
+
+                        @if (fieldErrors[field.key]) {
+                        <span class="text-xs text-red-600">{{ fieldErrors[field.key] }}</span>
+                        } @else if (field.description) {
+                        <span class="text-xs text-gray-500">{{ field.description }}</span>
+                        }
+                    </div>
+                    }
+                </div>
+            </section>
+            }
+
+            <p class="text-xs text-gray-500">{{ 'docIntelAgent.settings.footerNote' | translate: { file: envFile } }}</p>
+        </div>
+        }
+    </div>
+</div>
