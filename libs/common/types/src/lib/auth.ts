@@ -9,6 +9,14 @@ export interface TokenResponse {
     token_type: string;
 }
 
+/** Platform API login response (`POST /auth/agents/login`) — camelCase, unlike the OAuth2 form response above. */
+export interface PlatformTokenResponse {
+    accessToken: string;
+    tokenType: string;
+    expiresIn: number;
+    sessionId?: string | null;
+}
+
 export interface ForgotPasswordRequest {
     email: string;
 }

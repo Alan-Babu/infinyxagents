@@ -48,10 +48,10 @@ export class DigitalAttestationApiService extends DigitalAttestationApiBase {
      * re-fetch of the single workflow afterward. Callers close the drawer and reload the
      * list (the queue endpoint is the source of truth for refreshed state).
      */
-    async decide(id: string, decision: CaseDecision, reviewerId: string, notes?: string, reasons: string[] = []): Promise<void> {
+    async decide(id: string, decision: CaseDecision, notes?: string, reasons: string[] = []): Promise<void> {
+        // No reviewer id: the platform records the authenticated user from the bearer token.
         const body: ReviewDecisionRequest = {
             decision,
-            reviewer_id: reviewerId || null,
             notes: notes?.trim() || null,
             reasons: [`ReviewHub ${decision.toLowerCase()}`, ...reasons.slice(0, 5)],
         };

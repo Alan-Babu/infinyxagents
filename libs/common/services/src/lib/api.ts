@@ -138,6 +138,13 @@ export class ApiService {
         });
     }
 
+    /** POST JSON to an absolute URL outside this service's base (e.g. the platform identity provider). */
+    postAbsolute<T>(absoluteUrl: string, body: unknown, headers?: Record<string, string>): Promise<T> {
+        return firstValueFrom(this.http.post<T>(absoluteUrl, body, { headers })).catch(err => {
+            throw this.toApiError(err);
+        });
+    }
+
     postForm<T>(path: string, body: Record<string, string>): Promise<T> {
         const params = new URLSearchParams();
         for (const [key, value] of Object.entries(body)) {
