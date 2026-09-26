@@ -15,9 +15,12 @@ import { AuthService } from '../services/auth.service';
  * endpoints that route calls. Matches this app's current trust level
  * everywhere else; not a new gap, but not real access control either.
  */
-export const requireAdminGuard: CanActivateFn = () => {
+export const requireAdminGuard: CanActivateFn = route => {
     const auth = inject(AuthService);
-    if (auth.isAdmin()) return true;
+    // A route may name its agent (`data: { agentId }`) to be gated on that agent's admin scope; without it,
+    // the old global admin rule applies.
+    const agentId = route.data?.['agentId'] as string | undefined;
+    if (agentId ? auth.isAgentAdmin(agentId) : auth.isAdmin()) return true;
 
     const router = inject(Router);
     return router.parseUrl('/dashboard');

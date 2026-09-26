@@ -75,7 +75,7 @@ const EXEC_SUMMARY_NAV: MenuModel[] = [
  * non-admin is never offered a page that can only answer "admin required".
  */
 const execSummaryNavResolver = () => {
-    const isAdmin = inject(AuthService).isAdmin();
+    const isAdmin = inject(AuthService).isAgentAdmin('executive-summary');
     for (const item of EXEC_SUMMARY_NAV) {
         if (ADMIN_ONLY_NAV.includes(item.name)) item.hide = !isAdmin;
     }

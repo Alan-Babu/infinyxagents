@@ -5,6 +5,8 @@ export const environment = {
     // token is accepted by the agent backends and ReviewHub. Remove to fall back to the agents
     // backend's own /auth/token login (only while HR_AGENT still has LOCAL_LOGIN_ENABLED=true).
     platformApiUrl: 'https://api.nfinyx.ai/platform/api/v1',
+    // Per-agent access (tiles + route guard from the token's scopes). Keep false until the Platform roles are updated.
+    enforceAgentAccess: false,
     RSA: {
         publicKey: '',
         privateKey: '',

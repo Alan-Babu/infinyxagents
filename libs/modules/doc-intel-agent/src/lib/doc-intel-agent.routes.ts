@@ -42,7 +42,7 @@ const DOC_INTEL_AGENT_SETTINGS_NAV_ITEM: MenuModel = {
  * API; this only controls whether the entry is shown.
  */
 const docIntelAgentNavResolver: ResolveFn<MenuModel[]> = () =>
-    inject(AuthService).isAdmin()
+    inject(AuthService).isAgentAdmin('doc-intel-agent')
         ? [...DOC_INTEL_AGENT_BASE_NAV, DOC_INTEL_AGENT_SETTINGS_NAV_ITEM]
         : DOC_INTEL_AGENT_BASE_NAV;
 
@@ -71,7 +71,7 @@ export const DOC_INTEL_AGENT_ROUTES: Route[] = [
                 path: 'settings',
                 loadComponent: () => import('./pages/settings/settings').then(m => m.SettingsPage),
                 canActivate: [requireAdminGuard],
-                data: { name: 'doc-intel-agent-settings' },
+                data: { name: 'doc-intel-agent-settings', agentId: 'doc-intel-agent' },
             },
         ],
     },

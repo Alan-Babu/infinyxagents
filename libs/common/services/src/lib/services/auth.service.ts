@@ -1,5 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 
+import { canOpenAgentWithScopes, isAgentAdminWithScopes, scopesFromToken } from '../agent-access';
 import { ApiService } from '../api';
 import { APP_CONFIG } from '../app-config';
 import { StorageService } from '../local-storage';
@@ -41,6 +42,28 @@ export class AuthService {
     readonly isAdmin = computed(
         () => (this.user()?.role ?? '').toLowerCase() === 'admin',
     );
+    /** Scopes the Platform granted in the token (`agents:use`, `doc_intel:admin`, ...). */
+    readonly scopes = computed(() => scopesFromToken(this._session()?.token));
+
+    /**
+     * May the user open this agent? Always true unless `enforceAgentAccess` is on. `tileId` is the agents-UI tile/route id.
+     * (An admin HR profile may always open HR Agent, mirroring the backend.)
+     */
+    canOpenAgent(tileId: string): boolean {
+        if (!this.appConfig.enforceAgentAccess) return true;
+        if (tileId === 'hr-agent' && this.isAdmin()) return true;
+        return canOpenAgentWithScopes(this.scopes(), tileId);
+    }
+
+    /**
+     * Is the user an admin of this agent? With `enforceAgentAccess` off this is the old global rule
+     * (the HR profile's admin role); on, it comes from the token's `agents:admin` / `<agent>:admin` scope.
+     */
+    isAgentAdmin(tileId: string): boolean {
+        if (!this.appConfig.enforceAgentAccess) return this.isAdmin();
+        if (tileId === 'hr-agent' && this.isAdmin()) return true;
+        return isAgentAdminWithScopes(this.scopes(), tileId);
+    }
 
     me(): Promise<AuthenticatedUserDto> {
         return this.api.get<AuthenticatedUserDto>(AuthAPIPaths.authMe);

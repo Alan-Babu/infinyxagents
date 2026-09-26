@@ -273,7 +273,7 @@ export class InsightsPage implements OnInit {
      * call it at all — an unauthorized probe on page load surfaces as a spurious backend error.
      */
     get isAdmin(): boolean {
-        return this.auth.isAdmin();
+        return this.auth.isAgentAdmin('executive-summary');
     }
 
     get backendUserId(): string {

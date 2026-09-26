@@ -22,6 +22,12 @@ export interface AppConfig {
      * local `/auth/token` login is used.
      */
     platformApiUrl?: string;
+    /**
+     * Hide agents the user's role does not include, and block their routes (tiles + route guard driven by the
+     * token's scopes). Off by default. Turn on together with the backends' PLATFORM_ENFORCE_AGENT_ACCESS, and only
+     * after the Platform roles carry the new permissions and users have signed in again.
+     */
+    enforceAgentAccess?: boolean;
     authTokenURL: string;
     redirectURL?: string;
     logoutURL?: string;

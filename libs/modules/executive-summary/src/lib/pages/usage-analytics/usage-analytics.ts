@@ -40,7 +40,7 @@ export class UsageAnalyticsPage implements OnInit {
 
     /** Every analytics endpoint lives on the exec-agent admin router. */
     get isAdmin(): boolean {
-        return this.auth.isAdmin();
+        return this.auth.isAgentAdmin('executive-summary');
     }
 
     async ngOnInit(): Promise<void> {
