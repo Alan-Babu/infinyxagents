@@ -157,6 +157,8 @@ export interface DocIntelSettingField {
     pinned_by_env: boolean;
     min: number | null;
     max: number | null;
+    /** Non-empty for a fixed set of allowed values (e.g. the model provider): render a select, not free text. */
+    choices?: string[];
 }
 
 export interface DocIntelSettingsGroup {

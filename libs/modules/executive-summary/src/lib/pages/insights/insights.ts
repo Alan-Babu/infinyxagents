@@ -419,12 +419,24 @@ export class InsightsPage implements OnInit {
                 // Keep expert defaults when no profile has been saved.
             }
         }
+        // Not awaited: the health check probes every provider (up to 5 s when the local one is down).
+        void this.applyDefaultProvider();
         if (this.isAdmin) await this.applyAdminSettings();
         try {
             this.historyEntries = (await this.api.listHistory()).items;
         } catch (err) {
             this.historyEntries = [];
             this.historyLoadError = this.describeError(err);
+        }
+    }
+
+    /** Preselects the provider the admin chose as the default (else the server's). Users can still pick another in step 3. */
+    private async applyDefaultProvider(): Promise<void> {
+        try {
+            const { default_provider } = await this.api.health();
+            if (default_provider && this.stage === 'idle') this.provider = this.providerLabel(default_provider);
+        } catch {
+            // Keep the built-in default; provider selection must not block the research flow.
         }
     }
 

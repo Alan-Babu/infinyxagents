@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Paginated } from '@nfinyx/document-agent';
+import { LlmSettingsUpdate, LlmTestResult } from '@nfinyx/llm-settings';
 import { DocIntelApiBase } from './doc-intel-api-base';
 import {
     AgentStats,
@@ -26,6 +27,7 @@ const DocIntelApiPaths = {
     performance: '/stats/performance',
     logs: '/stats/logs',
     settings: '/admin/settings',
+    llmTest: '/admin/llm/test',
 };
 
 @Injectable({ providedIn: 'root' })
@@ -127,5 +129,10 @@ export class DocIntelApiService extends DocIntelApiBase {
     /** Admin only. Send just the changed keys; a blank secret keeps its current value. */
     updateSettings(values: Record<string, string | number | boolean | null>): Promise<DocIntelSettingsUpdateResult> {
         return this.put<DocIntelSettingsUpdateResult>(DocIntelApiPaths.settings, { values });
+    }
+
+    /** Admin only. One tiny completion with these values over the saved ones (a blank key uses the saved key); nothing is saved. */
+    testModel(body: LlmSettingsUpdate): Promise<LlmTestResult> {
+        return this.post<LlmTestResult>(DocIntelApiPaths.llmTest, body);
     }
 }

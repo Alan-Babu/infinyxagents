@@ -389,6 +389,17 @@ export interface AdminSettingsResponse {
     openai_api_key_set: boolean;
     anthropic_api_key_set: boolean;
     qwen_api_key_set: boolean;
+    /** The admin's saved override per provider (null = none); `endpoint_defaults` is what each falls back to. */
+    qwen_base_url?: string | null;
+    qwen_model?: string | null;
+    openai_base_url?: string | null;
+    openai_model?: string | null;
+    anthropic_base_url?: string | null;
+    anthropic_model?: string | null;
+    endpoint_defaults?: Record<string, { base_url: string; model: string }>;
+    /** The admin's saved default provider (null = none saved) and the server env value it falls back to. */
+    default_provider?: string | null;
+    env_default_provider?: string;
     model_version?: string | null;
     provider_name?: string | null;
     token_rate_limit_per_user?: number | null;
@@ -420,6 +431,15 @@ export interface AdminSettingsPayload {
     openai_api_key?: string | null;
     anthropic_api_key?: string | null;
     qwen_api_key?: string | null;
+    /** Blank clears the override (back to the server default). */
+    qwen_base_url?: string | null;
+    qwen_model?: string | null;
+    openai_base_url?: string | null;
+    openai_model?: string | null;
+    anthropic_base_url?: string | null;
+    anthropic_model?: string | null;
+    /** Which provider generations start with; null clears it (back to the server default). */
+    default_provider?: Provider | null;
     model_version?: string | null;
     provider_name?: string | null;
     token_rate_limit_per_user?: number | null;
@@ -638,4 +658,20 @@ export interface ModerationSummaryResponse {
     by_category: { category: string; count: number }[];
     by_detection_method: { detection_method: string; count: number }[];
     by_status: { status: string; count: number }[];
+}
+
+/** POST `/admin/models/test`: one tiny completion with these values over the saved ones; a provider failure is the answer, not an HTTP error. */
+export interface ProviderTestRequest {
+    provider: Provider;
+    base_url?: string | null;
+    model?: string | null;
+    api_key?: string | null;
+}
+
+export interface ProviderTestResult {
+    ok: boolean;
+    model?: string;
+    latency_ms?: number;
+    error?: string;
+    status_code?: number | null;
 }

@@ -1,0 +1,72 @@
+{
+    "llmSettings": {
+        "nav": "Model settings",
+        "title": "Model settings",
+        "subtitle": "Choose which AI model this agent uses — the self-hosted model or an external provider.",
+        "adminOnly": "Only administrators can change model settings.",
+        "loading": "Loading…",
+        "retry": "Retry",
+        "readOnly": "These settings are managed elsewhere for this agent. You can review them and test the connection here.",
+        "restrictedHosts": "This deployment only allows these model hosts: {{hosts}}. Any other address is refused.",
+        "sections": {
+            "connection": "Connection",
+            "limits": "Limits",
+            "advanced": "Advanced"
+        },
+        "fields": {
+            "enabled": "Model enabled",
+            "enabledHint": "Turn the model off without redeploying. The agent then answers that the model is disabled.",
+            "provider": "Provider",
+            "providerHint": "Use OpenAI-compatible for OpenAI, Groq, Azure's compatible route, vLLM, Ollama and similar servers. Use Anthropic for Claude.",
+            "baseUrl": "API base URL",
+            "baseUrlHint": "Leave blank to use the provider's public endpoint.",
+            "model": "Model",
+            "modelHint": "The exact model name. For documents with images, pick a vision-capable model.",
+            "apiKey": "API key",
+            "apiKeyKeep": "Leave blank to keep the current key",
+            "apiKeyCurrent": "Current key",
+            "apiKeyNone": "No key saved",
+            "timeout": "Request timeout (seconds)",
+            "maxTokens": "Max output tokens",
+            "vllmExtras": "Self-hosted vLLM thinking control",
+            "vllmExtrasHint": "Sends a vLLM-only setting that stops Qwen3 spending its token budget on a thinking trace. Leave off for hosted providers."
+        },
+        "providers": {
+            "openai_compatible": "OpenAI-compatible",
+            "anthropic": "Anthropic (Claude)"
+        },
+        "placeholders": {
+            "baseUrlOpenai": "https://api.openai.com/v1 or http://your-server:8000/v1",
+            "baseUrlAnthropic": "https://api.anthropic.com",
+            "modelOpenai": "e.g. gpt-4o, llama-3.3-70b-versatile, Qwen3-VL-8B-Instruct",
+            "modelAnthropic": "e.g. claude-sonnet-4-6"
+        },
+        "actions": {
+            "save": "Save",
+            "test": "Test connection",
+            "testing": "Testing…",
+            "reset": "Reset to defaults",
+            "discard": "Discard changes"
+        },
+        "test": {
+            "ok": "Connected — {{model}} answered in {{ms}} ms.",
+            "failed": "The connection failed: {{error}}",
+            "keyHint": "The connection is tested with the values above; a blank key uses the saved one."
+        },
+        "confirm": {
+            "saveHeader": "Change the model?",
+            "saveMessage": "New requests from every user of this agent will use this model straight away.",
+            "saveWarning": "Documents and questions are sent to the provider you chose. Check that this is permitted for the data this agent handles.",
+            "resetHeader": "Reset to defaults?",
+            "resetMessage": "The saved settings are removed and the agent goes back to its configured defaults."
+        },
+        "toast": {
+            "saved": "Model settings saved",
+            "reset": "Model settings reset to defaults",
+            "loadFailed": "Could not load the model settings",
+            "saveFailed": "Could not save the model settings",
+            "invalid": "Some settings are invalid — check the highlighted fields",
+            "notAuthorised": "You are not allowed to change these settings"
+        }
+    }
+}

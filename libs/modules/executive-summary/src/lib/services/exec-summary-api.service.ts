@@ -37,6 +37,8 @@ import {
     PaginatedFeedbackResponse,
     PaginatedHistoryResponse,
     Provider,
+    ProviderTestRequest,
+    ProviderTestResult,
     RefineResponse,
     SaveChatTurnRequest,
     ChatTurnEntry,
@@ -67,6 +69,7 @@ const ExecSummaryApiPaths = {
     schedules: '/schedules',
     scheduleRuns: '/schedule-runs',
     adminSettings: '/admin/settings',
+    adminModelTest: '/admin/models/test',
     instructions: '/instructions',
     moderationFlags: '/moderation/flags',
     adminLogs: '/admin/logs',
@@ -143,8 +146,8 @@ export class ExecSummaryApiService extends ExecSummaryApiBase {
         );
     }
 
-    health(): Promise<{ status: string; providers: Record<Provider, boolean> }> {
-        return this.get<{ status: string; providers: Record<Provider, boolean> }>(ExecSummaryApiPaths.health);
+    health(): Promise<{ status: string; providers: Record<Provider, boolean>; default_provider?: Provider }> {
+        return this.get<{ status: string; providers: Record<Provider, boolean>; default_provider?: Provider }>(ExecSummaryApiPaths.health);
     }
 
     startSession(topic: string, provider: Provider, userId: string): Promise<StartSessionResponse> {
@@ -326,6 +329,11 @@ export class ExecSummaryApiService extends ExecSummaryApiBase {
 
     saveAdminSettings(payload: AdminSettingsPayload): Promise<AdminSettingsResponse> {
         return this.put<AdminSettingsResponse>(ExecSummaryApiPaths.adminSettings, payload);
+    }
+
+    /** Admin only. Tries a provider with the values in the form (a blank key uses the saved one); saves nothing. */
+    testProvider(body: ProviderTestRequest): Promise<ProviderTestResult> {
+        return this.post<ProviderTestResult>(ExecSummaryApiPaths.adminModelTest, body);
     }
 
     listInstructions(userId: string): Promise<AgentInstructionEntry[]> {

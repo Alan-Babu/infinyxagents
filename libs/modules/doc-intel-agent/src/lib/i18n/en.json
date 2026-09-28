@@ -209,6 +209,17 @@
             "reset": "Discard",
             "keepCurrent": "Leave blank to keep the current value",
             "current": "Current",
+            "testConnection": "Test connection",
+            "testing": "Testing…",
+            "providers": {
+                "openai_compatible": "OpenAI-compatible (OpenAI, Groq, vLLM, Ollama…)",
+                "anthropic": "Anthropic (Claude)"
+            },
+            "test": {
+                "hint": "Tries the provider, URL, model and key above without saving them. A blank key uses the saved one.",
+                "ok": "Connected — {{model}} answered in {{ms}} ms.",
+                "failed": "The connection failed: {{error}}"
+            },
             "footerNote": "Changes are written to {{file}} on the server. Most apply immediately; items marked “Restart required” apply after the backend restarts.",
             "badge": {
                 "restart": "Restart required",
