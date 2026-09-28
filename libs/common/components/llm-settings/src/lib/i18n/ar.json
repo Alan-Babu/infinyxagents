@@ -38,7 +38,7 @@
         "placeholders": {
             "baseUrlOpenai": "https://api.openai.com/v1 أو http://your-server:8000/v1",
             "baseUrlAnthropic": "https://api.anthropic.com",
-            "modelOpenai": "مثال: gpt-4o أو llama-3.3-70b-versatile أو Qwen3-VL-8B-Instruct",
+            "modelOpenai": "مثال: gpt-4o أو openai/gpt-oss-120b أو Qwen3-VL-8B-Instruct",
             "modelAnthropic": "مثال: claude-sonnet-4-6"
         },
         "actions": {
