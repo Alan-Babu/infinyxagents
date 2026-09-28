@@ -55,7 +55,7 @@ export class GuardrailsReportPage implements OnInit, OnDestroy {
 
     /** Moderation flags and the audit log both live on the exec-agent admin router. */
     get isAdmin(): boolean {
-        return this.auth.isAdmin();
+        return this.auth.isAgentAdmin('executive-summary');
     }
 
     async refresh(): Promise<void> {

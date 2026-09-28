@@ -9,6 +9,7 @@ export interface VerificationWorkflowEnvelope<T> {
 export interface HumanReviewSummary {
     decision?: string | null;
     reviewer_id?: string | null;
+    reviewer_name?: string | null;
     notes?: string | null;
     source?: string | null;
     reviewed_at?: string | null;
@@ -51,7 +52,6 @@ export interface VerificationWorkflowQueueResponse {
 
 export interface ReviewDecisionRequest {
     decision: 'APPROVED' | 'REJECTED';
-    reviewer_id?: string | null;
     reasons?: string[];
     notes?: string | null;
 }

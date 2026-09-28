@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
@@ -37,7 +37,8 @@ export class SettingsPage implements OnInit {
     private readonly common = inject(CommonService);
 
     /** The route guard already keeps non-admins out; this is the in-page second line, and the backend is the real one. */
-    readonly isAdmin = inject(AuthService).isAdmin;
+    private readonly auth = inject(AuthService);
+    readonly isAdmin = computed(() => this.auth.isAgentAdmin('doc-intel-agent'));
 
     groups: DocIntelSettingsGroup[] = [];
     envFile = '';

@@ -10,7 +10,7 @@ import { UsageAnalyticsPage } from './pages/usage-analytics/usage-analytics';
  */
 function withRole<T>(prototype: object, isAdmin: boolean, extra: Record<string, unknown> = {}): T {
   const page = Object.create(prototype) as T;
-  Object.assign(page as object, { auth: { isAdmin: () => isAdmin } }, extra);
+  Object.assign(page as object, { auth: { isAdmin: () => isAdmin, isAgentAdmin: () => isAdmin } }, extra);
   return page;
 }
 

@@ -64,7 +64,7 @@ export function mapWorkflowToCase(item: VerificationWorkflowQueueItem, existingP
         createdAt: parseTimestamp(item.created_at),
         updatedAt: parseTimestamp(item.updated_at),
         reviewedAt,
-        reviewer: item.human_review?.reviewer_id ?? null,
+        reviewer: item.human_review?.reviewer_name ?? item.human_review?.reviewer_id ?? null,
         notes: item.human_review?.notes ?? '',
     };
 }

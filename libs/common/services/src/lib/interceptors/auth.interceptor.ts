@@ -6,30 +6,6 @@ import { APP_CONFIG } from '../app-config';
 import { StorageService } from '../local-storage';
 
 /**
- * Hosts whose routes aren't protected by the platform's own bearer token — attaching
- * `Authorization` (and reacting to a 401 from them by clearing the session) doesn't apply.
- * digital-attestation's verification-workflows backend currently lives here, on a separate
- * host from the rest of the platform (`APP_CONFIG.baseURL`).
- *
- * @deprecated Temporary carve-out. Remove this list (and the branch in `intercept()` that
- * checks it) once `DigitalAttestationApiBase` moves under the platform's authenticated
- * domain — see the commented-out `resolveBaseUrl('attestation/api')` there.
- */
-const UNAUTHENTICATED_HOSTS = ['api.nfinyx.ai'];
-
-/**
- * Exact hostname match — `req.url.includes(host)` would also match e.g. `agentsapi.nfinyx.ai`
- * (it contains `api.nfinyx.ai` as a substring), silently stripping auth from the wrong host.
- */
-function isUnauthenticatedHost(url: string): boolean {
-    try {
-        return UNAUTHENTICATED_HOSTS.includes(new URL(url).hostname);
-    } catch {
-        return false;
-    }
-}
-
-/**
  * Attaches the persisted session's bearer token to outgoing requests, and clears the
  * session on a 401 so `AuthService.isLoggedIn` reflects reality immediately rather than
  * only after the next explicit `/auth/me` call.
@@ -43,20 +19,21 @@ function isUnauthenticatedHost(url: string): boolean {
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
     private readonly storage = inject(StorageService);
-    /** `{baseURL}/api/` — the platform API that issues and validates the session token. */
+    /** `{baseURL}/api/` — the agents API that validates the session token. */
     private readonly platformApiPrefix: string;
+    /** The nfinyx Platform API (identity provider + ReviewHub), when configured. */
+    private readonly identityApiPrefix: string | null;
 
     constructor(@Inject(APP_CONFIG) appConfig: AppConfig) {
         this.platformApiPrefix = `${(appConfig.baseURL ?? '').replace(/\/+$/, '')}/api/`;
+        const identityRoot = (appConfig.platformApiUrl ?? '').replace(/\/+$/, '');
+        this.identityApiPrefix = identityRoot ? `${identityRoot}/` : null;
     }
 
     intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-        if (isUnauthenticatedHost(req.url)) {
-            // eslint-disable-next-line no-console
-            console.error(
-                `[AuthInterceptor] Skipping auth for ${req.url} (unauthenticated-host carve-out). ` +
-                    'Remove UNAUTHENTICATED_HOSTS once this backend moves under the authenticated domain.',
-            );
+        // A caller-supplied Authorization header wins (e.g. the platform logout call, made after
+        // the local session is already cleared).
+        if (req.headers.has('Authorization')) {
             return next.handle(req);
         }
 
@@ -83,8 +60,10 @@ export class AuthInterceptor implements HttpInterceptor {
      */
     private isDeadSession(url: string, session: SessionState | null): boolean {
         if (!session) return false;
-        if (url.includes('/auth/token')) return false;
+        if (url.includes('/auth/token') || url.includes('/auth/agents/login')) return false;
         if (url.startsWith(this.platformApiPrefix)) return true;
+        // The platform issued this token, so its 401 (expired or revoked session) is a dead session.
+        if (this.identityApiPrefix && url.startsWith(this.identityApiPrefix)) return true;
         return !session.expiresAt || session.expiresAt <= Date.now();
     }
 }

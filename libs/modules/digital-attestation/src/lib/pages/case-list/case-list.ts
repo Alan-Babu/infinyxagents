@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { AuthService, CommonService } from '@nfinyx/services';
+import { CommonService } from '@nfinyx/services';
 import { DataTable } from '@nfinyx/data-table';
 import { PageHeaderComponent } from '@nfinyx/page-header';
 import type { ColDef } from 'ag-grid-community';
@@ -25,7 +25,6 @@ import { docTypeLabel } from '../../utils/case-display';
 export class CaseListPage implements OnInit, OnDestroy {
     private readonly route = inject(ActivatedRoute);
     private readonly api = inject(DigitalAttestationApiService);
-    private readonly auth = inject(AuthService);
     private readonly translate = inject(TranslateService);
     private readonly common = inject(CommonService);
 
@@ -135,7 +134,7 @@ export class CaseListPage implements OnInit, OnDestroy {
     async onDecide(event: { id: string; decision: CaseDecision }): Promise<void> {
         const row = this.allCases.find(c => c.id === event.id);
         try {
-            await this.api.decide(event.id, event.decision, this.auth.user()?.id || '', undefined, row?.mismatch);
+            await this.api.decide(event.id, event.decision, undefined, row?.mismatch);
             await this.refresh();
         } catch (err) {
             this.common.showApiError(err);

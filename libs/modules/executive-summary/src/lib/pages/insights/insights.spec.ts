@@ -13,6 +13,7 @@ function pageDouble(isAdmin = true): InsightsPage {
       }),
       isLoggedIn: () => true,
       isAdmin: () => isAdmin,
+      isAgentAdmin: () => isAdmin,
     },
     framework: 'PESTLE',
     frameworkOptions: [],
