@@ -1,6 +1,7 @@
 import { Route } from '@angular/router';
 import { AgentLayout } from '@nfinyx/layouts';
 import { createModuleI18nResolver } from '@nfinyx/services';
+import { llmSettingsI18nResolver, llmSettingsRoute, withLlmSettingsNav } from '@nfinyx/llm-settings';
 import { MenuIcon, MenuModel } from '@nfinyx/types';
 import * as ar from './i18n/ar.json';
 import * as en from './i18n/en.json';
@@ -44,6 +45,7 @@ const LEGAL_AI_NAV: MenuModel[] = [
  *   /legal-ai/library                  legislation knowledge base
  *   /legal-ai/library/:lawId           a law and its articles
  *   /legal-ai/pipeline                 the analysis pipeline
+ *   /legal-ai/model-settings           model provider / endpoint / key (admins)
  *
  * List state (page, filter, search, tab, open finding) lives in query params.
  */
@@ -51,8 +53,12 @@ export const LEGAL_AI_ROUTES: Route[] = [
     {
         path: '',
         component: AgentLayout,
-        data: { 'main-nav': LEGAL_AI_NAV },
-        resolve: { i18n: legalAiI18nResolver },
+        resolve: {
+            i18n: legalAiI18nResolver,
+            llmI18n: llmSettingsI18nResolver,
+            // Adds "Model settings" for legal-ai admins only (route + API are enforced separately).
+            'main-nav': withLlmSettingsNav('legal-ai', LEGAL_AI_NAV, `${LEGAL_AI_BASE}/model-settings`),
+        },
         children: [
             {
                 path: '',
@@ -83,6 +89,7 @@ export const LEGAL_AI_ROUTES: Route[] = [
                         loadComponent: () => import('./pages/pipeline/pipeline').then((m) => m.LegalAiPipelinePage),
                         data: { name: 'legal-ai-pipeline' },
                     },
+                    llmSettingsRoute('legal-ai', 'legalai/api'),
                 ],
             },
         ],

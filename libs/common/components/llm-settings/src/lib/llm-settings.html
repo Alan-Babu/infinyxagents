@@ -1,0 +1,168 @@
+<div class="flex h-full min-h-0 flex-col">
+    <lib-page-header titleKey="llmSettings.title" subtitleKey="llmSettings.subtitle" [showBack]="false">
+        @if (isAdmin() && editable) {
+        <div class="flex items-center gap-2">
+            <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="!hasChanges || saving" (click)="discard()">
+                <span>{{ 'llmSettings.actions.discard' | translate }}</span>
+            </button>
+            <button type="button" pButton size="small" [disabled]="!hasChanges || saving" [loading]="saving" (click)="save()">
+                <span>{{ 'llmSettings.actions.save' | translate }}</span>
+            </button>
+        </div>
+        }
+    </lib-page-header>
+
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+        @if (!isAdmin()) {
+        <div class="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            {{ 'llmSettings.adminOnly' | translate }}
+        </div>
+        } @else if (loading) {
+        <div class="text-sm text-gray-500">{{ 'llmSettings.loading' | translate }}</div>
+        } @else if (loadFailed) {
+        <div class="flex items-center gap-3 text-sm text-gray-600">
+            <span>{{ 'llmSettings.toast.loadFailed' | translate }}</span>
+            <button type="button" pButton size="small" severity="secondary" [outlined]="true" (click)="load()">
+                <span>{{ 'llmSettings.retry' | translate }}</span>
+            </button>
+        </div>
+        } @else if (settings) {
+        <div class="flex max-w-4xl flex-col gap-6">
+            @if (!editable) {
+            <div class="rounded-lg border border-sky-300 bg-sky-50 px-4 py-3 text-sm text-sky-800">
+                {{ 'llmSettings.readOnly' | translate }}
+            </div>
+            }
+            @if (settings.restricted_hosts.length) {
+            <div class="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                {{ 'llmSettings.restrictedHosts' | translate: { hosts: settings.restricted_hosts.join(', ') } }}
+            </div>
+            }
+
+            <section class="rounded-xl border border-gray-200 bg-white p-5">
+                <h2 class="mb-4 text-sm font-semibold text-gray-800">{{ 'llmSettings.sections.connection' | translate }}</h2>
+                <div class="grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2">
+                    <div class="flex flex-col gap-1.5 md:col-span-2">
+                        <label class="p-control-label" for="llm-enabled">{{ 'llmSettings.fields.enabled' | translate }}</label>
+                        <div class="flex items-center gap-2">
+                            <p-checkbox inputId="llm-enabled" [binary]="true" [disabled]="!editable"
+                                [ngModel]="draft.enabled" (ngModelChange)="draft.enabled = $event; clearError('enabled')" />
+                            <span class="text-xs text-gray-500">{{ 'llmSettings.fields.enabledHint' | translate }}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <label class="p-control-label" for="llm-provider">{{ 'llmSettings.fields.provider' | translate }}</label>
+                        <p-select inputId="llm-provider" [options]="providerOptions" optionLabel="label" optionValue="value"
+                            [disabled]="!editable" styleClass="w-full"
+                            [ngModel]="draft.provider" (ngModelChange)="draft.provider = $event; clearError('provider')" />
+                        @if (fieldErrors['provider']) {
+                        <span class="text-xs text-red-600">{{ fieldErrors['provider'] }}</span>
+                        } @else {
+                        <span class="text-xs text-gray-500">{{ 'llmSettings.fields.providerHint' | translate }}</span>
+                        }
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <label class="p-control-label" for="llm-model">{{ 'llmSettings.fields.model' | translate }}</label>
+                        <input pInputText id="llm-model" class="w-full" type="text" [disabled]="!editable"
+                            [placeholder]="modelPlaceholderKey | translate"
+                            [ngModel]="draft.model" (ngModelChange)="draft.model = $event; clearError('model')" />
+                        @if (fieldErrors['model']) {
+                        <span class="text-xs text-red-600">{{ fieldErrors['model'] }}</span>
+                        } @else {
+                        <span class="text-xs text-gray-500">{{ 'llmSettings.fields.modelHint' | translate }}</span>
+                        }
+                    </div>
+
+                    <div class="flex flex-col gap-1.5 md:col-span-2">
+                        <label class="p-control-label" for="llm-base-url">{{ 'llmSettings.fields.baseUrl' | translate }}</label>
+                        <input pInputText id="llm-base-url" class="w-full" type="text" [disabled]="!editable"
+                            [placeholder]="baseUrlPlaceholderKey | translate"
+                            [ngModel]="draft.baseUrl" (ngModelChange)="draft.baseUrl = $event; clearError('base_url')" />
+                        @if (fieldErrors['base_url']) {
+                        <span class="text-xs text-red-600">{{ fieldErrors['base_url'] }}</span>
+                        } @else {
+                        <span class="text-xs text-gray-500">{{ 'llmSettings.fields.baseUrlHint' | translate }}</span>
+                        }
+                    </div>
+
+                    <div class="flex flex-col gap-1.5 md:col-span-2">
+                        <label class="p-control-label" for="llm-api-key">{{ 'llmSettings.fields.apiKey' | translate }}</label>
+                        <p-password inputId="llm-api-key" [toggleMask]="true" [feedback]="false" styleClass="w-full" inputStyleClass="w-full"
+                            [placeholder]="'llmSettings.fields.apiKeyKeep' | translate"
+                            [ngModel]="draft.apiKey" (ngModelChange)="draft.apiKey = $event; clearError('api_key')" />
+                        @if (fieldErrors['api_key']) {
+                        <span class="text-xs text-red-600">{{ fieldErrors['api_key'] }}</span>
+                        } @else {
+                        <span class="text-xs text-gray-500">{{ keyHint }}</span>
+                        }
+                    </div>
+                </div>
+
+                <div class="mt-5 flex flex-col gap-3 border-t border-gray-100 pt-4">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="testing" [loading]="testing" (click)="test()">
+                            <span>{{ (testing ? 'llmSettings.actions.testing' : 'llmSettings.actions.test') | translate }}</span>
+                        </button>
+                        <span class="text-xs text-gray-500">{{ 'llmSettings.test.keyHint' | translate }}</span>
+                    </div>
+                    @if (testResult) {
+                    <div class="rounded-lg border px-4 py-3 text-sm"
+                        [ngClass]="testResult.ok ? 'border-green-300 bg-green-50 text-green-800' : 'border-red-300 bg-red-50 text-red-800'"
+                        role="status">
+                        {{ testMessage(testResult) }}
+                    </div>
+                    }
+                </div>
+            </section>
+
+            <section class="rounded-xl border border-gray-200 bg-white p-5">
+                <h2 class="mb-4 text-sm font-semibold text-gray-800">{{ 'llmSettings.sections.limits' | translate }}</h2>
+                <div class="grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2">
+                    <div class="flex flex-col gap-1.5">
+                        <label class="p-control-label" for="llm-timeout">{{ 'llmSettings.fields.timeout' | translate }}</label>
+                        <input pInputText id="llm-timeout" class="w-full" type="number" [disabled]="!editable"
+                            [attr.min]="settings.limits.timeout_seconds[0]" [attr.max]="settings.limits.timeout_seconds[1]"
+                            [ngModel]="draft.timeoutSeconds" (ngModelChange)="draft.timeoutSeconds = $event; clearError('timeout_seconds')" />
+                        @if (fieldErrors['timeout_seconds']) {
+                        <span class="text-xs text-red-600">{{ fieldErrors['timeout_seconds'] }}</span>
+                        }
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="p-control-label" for="llm-max-tokens">{{ 'llmSettings.fields.maxTokens' | translate }}</label>
+                        <input pInputText id="llm-max-tokens" class="w-full" type="number" [disabled]="!editable"
+                            [attr.min]="settings.limits.max_tokens[0]" [attr.max]="settings.limits.max_tokens[1]"
+                            [ngModel]="draft.maxTokens" (ngModelChange)="draft.maxTokens = $event; clearError('max_tokens')" />
+                        @if (fieldErrors['max_tokens']) {
+                        <span class="text-xs text-red-600">{{ fieldErrors['max_tokens'] }}</span>
+                        }
+                    </div>
+                </div>
+            </section>
+
+            @if (!isAnthropic) {
+            <section class="rounded-xl border border-gray-200 bg-white p-5">
+                <h2 class="mb-4 text-sm font-semibold text-gray-800">{{ 'llmSettings.sections.advanced' | translate }}</h2>
+                <div class="flex flex-col gap-1.5">
+                    <label class="p-control-label" for="llm-vllm">{{ 'llmSettings.fields.vllmExtras' | translate }}</label>
+                    <div class="flex items-start gap-2">
+                        <p-checkbox inputId="llm-vllm" [binary]="true" [disabled]="!editable"
+                            [ngModel]="draft.vllmExtras" (ngModelChange)="draft.vllmExtras = $event; clearError('vllm_extras')" />
+                        <span class="text-xs text-gray-500">{{ 'llmSettings.fields.vllmExtrasHint' | translate }}</span>
+                    </div>
+                </div>
+            </section>
+            }
+
+            @if (editable) {
+            <div>
+                <button type="button" pButton size="small" severity="secondary" [text]="true" [disabled]="saving" (click)="resetToDefaults()">
+                    <span>{{ 'llmSettings.actions.reset' | translate }}</span>
+                </button>
+            </div>
+            }
+        </div>
+        }
+    </div>
+</div>

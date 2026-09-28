@@ -71,6 +71,9 @@
                         @if (field.is_set) {
                         <span class="text-xs text-gray-500">{{ 'docIntelAgent.settings.current' | translate }}: {{ field.value }}</span>
                         }
+                        } @else if (field.choices?.length) {
+                        <p-select [inputId]="'setting-' + field.key" [options]="optionsFor(field)" optionLabel="label" optionValue="value"
+                            styleClass="w-full" [ngModel]="draft[field.key]" (ngModelChange)="draft[field.key] = $event; clearError(field.key)" />
                         } @else if (field.type === 'int') {
                         <input pInputText class="w-full" type="number" [id]="'setting-' + field.key"
                             [attr.min]="field.min" [attr.max]="field.max"
@@ -88,6 +91,22 @@
                     </div>
                     }
                 </div>
+                @if (group.id === 'qwen') {
+                <div class="mt-5 flex flex-col gap-3 border-t border-gray-100 pt-4">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="testing" [loading]="testing" (click)="testModel()">
+                            <span>{{ (testing ? 'docIntelAgent.settings.testing' : 'docIntelAgent.settings.testConnection') | translate }}</span>
+                        </button>
+                        <span class="text-xs text-gray-500">{{ 'docIntelAgent.settings.test.hint' | translate }}</span>
+                    </div>
+                    @if (testResult) {
+                    <div class="rounded-lg border px-4 py-3 text-sm" role="status"
+                        [ngClass]="testResult.ok ? 'border-green-300 bg-green-50 text-green-800' : 'border-red-300 bg-red-50 text-red-800'">
+                        {{ testMessage(testResult) }}
+                    </div>
+                    }
+                </div>
+                }
             </section>
             }
 

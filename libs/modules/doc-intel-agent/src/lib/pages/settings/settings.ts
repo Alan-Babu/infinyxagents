@@ -5,11 +5,13 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService, CommonService } from '@nfinyx/services';
 import { ApiError } from '@nfinyx/types';
+import { LlmProvider, LlmTestResult } from '@nfinyx/llm-settings';
 import { PageHeaderComponent } from '@nfinyx/page-header';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
+import { SelectModule } from 'primeng/select';
 import { DocIntelApiService } from '../../services/doc-intel-api.service';
 import { DocIntelSettingField, DocIntelSettingsGroup } from '../../models/doc-intel.models';
 
@@ -26,6 +28,7 @@ type DraftValue = string | number | boolean | null;
         CheckboxModule,
         InputTextModule,
         PasswordModule,
+        SelectModule,
         PageHeaderComponent,
     ],
     templateUrl: './settings.html',
@@ -54,6 +57,10 @@ export class SettingsPage implements OnInit {
     /** Outcome of the last save, shown as a banner. */
     restartRequiredLabels: string[] = [];
     ineffectiveLabels: string[] = [];
+
+    /** "Test connection" for the model group. */
+    testing = false;
+    testResult: LlmTestResult | null = null;
 
     async ngOnInit(): Promise<void> {
         if (this.isAdmin()) await this.load();
@@ -126,6 +133,46 @@ export class SettingsPage implements OnInit {
 
     isWide(field: DocIntelSettingField): boolean {
         return field.type === 'url' || field.type === 'dsn' || field.type === 'list';
+    }
+
+    /** Select options for a field with a fixed set of values; provider names get a readable label. */
+    optionsFor(field: DocIntelSettingField): { label: string; value: string }[] {
+        return (field.choices ?? []).map(value => {
+            const key = `docIntelAgent.settings.providers.${value}`;
+            const label = this.translate.instant(key);
+            return { value, label: label === key ? value : label };
+        });
+    }
+
+    /**
+     * Tests the model group as the form stands (saved or not). The provider, endpoint and model are sent as typed; a blank
+     * key is left out so the backend tests with the saved one.
+     */
+    async testModel(): Promise<void> {
+        if (this.testing) return;
+        this.testing = true;
+        this.testResult = null;
+        try {
+            const provider = String(this.draft['QWEN_PROVIDER'] ?? '');
+            const model = String(this.draft['QWEN_MODEL'] ?? '').trim();
+            const apiKey = String(this.draft['QWEN_API_KEY'] ?? '').trim();
+            this.testResult = await this.api.testModel({
+                ...(provider ? { provider: provider as LlmProvider } : {}),
+                base_url: String(this.draft['QWEN_API_BASE'] ?? '').trim(),
+                ...(model ? { model } : {}),
+                ...(apiKey ? { api_key: apiKey } : {}),
+            });
+        } catch (err) {
+            this.handleSaveError(err);
+        } finally {
+            this.testing = false;
+        }
+    }
+
+    testMessage(result: LlmTestResult): string {
+        return result.ok
+            ? this.translate.instant('docIntelAgent.settings.test.ok', { model: result.model ?? '', ms: result.latency_ms ?? 0 })
+            : this.translate.instant('docIntelAgent.settings.test.failed', { error: result.error ?? '' });
     }
 
     private applyResponse(res: { groups: DocIntelSettingsGroup[]; env_file: string }): void {

@@ -2,6 +2,7 @@ import { inject } from '@angular/core';
 import { ResolveFn, Route } from '@angular/router';
 import { AgentLayout } from '@nfinyx/layouts';
 import { AuthService, createModuleI18nResolver, requireAdminGuard } from '@nfinyx/services';
+import { llmSettingsI18nResolver, llmSettingsRoute } from '@nfinyx/llm-settings';
 import { MenuIcon, MenuModel } from '@nfinyx/types';
 import * as en from './i18n/en.json';
 import * as ar from './i18n/ar.json';
@@ -45,7 +46,7 @@ export const MOFA_CHATBOT_ROUTES: Route[] = [
         // (see app.routes.ts in each app) — this route is nested under that block.
         path: '',
         component: AgentLayout,
-        resolve: { i18n: mofaChatbotI18nResolver, 'main-nav': mofaChatbotNavResolver },
+        resolve: { i18n: mofaChatbotI18nResolver, llmI18n: llmSettingsI18nResolver, 'main-nav': mofaChatbotNavResolver },
         children: [
             {
                 path: '',
@@ -93,6 +94,7 @@ export const MOFA_CHATBOT_ROUTES: Route[] = [
                         loadComponent: () => import('./pages/admin/feedback/feedback').then(m => m.AdminFeedbackPage),
                         data: { name: 'mofa-chatbot-admin-feedback' },
                     },
+                    llmSettingsRoute('mofa-chatbot', 'mofa-chatbot/api', 'model'),
                 ],
             },
         ],

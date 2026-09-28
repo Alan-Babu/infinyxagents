@@ -1,6 +1,7 @@
 import { Route } from '@angular/router';
 import { AgentLayout } from '@nfinyx/layouts';
 import { createModuleI18nResolver } from '@nfinyx/services';
+import { llmSettingsI18nResolver, llmSettingsRoute, withLlmSettingsNav } from '@nfinyx/llm-settings';
 import { MenuIcon, MenuModel } from '@nfinyx/types';
 import * as en from './i18n/en.json';
 import * as ar from './i18n/ar.json';
@@ -30,8 +31,12 @@ export const CONTRACT_ANALYZER_ROUTES: Route[] = [
     {
         path: '',
         component: AgentLayout,
-        data: { 'main-nav': CONTRACT_ANALYZER_NAV },
-        resolve: { i18n: contractAnalyzerI18nResolver },
+        resolve: {
+            i18n: contractAnalyzerI18nResolver,
+            llmI18n: llmSettingsI18nResolver,
+            // Adds "Model settings" for admins of this agent only (route + API are enforced separately).
+            'main-nav': withLlmSettingsNav('contract-analyzer', CONTRACT_ANALYZER_NAV, '/contract-analyzer/model-settings'),
+        },
         children: [
             {
                 path: '',
@@ -48,6 +53,7 @@ export const CONTRACT_ANALYZER_ROUTES: Route[] = [
                 loadComponent: () => import('./pages/contract-detail/contract-detail').then(m => m.ContractDetailPage),
                 data: { name: 'contract-analyzer-contract-detail' },
             },
+            llmSettingsRoute('contract-analyzer', 'contract-analyzer/api'),
         ],
     },
 ];

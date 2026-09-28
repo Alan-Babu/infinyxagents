@@ -18,9 +18,10 @@ const ADMIN_TABS: AdminTabLink[] = [
     { labelKey: 'mofaChatbot.admin.nav.sessions', path: '/mofa-chatbot/admin/sessions', icon: 'pi pi-comments', exact: false },
     { labelKey: 'mofaChatbot.admin.nav.riskSessions', path: '/mofa-chatbot/admin/risk-sessions', icon: 'pi pi-exclamation-triangle', exact: false },
     { labelKey: 'mofaChatbot.admin.nav.feedback', path: '/mofa-chatbot/admin/feedback', icon: 'pi pi-star', exact: false },
+    { labelKey: 'llmSettings.nav', path: '/mofa-chatbot/admin/model', icon: 'pi pi-sliders-h', exact: false },
 ];
 
-/** Secondary-nav shell for the 6 admin backoffice sub-pages, driving real routed navigation (not `@if` state). */
+/** Secondary-nav shell for the admin backoffice sub-pages, driving real routed navigation (not `@if` state). */
 @Component({
     selector: 'lib-admin-shell',
     standalone: true,

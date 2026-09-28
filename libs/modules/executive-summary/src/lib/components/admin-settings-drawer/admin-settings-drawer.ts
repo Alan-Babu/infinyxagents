@@ -21,6 +21,7 @@ import {
     ErrorLogEntry,
     McpServerEntry,
     Provider,
+    ProviderTestResult,
     TrustedSourceEntry,
 } from '../../models/executive-summary.models';
 
@@ -72,6 +73,15 @@ export class AdminSettingsDrawerComponent implements OnChanges {
     qwenKeyInput = '';
     modelVersion = '';
     providerName = '';
+    // Where and with which model each provider is called (blank = the server default).
+    qwenBaseUrl = '';
+    qwenModel = '';
+    openaiBaseUrl = '';
+    openaiModel = '';
+    anthropicBaseUrl = '';
+    anthropicModel = '';
+    testingProvider: Provider | null = null;
+    testResults: Partial<Record<Provider, ProviderTestResult>> = {};
     tokenRateLimit: number | null = null;
     allowedFileTypes: string[] = [...ALL_FILE_TYPES];
     enabledFrameworks: string[] = [...ALL_FRAMEWORKS];
@@ -90,6 +100,9 @@ export class AdminSettingsDrawerComponent implements OnChanges {
     modelModerationEnabled = true;
     modelModerationThreshold = 0.5;
     fallbackProviderOrder: Provider[] = [];
+    /** '' = the server default (DEFAULT_PROVIDER). */
+    defaultProvider: Provider | '' = '';
+    envDefaultProvider: Provider = 'qwen';
 
     presentonEnabled = false;
     presentonBaseUrl = '';
@@ -169,6 +182,12 @@ export class AdminSettingsDrawerComponent implements OnChanges {
             this.promptOptimizationEnabled = res.prompt_optimization_enabled;
             this.arabicEnabled = res.arabic_enabled;
             this.modelVersion = res.model_version || '';
+            this.qwenBaseUrl = res.qwen_base_url || '';
+            this.qwenModel = res.qwen_model || '';
+            this.openaiBaseUrl = res.openai_base_url || '';
+            this.openaiModel = res.openai_model || '';
+            this.anthropicBaseUrl = res.anthropic_base_url || '';
+            this.anthropicModel = res.anthropic_model || '';
             this.providerName = res.provider_name || '';
             this.tokenRateLimit = res.token_rate_limit_per_user ?? null;
             this.allowedFileTypes = res.allowed_file_types?.length ? [...res.allowed_file_types] : [...ALL_FILE_TYPES];
@@ -184,6 +203,8 @@ export class AdminSettingsDrawerComponent implements OnChanges {
             this.modelModerationEnabled = res.model_moderation_enabled;
             this.modelModerationThreshold = res.model_moderation_threshold;
             this.fallbackProviderOrder = (res.fallback_provider_order || []) as Provider[];
+            this.defaultProvider = (res.default_provider || '') as Provider | '';
+            this.envDefaultProvider = (res.env_default_provider || 'qwen') as Provider;
             this.presentonEnabled = res.presenton_enabled;
             this.presentonBaseUrl = res.presenton_base_url || '';
             this.presentonTemplateName = res.presenton_template_name || '';
@@ -229,6 +250,12 @@ export class AdminSettingsDrawerComponent implements OnChanges {
                 openai_api_key: this.openaiKeyInput || null,
                 anthropic_api_key: this.anthropicKeyInput || null,
                 qwen_api_key: this.qwenKeyInput || null,
+                qwen_base_url: this.qwenBaseUrl.trim(),
+                qwen_model: this.qwenModel.trim(),
+                openai_base_url: this.openaiBaseUrl.trim(),
+                openai_model: this.openaiModel.trim(),
+                anthropic_base_url: this.anthropicBaseUrl.trim(),
+                anthropic_model: this.anthropicModel.trim(),
                 model_version: this.modelVersion || null,
                 provider_name: this.providerName || null,
                 token_rate_limit_per_user: this.tokenRateLimit,
@@ -242,6 +269,7 @@ export class AdminSettingsDrawerComponent implements OnChanges {
                 moderation_flag_retention_days: this.moderationFlagRetentionDays,
                 audit_log_retention_days: this.auditLogRetentionDays,
                 fallback_provider_order: this.fallbackProviderOrder,
+                default_provider: this.defaultProvider || null,
                 presenton_enabled: this.presentonEnabled,
                 presenton_base_url: this.presentonBaseUrl || null,
                 presenton_api_key: this.presentonApiKeyInput || null,
@@ -263,6 +291,44 @@ export class AdminSettingsDrawerComponent implements OnChanges {
         } catch {
             this.saveStatus = this.translate.instant('executiveSummary.adminSettings.saveFailed');
         }
+    }
+
+    /** What the server uses for a provider when no override is saved, shown as the input placeholder. */
+    defaultsFor(provider: Provider): { base_url: string; model: string } {
+        return this.settings?.endpoint_defaults?.[provider] ?? { base_url: '', model: '' };
+    }
+
+    /**
+     * Tests a provider with the values in the form, saved or not. Blank fields fall back to what the provider uses now
+     * (including the saved key), so an admin can check a new endpoint before committing to it.
+     */
+    async testProvider(provider: Provider): Promise<void> {
+        if (this.testingProvider) return;
+        const form = {
+            qwen: { base_url: this.qwenBaseUrl, model: this.qwenModel, api_key: this.qwenKeyInput },
+            openai: { base_url: this.openaiBaseUrl, model: this.openaiModel, api_key: this.openaiKeyInput },
+            claude: { base_url: this.anthropicBaseUrl, model: this.anthropicModel, api_key: this.anthropicKeyInput },
+        }[provider];
+        this.testingProvider = provider;
+        delete this.testResults[provider];
+        try {
+            this.testResults[provider] = await this.api.testProvider({
+                provider,
+                base_url: form.base_url.trim() || null,
+                model: form.model.trim() || null,
+                api_key: form.api_key.trim() || null,
+            });
+        } catch {
+            this.testResults[provider] = { ok: false, error: this.translate.instant('executiveSummary.adminSettings.testUnavailable') };
+        } finally {
+            this.testingProvider = null;
+        }
+    }
+
+    testMessage(result: ProviderTestResult): string {
+        return result.ok
+            ? this.translate.instant('executiveSummary.adminSettings.testOk', { model: result.model ?? '', ms: result.latency_ms ?? 0 })
+            : this.translate.instant('executiveSummary.adminSettings.testFailed', { error: result.error ?? '' });
     }
 
     async loadErrorLogs(): Promise<void> {
