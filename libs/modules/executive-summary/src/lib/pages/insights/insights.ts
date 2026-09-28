@@ -483,6 +483,10 @@ export class InsightsPage implements OnInit {
         ];
     }
 
+    get selectedToolLabel(): string {
+        return this.mcpToolOptions.find(o => o.value === this.mcpConnectionId)?.label ?? 'None';
+    }
+
     async loadFromHistory(sessionId: string): Promise<void> {
         this.historyLoadError = '';
         try {

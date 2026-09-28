@@ -564,10 +564,17 @@
                     [sending]="stage === 'loading' || stage === 'streaming'"
                     (send)="startResearch()"
                 >
-                    <ng-template #leftToolbar>
-                        <p-select class="w-56" [options]="frameworkOptions" [(ngModel)]="framework" optionLabel="label" optionValue="label" [placeholder]="'executiveSummary.insights.framework' | translate" appendTo="body" />
-                        <p-select class="w-44" [options]="mcpToolOptions" [(ngModel)]="mcpConnectionId" optionLabel="label" optionValue="value"
-                            [placeholder]="'executiveSummary.options.tools' | translate" appendTo="body" />
+                    <ng-template #rightToolbar>
+                        <button type="button" class="flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-3 text-gray-400 hover:text-primary-600"
+                            pTooltip="{{ framework }}" tooltipPosition="top" (click)="frameworkMenu.toggle($event)">
+                            <i class="pi pi-sitemap"></i>
+                            <span class="max-w-32 truncate text-xs font-semibold">{{ framework }}</span>
+                        </button>
+                        <button type="button" class="flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-3 text-gray-400 hover:text-primary-600"
+                            [pTooltip]="selectedToolLabel" tooltipPosition="top" (click)="toolsMenu.toggle($event)">
+                            <i class="pi pi-bolt"></i>
+                            <span class="max-w-32 truncate text-xs font-semibold">{{ selectedToolLabel }}</span>
+                        </button>
                     </ng-template>
                 </lib-chat-composer>
                 }
@@ -606,6 +613,33 @@
         (open)="loadFromHistory($event)" (openConversation)="loadConversation($event)"
         (exportItem)="exportRecentReport($event)" />
 </div>
+
+<p-popover #frameworkMenu appendTo="body" [baseZIndex]="1300">
+    <p class="mb-2 px-1 text-xs font-bold uppercase tracking-wide text-gray-400">{{ 'executiveSummary.insights.framework' | translate }}</p>
+    <div class="flex w-72 flex-col gap-1">
+        @for (opt of frameworkOptions; track opt.label) {
+        <button type="button" class="flex cursor-pointer flex-col items-start gap-0.5 rounded-lg px-3 py-2 text-start hover:bg-gray-100"
+            [class.bg-primary-50]="framework === opt.label" (click)="framework = opt.label; frameworkMenu.hide()">
+            <span class="text-sm font-semibold text-gray-800">{{ opt.label }}</span>
+            @if (opt.description) {
+            <span class="text-xs text-gray-400">{{ opt.description }}</span>
+            }
+        </button>
+        }
+    </div>
+</p-popover>
+
+<p-popover #toolsMenu appendTo="body" [baseZIndex]="1300">
+    <p class="mb-2 px-1 text-xs font-bold uppercase tracking-wide text-gray-400">{{ 'executiveSummary.options.tools' | translate }}</p>
+    <div class="flex w-56 flex-col gap-1">
+        @for (opt of mcpToolOptions; track opt.value) {
+        <button type="button" class="cursor-pointer rounded-lg px-3 py-2 text-start text-sm font-medium text-gray-800 hover:bg-gray-100"
+            [class.bg-primary-50]="mcpConnectionId === opt.value" (click)="mcpConnectionId = opt.value; toolsMenu.hide()">
+            {{ opt.label }}
+        </button>
+        }
+    </div>
+</p-popover>
 
 <p-popover #exportPopover>
     <p class="mb-2 px-1 text-xs font-bold uppercase tracking-wide text-gray-400">{{ "executiveSummary.exportPanel.title" | translate }}</p>
