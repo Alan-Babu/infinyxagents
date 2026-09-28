@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleCha
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { AuthService, CommonService } from '@nfinyx/services';
+import { CommonService } from '@nfinyx/services';
 import { ApiError } from '@nfinyx/types';
 import { ButtonModule } from 'primeng/button';
 import { DrawerModule } from 'primeng/drawer';
@@ -52,7 +52,6 @@ function blankFileView(): FileViewState {
 })
 export class CaseDrawerComponent implements OnChanges, OnDestroy {
     private readonly api = inject(DigitalAttestationApiService);
-    private readonly auth = inject(AuthService);
     private readonly translate = inject(TranslateService);
     private readonly common = inject(CommonService);
     private readonly sanitizer = inject(DomSanitizer);
@@ -246,8 +245,7 @@ export class CaseDrawerComponent implements OnChanges, OnDestroy {
         if (!this.case || this.submitting) return;
         this.submitting = true;
         try {
-            const reviewerId = this.auth.user()?.id || '';
-            await this.api.decide(this.case.id, decision, reviewerId, this.notes, this.case.mismatch);
+            await this.api.decide(this.case.id, decision, this.notes, this.case.mismatch);
             // Matches the reference app: close the drawer and let the parent reload the list
             // from the queue endpoint rather than re-fetching this single workflow.
             this.closed.emit();

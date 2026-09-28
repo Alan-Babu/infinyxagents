@@ -36,7 +36,7 @@ const MOFA_CHATBOT_ADMIN_NAV_ITEM: MenuModel = {
  */
 const mofaChatbotNavResolver: ResolveFn<MenuModel[]> = () => {
     const auth = inject(AuthService);
-    return auth.isAdmin() ? [MOFA_CHATBOT_CHAT_NAV_ITEM, MOFA_CHATBOT_ADMIN_NAV_ITEM] : [MOFA_CHATBOT_CHAT_NAV_ITEM];
+    return auth.isAgentAdmin('mofa-chatbot') ? [MOFA_CHATBOT_CHAT_NAV_ITEM, MOFA_CHATBOT_ADMIN_NAV_ITEM] : [MOFA_CHATBOT_CHAT_NAV_ITEM];
 };
 
 export const MOFA_CHATBOT_ROUTES: Route[] = [
@@ -56,7 +56,7 @@ export const MOFA_CHATBOT_ROUTES: Route[] = [
                 path: 'admin',
                 loadComponent: () => import('./pages/admin/admin-shell/admin-shell').then(m => m.AdminShellPage),
                 canActivate: [requireAdminGuard],
-                data: { name: 'mofa-chatbot-admin' },
+                data: { name: 'mofa-chatbot-admin', agentId: 'mofa-chatbot' },
                 children: [
                     {
                         path: '',

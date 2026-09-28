@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { AuthService, CommonService } from '@nfinyx/services';
+import { CommonService } from '@nfinyx/services';
 import { DataTable } from '@nfinyx/data-table';
 import { StatCardComponent } from '@nfinyx/stat-card';
 import { PageHeaderComponent } from '@nfinyx/page-header';
@@ -23,7 +23,6 @@ import { buildCaseColDefs } from '../../utils/case-columns';
 export class AttestationDashboardPage implements OnInit, OnDestroy {
     private readonly api = inject(DigitalAttestationApiService);
     private readonly router = inject(Router);
-    private readonly auth = inject(AuthService);
     private readonly translate = inject(TranslateService);
     private readonly common = inject(CommonService);
 
@@ -111,7 +110,7 @@ export class AttestationDashboardPage implements OnInit, OnDestroy {
     async onDecide(event: { id: string; decision: CaseDecision }): Promise<void> {
         const row = this.cases.find(c => c.id === event.id);
         try {
-            await this.api.decide(event.id, event.decision, this.auth.user()?.id || '', undefined, row?.mismatch);
+            await this.api.decide(event.id, event.decision, undefined, row?.mismatch);
             await this.refresh();
         } catch (err) {
             this.common.showApiError(err);

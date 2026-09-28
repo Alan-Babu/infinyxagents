@@ -10,7 +10,7 @@ describe('GuardrailsReportPage audit loading', () => {
     const page = Object.create(GuardrailsReportPage.prototype) as GuardrailsReportPage;
     Object.assign(page, {
       api: { getAuditLog },
-      auth: { isAdmin: () => true },
+      auth: { isAdmin: () => true, isAgentAdmin: () => true },
       toastr: { warning: vi.fn() },
       translate: { instant: (key: string) => key },
       activeTab: 'blocked',

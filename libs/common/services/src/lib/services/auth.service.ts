@@ -1,9 +1,11 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 
+import { canOpenAgentWithScopes, isAgentAdminWithScopes, scopesFromToken } from '../agent-access';
 import { ApiService } from '../api';
+import { APP_CONFIG } from '../app-config';
 import { StorageService } from '../local-storage';
 import { CommonService } from './common';
-import { ApiError, AuthenticatedUserDto, AuthMessageResponse, ForgotPasswordRequest, LocalStorage, messageFromApiError, ResetPasswordRequest, SessionState, SessionUser, TokenResponse } from '@nfinyx/types';
+import { ApiError, AuthenticatedUserDto, AuthMessageResponse, ForgotPasswordRequest, LocalStorage, messageFromApiError, PlatformTokenResponse, ResetPasswordRequest, SessionState, SessionUser, TokenResponse } from '@nfinyx/types';
 
 export const AuthAPIPaths = {
     authLogin: '/auth/token',
@@ -17,6 +19,7 @@ export class AuthService {
     private readonly storage = inject(StorageService);
     private readonly api = inject(ApiService);
     private readonly common = inject(CommonService);
+    private readonly appConfig = inject(APP_CONFIG);
     private readonly _session = signal<SessionState | null>(this.restore());
     public loginsessionkey = "login";
 
@@ -39,6 +42,28 @@ export class AuthService {
     readonly isAdmin = computed(
         () => (this.user()?.role ?? '').toLowerCase() === 'admin',
     );
+    /** Scopes the Platform granted in the token (`agents:use`, `doc_intel:admin`, ...). */
+    readonly scopes = computed(() => scopesFromToken(this._session()?.token));
+
+    /**
+     * May the user open this agent? Always true unless `enforceAgentAccess` is on. `tileId` is the agents-UI tile/route id.
+     * (An admin HR profile may always open HR Agent, mirroring the backend.)
+     */
+    canOpenAgent(tileId: string): boolean {
+        if (!this.appConfig.enforceAgentAccess) return true;
+        if (tileId === 'hr-agent' && this.isAdmin()) return true;
+        return canOpenAgentWithScopes(this.scopes(), tileId);
+    }
+
+    /**
+     * Is the user an admin of this agent? With `enforceAgentAccess` off this is the old global rule
+     * (the HR profile's admin role); on, it comes from the token's `agents:admin` / `<agent>:admin` scope.
+     */
+    isAgentAdmin(tileId: string): boolean {
+        if (!this.appConfig.enforceAgentAccess) return this.isAdmin();
+        if (tileId === 'hr-agent' && this.isAdmin()) return true;
+        return isAgentAdminWithScopes(this.scopes(), tileId);
+    }
 
     me(): Promise<AuthenticatedUserDto> {
         return this.api.get<AuthenticatedUserDto>(AuthAPIPaths.authMe);
@@ -57,11 +82,8 @@ export class AuthService {
         password: string,
     ): Promise<{ ok: true } | { ok: false; reason: string }> {
         try {
-            const token = await this.api.postForm<TokenResponse>(AuthAPIPaths.authLogin, {
-                username: email.trim().toLowerCase(),
-                password,
-            });
-            const state = await this.buildSession(token.access_token);
+            const accessToken = await this.requestAccessToken(email.trim().toLowerCase(), password);
+            const state = await this.buildSession(accessToken);
             this._session.set(state);
             this.persist(state);
             return { ok: true };
@@ -74,6 +96,27 @@ export class AuthService {
             }
             return { ok: false, reason: 'alerts.loginFailed' };
         }
+    }
+
+    /**
+     * Exchanges credentials for an access token. With `platformApiUrl` configured the nfinyx Platform
+     * is the identity provider (its token is also what ReviewHub accepts); otherwise this falls back
+     * to the agents backend's own `/auth/token`.
+     */
+    private async requestAccessToken(email: string, password: string): Promise<string> {
+        const platformApiUrl = this.appConfig.platformApiUrl?.replace(/\/+$/, '');
+        if (platformApiUrl) {
+            const token = await this.api.postAbsolute<PlatformTokenResponse>(
+                `${platformApiUrl}/auth/agents/login`,
+                { email, password },
+            );
+            return token.accessToken;
+        }
+        const token = await this.api.postForm<TokenResponse>(AuthAPIPaths.authLogin, {
+            username: email,
+            password,
+        });
+        return token.access_token;
     }
 
     /** Re-validates token via /auth/me and refreshes persisted session. */
@@ -132,8 +175,10 @@ export class AuthService {
      * instead of silently re-using the previous IdP user.
      */
     logout(options?: { endIdpSession?: boolean; returnUrl?: string }): void {
+        const previousToken = this._session()?.token ?? null;
         this._session.set(null);
         this.storage.removeItem(LocalStorage.Session);
+        void this.revokePlatformSession(previousToken);
 
         // Opt-in only (sign-out button). Do not default on — session expiry
         // /auth/me failures must not bounce the whole tab through Keycloak.
@@ -147,6 +192,19 @@ export class AuthService {
         }
         const qs = params.toString();
         window.location.href = `${base}/auth/oidc/logout${qs ? `?${qs}` : ''}`;
+    }
+
+    /** Best-effort revoke of the platform session behind `token`; a failure never blocks sign-out. */
+    private async revokePlatformSession(token: string | null): Promise<void> {
+        const platformApiUrl = this.appConfig.platformApiUrl?.replace(/\/+$/, '');
+        if (!platformApiUrl || !token) return;
+        try {
+            await this.api.postAbsolute(`${platformApiUrl}/auth/logout`, null, {
+                Authorization: `Bearer ${token}`,
+            });
+        } catch {
+            // Token expiry bounds the exposure if the revoke call fails.
+        }
     }
 
     private async buildSession(token: string): Promise<SessionState> {

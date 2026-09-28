@@ -135,7 +135,7 @@ export class AdminSettingsDrawerComponent implements OnChanges {
 
     /** Every endpoint behind this drawer sits on the exec-agent admin router. */
     get isAdmin(): boolean {
-        return this.auth.isAdmin();
+        return this.auth.isAgentAdmin('executive-summary');
     }
 
     get drawerTitle(): string {
