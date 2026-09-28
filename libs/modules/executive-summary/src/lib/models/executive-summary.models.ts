@@ -80,7 +80,8 @@ export interface GenerateRequest {
     category?: Category | null;
     audience?: string | null;
     output_format: OutputFormat;
-    provider: Provider;
+    /** Omit to use the admin's default provider. */
+    provider?: Provider;
     personnel_profile?: boolean;
     country_dashboard?: boolean;
     source?: string | null;

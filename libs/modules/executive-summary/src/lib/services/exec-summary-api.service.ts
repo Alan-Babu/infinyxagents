@@ -150,7 +150,8 @@ export class ExecSummaryApiService extends ExecSummaryApiBase {
         return this.get<{ status: string; providers: Record<Provider, boolean>; default_provider?: Provider }>(ExecSummaryApiPaths.health);
     }
 
-    startSession(topic: string, provider: Provider, userId: string): Promise<StartSessionResponse> {
+    /** `provider` undefined = the server uses the admin's default provider. */
+    startSession(topic: string, provider: Provider | undefined, userId: string): Promise<StartSessionResponse> {
         return this.post<StartSessionResponse>(`${ExecSummaryApiPaths.session}/start`, {
             topic,
             provider,

@@ -325,6 +325,9 @@ export class InsightsPage implements OnInit {
     customWordCount: number | null = null;
     audience = '';
     provider = 'Qwen (local)';
+    /** True once the user picks a provider (or continues a conversation that used one). Until then no provider is
+     *  sent and the server applies the admin's default, so a stale page can never pin the wrong one. */
+    providerTouched = false;
     personnelProfile = false;
     countryDashboard = false;
     mcpServers: McpServerEntry[] = [];
@@ -434,7 +437,8 @@ export class InsightsPage implements OnInit {
     private async applyDefaultProvider(): Promise<void> {
         try {
             const { default_provider } = await this.api.health();
-            if (default_provider && this.stage === 'idle') this.provider = this.providerLabel(default_provider);
+            // Display only: requests omit the provider until the user picks one (see providerTouched).
+            if (default_provider && !this.providerTouched) this.provider = this.providerLabel(default_provider);
         } catch {
             // Keep the built-in default; provider selection must not block the research flow.
         }
@@ -552,6 +556,7 @@ export class InsightsPage implements OnInit {
             this.activeTopic = last.topic;
             this.framework = last.framework || this.framework;
             this.provider = this.providerLabel(last.provider);
+            this.providerTouched = true;
             this.source = last.sourceSelection || this.source;
             if (last.kind === 'brief') {
                 this.applyBrief(last.title, last.markdown, last.sources);
@@ -640,7 +645,7 @@ export class InsightsPage implements OnInit {
         this.quotaExceeded = false;
         this.stage = 'loading';
         try {
-            const res = await this.api.startSession(submittedTopic, this.providerKey(this.provider), this.backendUserId);
+            const res = await this.api.startSession(submittedTopic, this.requestedProvider(), this.backendUserId);
             if (res.intent === 'chit_chat') {
                 this.sessionId = res.session_id;
                 const turn = this.makeTurn('chitchat', submittedTopic, '', res.reply ?? '', res.session_id, []);
@@ -758,7 +763,7 @@ export class InsightsPage implements OnInit {
                     framework: this.framework as Framework,
                     audience: this.audience || null,
                     output_format: 'html',
-                    provider: this.providerKey(this.provider),
+                    provider: this.requestedProvider(),
                     personnel_profile: this.personnelProfile,
                     country_dashboard: this.countryDashboard,
                     source: this.source,
@@ -1061,6 +1066,7 @@ export class InsightsPage implements OnInit {
             this.activeTopic = turn.topic;
             this.framework = turn.framework || this.framework;
             this.provider = this.providerLabel(turn.provider);
+            this.providerTouched = true;
             this.source = turn.sourceSelection || this.source;
             this.applyBrief(response.title, response.content_markdown, turn.sources);
             this.conversationId = this.newId();
@@ -1289,6 +1295,11 @@ export class InsightsPage implements OnInit {
 
     private defaultSaveProfileForm(): SaveProfileFormModel {
         return { name: '', description: '', researchType: RESEARCH_TYPE_OPTIONS[0].label, visibility: 'Private' };
+    }
+
+    /** The provider to send with a request: the user's explicit choice, else undefined (= the server default). */
+    private requestedProvider(): Provider | undefined {
+        return this.providerTouched ? this.providerKey(this.provider) : undefined;
     }
 
     private providerKey(label: string): Provider {
