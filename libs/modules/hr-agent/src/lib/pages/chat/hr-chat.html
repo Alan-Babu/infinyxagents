@@ -204,32 +204,19 @@
 
         <!-- Composer -->
         <div class="mx-auto w-full max-w-4xl px-6 pb-6">
-            @if (pendingAttachmentName) {
-            <div class="mb-2 inline-flex items-center gap-2 rounded-full bg-primary-500/15 px-3 py-1 text-sm font-semibold text-primary-700">
-                <i class="pi pi-paperclip text-xs"></i>
-                {{ pendingAttachmentName }}
-                <button type="button" class="cursor-pointer text-primary-600/80 hover:text-primary-600" (click)="clearAttachment()">✕</button>
-            </div>
-            }
-            <form class="space-y-3 rounded-lg border-2 border-gray-200 bg-white p-3 focus-within:border-primary-500" (ngSubmit)="send()">
-                <input name="draft" class="w-full border-0 bg-transparent px-1 py-2 text-gray-900 placeholder:text-gray-400 focus:outline-none"
-                    [(ngModel)]="draft" [placeholder]="'hrAgent.composerPlaceholder' | translate" [disabled]="sending" autocomplete="off" />
-                <div class="flex items-center gap-2">
-                    <div class="flex flex-1 items-center gap-1">
-                        <label class="grid h-9 w-9 shrink-0 cursor-pointer place-items-center rounded-full text-gray-400 transition-colors hover:text-primary-600"
-                            pTooltip="{{ 'hrAgent.attachFile' | translate }}" tooltipPosition="top">
-                            <i class="pi pi-paperclip"></i>
-                            <input type="file" (change)="onFileSelected($event)" hidden />
-                        </label>
-                    </div>
-                    <button type="submit" class="grid h-9 w-9 shrink-0 cursor-pointer place-items-center rounded-full text-white transition disabled:cursor-not-allowed"
-                        [class.bg-primary-500]="!sending && (draft.trim() || pendingAttachmentId)" [class.hover:bg-primary-400]="!sending && (draft.trim() || pendingAttachmentId)"
-                        [class.bg-gray-300]="sending || (!draft.trim() && !pendingAttachmentId)"
-                        [disabled]="sending || (!draft.trim() && !pendingAttachmentId)" pTooltip="{{ 'hrAgent.send' | translate }}" tooltipPosition="top">
-                        <i class="pi pi-send text-sm"></i>
-                    </button>
-                </div>
-            </form>
+            <lib-chat-composer
+                [value]="draft"
+                (valueChange)="draft = $event"
+                [placeholder]="'hrAgent.composerPlaceholder' | translate"
+                [maxRows]="5"
+                [sending]="sending"
+                [showAttachment]="true"
+                [files]="composerFiles"
+                (send)="send()"
+                (attachClick)="fileInputEl.click()"
+                (removeFile)="clearAttachment()"
+            ></lib-chat-composer>
+            <input #fileInputEl type="file" (change)="onFileSelected($event)" hidden />
         </div>
     </div>
 

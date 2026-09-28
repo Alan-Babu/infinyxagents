@@ -3,6 +3,7 @@ import { Component, HostListener, inject, OnInit, ViewChild } from '@angular/cor
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService, CommonService } from '@nfinyx/services';
+import { ChatComposerComponent } from '@nfinyx/chat-composer';
 import { marked } from 'marked';
 
 import { ButtonModule } from 'primeng/button';
@@ -223,6 +224,7 @@ function splitIntoSections(markdown: string, framework: string): BriefSection[] 
         CountryDashboardComponent, HistoryPanelComponent, ExportPanelComponent, AdminSettingsDrawerComponent,
         AgentOptionsPanelComponent, ProfileSettingsComponent,
         ShareTaskDrawerComponent, ScheduleDrawerComponent, SaveProfileDrawerComponent,
+        ChatComposerComponent,
     ],
     templateUrl: './insights.html',
 })
@@ -571,19 +573,6 @@ export class InsightsPage implements OnInit {
     useQuickAction(kind: 'summarise' | 'board-ready'): void {
         this.composerMode = kind === 'summarise' ? 'document' : 'topic';
         this.topic = '';
-    }
-
-    onComposerEnter(ev: Event): void {
-        const keyEv = ev as KeyboardEvent;
-        if (keyEv.shiftKey) return;
-        ev.preventDefault();
-        if (this.showingRefineComposer) {
-            if (!this.refineInstruction.trim() || this.refining) return;
-            this.refineBrief();
-            return;
-        }
-        if (!this.topic.trim() || this.stage === 'loading' || this.stage === 'streaming') return;
-        this.startResearch();
     }
 
     async refineBrief(): Promise<void> {

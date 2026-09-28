@@ -23,6 +23,9 @@
       "@nfinyx/asset-intelligence": [
         "libs/modules/asset-intelligence/src/index.ts"
       ],
+      "@nfinyx/chat-composer": [
+        "libs/common/components/chat-composer/src/index.ts"
+      ],
       "@nfinyx/chunk-transfer": ["libs/common/chunk-transfer/src/index.ts"],
       "@nfinyx/contract-analyzer": [
         "libs/modules/contract-analyzer/src/index.ts"

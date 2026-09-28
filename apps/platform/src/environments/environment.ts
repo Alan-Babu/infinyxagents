@@ -1,6 +1,6 @@
 export const environment = {
     production: false,
-    baseURL: 'https://agentsapi.nfinyx.ai',
+    baseURL: 'https://api.nfinyx.ai',
     RSA: {
         publicKey: '',
         privateKey: '',

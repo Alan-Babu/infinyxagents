@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService, CommonService } from '@nfinyx/services';
+import { ChatComposerComponent } from '@nfinyx/chat-composer';
 import { ButtonModule } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
@@ -45,6 +46,7 @@ type EndReason = 'user_exit' | 'idle_timeout' | 'manual';
         PrivacyNoticeModalComponent,
         SessionEndRatingModalComponent,
         ChatHistoryDrawerComponent,
+        ChatComposerComponent,
     ],
     providers: [VoiceCaptureService],
     templateUrl: './mofa-chat.html',
@@ -239,13 +241,6 @@ export class MofaChatPage implements OnInit, OnDestroy {
             this.common.showApiError(err, this.translate.instant('mofaChatbot.chat.toast.sendFailed'));
         } finally {
             this.sending = false;
-        }
-    }
-
-    onInputKeydown(event: KeyboardEvent): void {
-        if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault();
-            this.sendMessage();
         }
     }
 

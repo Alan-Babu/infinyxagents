@@ -1,0 +1,72 @@
+<div
+    class="grid grid-cols-[auto_1fr_auto] items-center gap-x-2 gap-y-2 rounded-lg border border-gray-300 bg-white p-3"
+    [style.grid-template-areas]="gridTemplateAreas"
+>
+    @if (files.length) {
+        <div class="flex flex-wrap gap-2" style="grid-area: files">
+            @for (file of files; track file.id) {
+                <div class="flex items-center gap-2 rounded-lg border border-gray-200 px-2 py-1.5 text-xs">
+                    <i class="text-primary-500" [ngClass]="file.icon ?? 'pi pi-file'"></i>
+                    <span class="max-w-40 truncate font-medium text-gray-800">{{ file.name }}</span>
+                    @if (file.sizeLabel) {
+                        <span class="text-gray-400">{{ file.sizeLabel }}</span>
+                    }
+                    <button
+                        type="button"
+                        class="cursor-pointer text-gray-400 hover:text-red-600"
+                        [attr.aria-label]="'Remove ' + file.name"
+                        (click)="onFileRemove(file.id)"
+                    >
+                        <i class="pi pi-times"></i>
+                    </button>
+                </div>
+            }
+        </div>
+    }
+
+    <textarea
+        #textareaEl
+        class="w-full resize-none border-0 bg-transparent p-0 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none"
+        style="grid-area: primary"
+        [attr.rows]="minRows"
+        [value]="value"
+        [placeholder]="placeholder"
+        [disabled]="disabled || sending"
+        (input)="onInput($event)"
+        (keydown)="onKeydown($event)"
+    ></textarea>
+
+    <div class="flex items-center gap-2" style="grid-area: leading">
+        @if (showAttachment) {
+            <button
+                type="button"
+                class="grid h-9 w-9 shrink-0 cursor-pointer place-items-center rounded-full text-gray-400 hover:text-primary-600"
+                [disabled]="disabled || sending"
+                (click)="attachClick.emit()"
+            >
+                <i class="pi pi-paperclip"></i>
+            </button>
+        }
+        @if (leftToolbarTpl) {
+            <ng-container [ngTemplateOutlet]="leftToolbarTpl"></ng-container>
+        }
+    </div>
+
+    <div class="flex items-center gap-2" style="grid-area: trailing">
+        @if (rightToolbarTpl) {
+            <ng-container [ngTemplateOutlet]="rightToolbarTpl"></ng-container>
+        }
+        <button
+            type="button"
+            class="grid h-9 w-9 shrink-0 place-items-center rounded-full text-white transition"
+            [class.bg-primary-500]="!sendDisabled"
+            [class.cursor-pointer]="!sendDisabled"
+            [class.bg-gray-200]="sendDisabled"
+            [class.cursor-not-allowed]="sendDisabled"
+            [disabled]="sendDisabled"
+            (click)="onSendClick()"
+        >
+            <i class="pi pi-send text-sm"></i>
+        </button>
+    </div>
+</div>

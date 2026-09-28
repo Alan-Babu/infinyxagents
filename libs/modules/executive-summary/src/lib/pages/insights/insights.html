@@ -546,37 +546,44 @@
         @if (stage === 'idle' || stage === 'loading' || stage === 'streaming' || stage === 'result') {
         <div class="bg-white px-6 py-4">
             <div class="mx-auto max-w-3xl">
-                <textarea class="w-full rounded-lg border border-gray-300 p-3 text-sm"
-                    [ngModel]="showingRefineComposer ? refineInstruction : topic"
-                    (ngModelChange)="showingRefineComposer ? (refineInstruction = $event) : (topic = $event)"
-                    [placeholder]="showingRefineComposer
-                        ? ('executiveSummary.insights.refinePlaceholder' | translate)
-                        : (composerMode === 'document' ? ('executiveSummary.insights.pastePlaceholder' | translate) : ('executiveSummary.insights.topicPlaceholder' | translate))"
-                    [rows]="showingRefineComposer ? 2 : (composerMode === 'document' ? 6 : 3)"
-                    (keydown.enter)="onComposerEnter($event)"></textarea>
-
                 @if (stage === 'result') {
-                <div class="mt-2 flex gap-1 rounded-lg bg-gray-100 p-1 text-xs">
+                <div class="mb-2 flex gap-1 rounded-lg bg-gray-100 p-1 text-xs">
                     <button type="button" class="cursor-pointer rounded-md px-3 py-1.5" [class.bg-white]="resultComposerMode === 'refine'"
                         (click)="switchResultComposerMode('refine')">{{ 'executiveSummary.insights.refineMode' | translate }}</button>
                     <button type="button" class="cursor-pointer rounded-md px-3 py-1.5" [class.bg-white]="resultComposerMode === 'new'"
                         (click)="switchResultComposerMode('new')">{{ 'executiveSummary.insights.newTopicMode' | translate }}</button>
                 </div>
                 }
+
                 @if (!showingRefineComposer) {
-                <div class="mt-2.5 flex flex-wrap items-center gap-2">
-                    <p-select class="w-56" [options]="frameworkOptions" [(ngModel)]="framework" optionLabel="label" optionValue="label" [placeholder]="'executiveSummary.insights.framework' | translate" appendTo="body" />
-                    <p-select class="w-44" [options]="mcpToolOptions" [(ngModel)]="mcpConnectionId" optionLabel="label" optionValue="value"
-                        [placeholder]="'executiveSummary.options.tools' | translate" appendTo="body" />
-                    <span class="flex-1"></span>
-                    <button type="button" pButton [disabled]="!topic.trim() || stage === 'loading' || stage === 'streaming'" (click)="startResearch()"><span>{{ (stage === 'loading' || stage === 'streaming' ? 'executiveSummary.insights.working' : (composerMode === 'document' ? 'executiveSummary.insights.summarise' : 'executiveSummary.insights.research')) | translate }}</span></button>
-                </div>
+                <lib-chat-composer
+                    [value]="topic"
+                    (valueChange)="topic = $event"
+                    [placeholder]="composerMode === 'document' ? ('executiveSummary.insights.pastePlaceholder' | translate) : ('executiveSummary.insights.topicPlaceholder' | translate)"
+                    [maxRows]="5"
+                    [sending]="stage === 'loading' || stage === 'streaming'"
+                    (send)="startResearch()"
+                >
+                    <ng-template #leftToolbar>
+                        <p-select class="w-56" [options]="frameworkOptions" [(ngModel)]="framework" optionLabel="label" optionValue="label" [placeholder]="'executiveSummary.insights.framework' | translate" appendTo="body" />
+                        <p-select class="w-44" [options]="mcpToolOptions" [(ngModel)]="mcpConnectionId" optionLabel="label" optionValue="value"
+                            [placeholder]="'executiveSummary.options.tools' | translate" appendTo="body" />
+                    </ng-template>
+                </lib-chat-composer>
                 }
                 @if (showingRefineComposer) {
-                <div class="mt-2.5 flex items-center justify-between gap-2">
-                    <span class="text-xs text-gray-400">{{ "executiveSummary.insights.refineHint" | translate }}</span>
-                    <button type="button" pButton [disabled]="!refineInstruction.trim() || refining" (click)="refineBrief()"><span>{{ (refining ? 'executiveSummary.insights.refining' : 'executiveSummary.insights.refine') | translate }}</span></button>
-                </div>
+                <lib-chat-composer
+                    [value]="refineInstruction"
+                    (valueChange)="refineInstruction = $event"
+                    [placeholder]="'executiveSummary.insights.refinePlaceholder' | translate"
+                    [maxRows]="5"
+                    [sending]="refining"
+                    (send)="refineBrief()"
+                >
+                    <ng-template #leftToolbar>
+                        <span class="text-xs text-gray-400">{{ "executiveSummary.insights.refineHint" | translate }}</span>
+                    </ng-template>
+                </lib-chat-composer>
                 }
             </div>
             <p class="mx-auto mt-2 max-w-3xl text-center text-xs text-gray-400">{{ "executiveSummary.insights.disclaimer" | translate }}</p>
