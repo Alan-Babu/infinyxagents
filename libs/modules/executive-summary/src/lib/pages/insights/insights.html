@@ -213,7 +213,7 @@
 
                     <div class="mb-4">
                         <label class="mb-1.5 block text-xs font-semibold text-gray-600" for="provider">{{ "executiveSummary.insights.model" | translate }}</label>
-                        <p-select class="w-full" [options]="providerOptions" [(ngModel)]="provider" optionLabel="label" optionValue="label" styleClass="w-full" appendTo="body" />
+                        <p-select class="w-full" [options]="providerOptions" [(ngModel)]="provider" (onChange)="providerTouched = true" optionLabel="label" optionValue="label" styleClass="w-full" appendTo="body" />
                     </div>
 
                     @if (showPersonnelCheckbox) {

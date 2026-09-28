@@ -1,6 +1,7 @@
 import { Route } from '@angular/router';
 import { AgentLayout } from '@nfinyx/layouts';
 import { createModuleI18nResolver } from '@nfinyx/services';
+import { llmSettingsI18nResolver, llmSettingsRoute, withLlmSettingsNav } from '@nfinyx/llm-settings';
 import { MenuIcon, MenuModel } from '@nfinyx/types';
 import * as en from './i18n/en.json';
 import * as ar from './i18n/ar.json';
@@ -30,8 +31,12 @@ export const EMAIL_COMPOSE_AGENT_ROUTES: Route[] = [
     {
         path: '',
         component: AgentLayout,
-        data: { 'main-nav': EMAIL_COMPOSE_AGENT_NAV },
-        resolve: { i18n: emailComposeAgentI18nResolver },
+        resolve: {
+            i18n: emailComposeAgentI18nResolver,
+            llmI18n: llmSettingsI18nResolver,
+            // Adds "Model settings" for admins of this agent only (route + API are enforced separately).
+            'main-nav': withLlmSettingsNav('email-compose-agent', EMAIL_COMPOSE_AGENT_NAV, '/email-compose-agent/model-settings'),
+        },
         children: [
             {
                 path: '',
@@ -48,6 +53,7 @@ export const EMAIL_COMPOSE_AGENT_ROUTES: Route[] = [
                 loadComponent: () => import('./pages/email-detail/email-detail').then(m => m.EmailDetailPage),
                 data: { name: 'email-compose-agent-detail' },
             },
+            llmSettingsRoute('email-compose-agent', 'email-compose/api'),
         ],
     },
 ];

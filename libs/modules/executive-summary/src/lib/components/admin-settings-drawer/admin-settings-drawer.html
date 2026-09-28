@@ -231,31 +231,89 @@
         <p class="mb-4 text-gray-500">{{ "executiveSummary.adminSettings.externalModelsHint" | translate }}
         </p>
 
-        <div class="mb-3">
-            <label for="admin-openai-key" class="mb-1 block text-xs font-semibold text-gray-600">
-                {{ "executiveSummary.adminSettings.openaiKey" | translate }}
-                {{ settings?.openai_api_key_set ? ("executiveSummary.adminSettings.set" | translate) :
-                ("executiveSummary.adminSettings.notSet" | translate) }}
-            </label>
-            <p-password inputId="admin-openai-key" [(ngModel)]="openaiKeyInput" [toggleMask]="true" [feedback]="false"
-                styleClass="w-full" inputStyleClass="w-full" placeholder="sk-..." />
-        </div>
-        <div class="mb-3">
-            <label for="admin-anthropic-key" class="mb-1 block text-xs font-semibold text-gray-600">
-                {{ "executiveSummary.adminSettings.anthropicKey" | translate }}
-                {{ settings?.anthropic_api_key_set ? ("executiveSummary.adminSettings.set" | translate) :
-                ("executiveSummary.adminSettings.notSet" | translate) }}
-            </label>
-            <p-password inputId="admin-anthropic-key" [(ngModel)]="anthropicKeyInput" [toggleMask]="true"
-                [feedback]="false" styleClass="w-full" inputStyleClass="w-full" placeholder="sk-ant-..." />
-        </div>
-        <div class="mb-3">
-            <label for="admin-qwen-key" class="mb-1 block text-xs font-semibold text-gray-600">{{
-                "executiveSummary.adminSettings.qwenKey" | translate }}</label>
-            <p-password inputId="admin-qwen-key" [(ngModel)]="qwenKeyInput" [toggleMask]="true" [feedback]="false"
-                styleClass="w-full" inputStyleClass="w-full"
-                [placeholder]="'executiveSummary.adminSettings.optional' | translate" />
-        </div>
+        <section class="mb-4 rounded-lg border border-gray-200 p-3">
+            <label for="admin-default-provider" class="mb-1 block text-xs font-bold text-gray-800">{{ "executiveSummary.adminSettings.defaultProvider" | translate }}</label>
+            <select id="admin-default-provider" class="w-full rounded-lg border border-gray-300 p-2 text-sm" [(ngModel)]="defaultProvider">
+                <option value="">{{ "executiveSummary.adminSettings.serverDefault" | translate: { provider: providerLabel(envDefaultProvider) } }}</option>
+                @for (provider of allProviders; track provider) {
+                <option [value]="provider">{{ providerLabel(provider) }}</option>
+                }
+            </select>
+            <p class="mt-1.5 text-xs text-gray-500">{{ "executiveSummary.adminSettings.defaultProviderHint" | translate }}</p>
+        </section>
+
+        <section class="mb-4 rounded-lg border border-gray-200 p-3">
+            <h4 class="mb-2.5 text-xs font-bold text-gray-800">{{ "executiveSummary.adminSettings.providerOpenai" | translate }}</h4>
+            <div class="mb-2.5">
+                <label for="admin-openai-base-url" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.providerBaseUrl" | translate }}</label>
+                <input id="admin-openai-base-url" pInputText class="w-full" [(ngModel)]="openaiBaseUrl" [placeholder]="defaultsFor('openai').base_url" />
+            </div>
+            <div class="mb-2.5">
+                <label for="admin-openai-model" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.model" | translate }}</label>
+                <input id="admin-openai-model" pInputText class="w-full" [(ngModel)]="openaiModel" [placeholder]="defaultsFor('openai').model" />
+            </div>
+            <div class="mb-2.5">
+                <label for="admin-openai-key" class="mb-1 block text-xs font-semibold text-gray-600">
+                {{ "executiveSummary.adminSettings.providerApiKey" | translate }}
+                {{ settings?.openai_api_key_set ? ("executiveSummary.adminSettings.set" | translate) : ("executiveSummary.adminSettings.notSet" | translate) }}
+                </label>
+                <p-password inputId="admin-openai-key" [(ngModel)]="openaiKeyInput" [toggleMask]="true" [feedback]="false" styleClass="w-full" inputStyleClass="w-full" placeholder="sk-..." />
+            </div>
+            <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="testingProvider !== null" [loading]="testingProvider === 'openai'" (click)="testProvider('openai')">
+                <span>{{ (testingProvider === 'openai' ? 'executiveSummary.adminSettings.testing' : 'executiveSummary.adminSettings.testConnection') | translate }}</span>
+            </button>
+            @if (testResults['openai']; as result) {
+            <p class="mt-2 text-xs font-semibold" [ngClass]="result.ok ? 'text-green-600' : 'text-red-600'" role="status">{{ testMessage(result) }}</p>
+            }
+        </section>
+        <section class="mb-4 rounded-lg border border-gray-200 p-3">
+            <h4 class="mb-2.5 text-xs font-bold text-gray-800">{{ "executiveSummary.adminSettings.providerClaude" | translate }}</h4>
+            <div class="mb-2.5">
+                <label for="admin-anthropic-base-url" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.providerBaseUrl" | translate }}</label>
+                <input id="admin-anthropic-base-url" pInputText class="w-full" [(ngModel)]="anthropicBaseUrl" [placeholder]="defaultsFor('claude').base_url" />
+            </div>
+            <div class="mb-2.5">
+                <label for="admin-anthropic-model" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.model" | translate }}</label>
+                <input id="admin-anthropic-model" pInputText class="w-full" [(ngModel)]="anthropicModel" [placeholder]="defaultsFor('claude').model" />
+            </div>
+            <div class="mb-2.5">
+                <label for="admin-anthropic-key" class="mb-1 block text-xs font-semibold text-gray-600">
+                {{ "executiveSummary.adminSettings.providerApiKey" | translate }}
+                {{ settings?.anthropic_api_key_set ? ("executiveSummary.adminSettings.set" | translate) : ("executiveSummary.adminSettings.notSet" | translate) }}
+                </label>
+                <p-password inputId="admin-anthropic-key" [(ngModel)]="anthropicKeyInput" [toggleMask]="true" [feedback]="false" styleClass="w-full" inputStyleClass="w-full" placeholder="sk-ant-..." />
+            </div>
+            <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="testingProvider !== null" [loading]="testingProvider === 'claude'" (click)="testProvider('claude')">
+                <span>{{ (testingProvider === 'claude' ? 'executiveSummary.adminSettings.testing' : 'executiveSummary.adminSettings.testConnection') | translate }}</span>
+            </button>
+            @if (testResults['claude']; as result) {
+            <p class="mt-2 text-xs font-semibold" [ngClass]="result.ok ? 'text-green-600' : 'text-red-600'" role="status">{{ testMessage(result) }}</p>
+            }
+        </section>
+        <section class="mb-4 rounded-lg border border-gray-200 p-3">
+            <h4 class="mb-2.5 text-xs font-bold text-gray-800">{{ "executiveSummary.adminSettings.providerQwen" | translate }}</h4>
+            <div class="mb-2.5">
+                <label for="admin-qwen-base-url" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.providerBaseUrl" | translate }}</label>
+                <input id="admin-qwen-base-url" pInputText class="w-full" [(ngModel)]="qwenBaseUrl" [placeholder]="defaultsFor('qwen').base_url" />
+            </div>
+            <div class="mb-2.5">
+                <label for="admin-qwen-model" class="mb-1 block text-xs font-semibold text-gray-600">{{ "executiveSummary.adminSettings.model" | translate }}</label>
+                <input id="admin-qwen-model" pInputText class="w-full" [(ngModel)]="qwenModel" [placeholder]="defaultsFor('qwen').model" />
+            </div>
+            <div class="mb-2.5">
+                <label for="admin-qwen-key" class="mb-1 block text-xs font-semibold text-gray-600">
+                {{ "executiveSummary.adminSettings.providerApiKey" | translate }}
+                </label>
+                <p-password inputId="admin-qwen-key" [(ngModel)]="qwenKeyInput" [toggleMask]="true" [feedback]="false" styleClass="w-full" inputStyleClass="w-full" [placeholder]="'executiveSummary.adminSettings.optional' | translate" />
+            </div>
+            <button type="button" pButton size="small" severity="secondary" [outlined]="true" [disabled]="testingProvider !== null" [loading]="testingProvider === 'qwen'" (click)="testProvider('qwen')">
+                <span>{{ (testingProvider === 'qwen' ? 'executiveSummary.adminSettings.testing' : 'executiveSummary.adminSettings.testConnection') | translate }}</span>
+            </button>
+            @if (testResults['qwen']; as result) {
+            <p class="mt-2 text-xs font-semibold" [ngClass]="result.ok ? 'text-green-600' : 'text-red-600'" role="status">{{ testMessage(result) }}</p>
+            }
+        </section>
+        <p class="mb-3 text-xs text-gray-500">{{ "executiveSummary.adminSettings.labelsHint" | translate }}</p>
         <div class="mb-3">
             <label for="admin-model-version" class="mb-1 block text-xs font-semibold text-gray-600">{{
                 "executiveSummary.adminSettings.modelVersion" | translate }}</label>
