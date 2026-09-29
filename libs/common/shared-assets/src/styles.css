@@ -309,38 +309,33 @@ html.theme-pink {
 /* Standard drawer widths — imported from the MOFA V2 sizing scale. Apply via
    styleClass="p-drawer-{sm|md|lg|xl|2xl|full}" instead of an inline
    `max-w-*!` Tailwind override. */
+.p-drawer {
+    --margin-start: calc(100% - 30px);
+    width: min(var(--margin-start), 600px);
+}
+
 .p-drawer-sm {
-    width: 400px !important;
+    width: min(var(--margin-start), 400px);
 }
 
 .p-drawer-md {
-    width: 800px !important;
+    width: min(var(--margin-start), 800px);
 }
 
 .p-drawer-lg {
-    width: 1000px !important;
+    width: min(var(--margin-start), 1000px);
 }
 
 .p-drawer-xl {
-    width: 1400px !important;
+    width: min(var(--margin-start), 1400px);
 }
 
 .p-drawer-2xl {
-    width: 1700px !important;
+    width: min(var(--margin-start), 1700px);
 }
 
 .p-drawer-full {
-    width: 100vw !important;
-}
-
-@media (max-width: 768px) {
-    .p-drawer-sm,
-    .p-drawer-md,
-    .p-drawer-lg,
-    .p-drawer-xl,
-    .p-drawer-2xl {
-        width: 100vw !important;
-    }
+    width: var(--margin-start);
 }
 
 .p-drawer-header {
@@ -353,7 +348,7 @@ html.theme-pink {
 
 .p-drawer-header,
 .p-drawer-footer {
-    @apply border-gray-200;
+    @apply py-3 border-gray-200;
 }
 
 .p-drawer-content {

@@ -3,6 +3,7 @@ import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '@nfinyx/services';
+import { ChatComposerComponent, ComposerFile } from '@nfinyx/chat-composer';
 import { ButtonModule } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
 
@@ -35,7 +36,7 @@ const HISTORY_PAGE_SIZE = 10;
 @Component({
     selector: 'lib-hr-chat',
     standalone: true,
-    imports: [CommonModule, FormsModule, TranslateModule, ButtonModule, Tooltip],
+    imports: [CommonModule, FormsModule, TranslateModule, ButtonModule, Tooltip, ChatComposerComponent],
     templateUrl: './hr-chat.html',
     host: {
         class: 'flex flex-col overflow-hidden flex-1 min-h-full',
@@ -53,6 +54,7 @@ export class HrChatPage implements OnInit {
     conversationId: string | null = null;
     pendingAttachmentId: string | null = null;
     pendingAttachmentName = '';
+    composerFiles: ComposerFile[] = [];
     sending = false;
 
     conversations: ConversationSummary[] = [];
@@ -141,6 +143,7 @@ export class HrChatPage implements OnInit {
         this.draft = '';
         this.pendingAttachmentId = null;
         this.pendingAttachmentName = '';
+        this.syncComposerFiles();
         this.sending = true;
         this.statusText = this.translate.instant('hrAgent.thinking');
         this.streamText = '';
@@ -362,12 +365,20 @@ export class HrChatPage implements OnInit {
         const ref = await this.chat.uploadAttachment(file);
         this.pendingAttachmentId = ref.attachment_id;
         this.pendingAttachmentName = file.name;
+        this.syncComposerFiles();
         input.value = '';
     }
 
     clearAttachment(): void {
         this.pendingAttachmentId = null;
         this.pendingAttachmentName = '';
+        this.syncComposerFiles();
+    }
+
+    private syncComposerFiles(): void {
+        this.composerFiles = this.pendingAttachmentId
+            ? [{ id: this.pendingAttachmentId, name: this.pendingAttachmentName, icon: 'pi pi-paperclip' }]
+            : [];
     }
 
     async openDocument(documentPath: string | null): Promise<void> {
