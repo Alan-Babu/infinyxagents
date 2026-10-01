@@ -41,6 +41,13 @@ export class ApiService {
         });
     }
 
+    /** GET an absolute URL outside this service's base (e.g. the platform's `/agent-groups/me`). */
+    getAbsolute<T>(absoluteUrl: string, query?: Record<string, string | number | boolean | undefined | null>): Promise<T> {
+        return firstValueFrom(this.http.get<T>(absoluteUrl, { params: this.toParams(query) })).catch(err => {
+            throw this.toApiError(err);
+        });
+    }
+
     getBlob(path: string, query?: Record<string, string | number | boolean | undefined | null>): Promise<Blob> {
         return firstValueFrom(
             this.http.get(this.url(path), {
