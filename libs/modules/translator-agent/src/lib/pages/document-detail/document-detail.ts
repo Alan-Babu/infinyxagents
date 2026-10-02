@@ -10,10 +10,18 @@ import { PageHeaderComponent } from '@nfinyx/page-header';
 import { SourceOverlayField, SourceOverlayStamp, VerifySourceDrawerComponent } from '@nfinyx/document-agent';
 import { TranslatorToolbarComponent } from '../../components/translator-toolbar/translator-toolbar';
 import { TranslatorApiService } from '../../services/translator-api.service';
-import { DocumentDetail, DocumentPageImage, QAExchange } from '../../models/translator.models';
+import {
+    DocumentDetail,
+    DocumentPageImage,
+    QAExchange,
+    SUMMARY_TYPES,
+    SummaryEntry,
+    SummaryFailure,
+    SummaryType,
+} from '../../models/translator.models';
 import { complianceClass, confidenceClass, fmtBytes, fmtConfidence, fmtDate, riskClass, statusBadgeClass } from '../../utils/translator-display';
 
-type Tab = 'overview' | 'risk' | 'compliance' | 'stamps' | 'translation' | 'ask';
+type Tab = 'overview' | 'risk' | 'compliance' | 'stamps' | 'translation' | 'summary' | 'ask';
 
 const OVERVIEW_FIELD_KEYS = ['issued_by_name', 'issued_to_name', 'document_type', 'issued_on', 'valid_through'];
 
@@ -69,6 +77,14 @@ export class DocumentDetailPage implements OnInit {
     /** Page-by-page original/translated split view */
     activePageTab = 1;
 
+    // ---------- summaries ----------
+    readonly summaryTypes = SUMMARY_TYPES;
+    selectedSummaryTypes = new Set<SummaryType>(['concise']);
+    summaries: SummaryEntry[] = [];
+    summaryFailures: SummaryFailure[] = [];
+    generatingSummary = false;
+    copiedSummaryType: SummaryType | null = null;
+
     async ngOnInit(): Promise<void> {
         const id = this.route.snapshot.paramMap.get('id');
         if (!id) return;
@@ -80,6 +96,8 @@ export class DocumentDetailPage implements OnInit {
         try {
             this.doc = await this.api.getDocument(id);
             this.qaHistory = await this.api.listQA(id);
+            this.summaries = this.doc.summaries ?? [];
+            this.summaryFailures = [];
             this.activeTab = 'overview';
             this.activePageTab = this.doc.pages_translated[0] || 1;
             await this.loadSourcePages(id);
@@ -123,6 +141,81 @@ export class DocumentDetailPage implements OnInit {
             this.toastr.success(this.translate.instant(decision === 'approve' ? 'translatorAgent.toast.reviewApproved' : 'translatorAgent.toast.reviewRejected'));
         } catch (err) {
             this.toastr.error(this.errorMessage(err, 'translatorAgent.toast.reviewFailed'));
+        }
+    }
+
+    // ---------- Summaries ----------
+    isSummaryTypeSelected(type: SummaryType): boolean {
+        return this.selectedSummaryTypes.has(type);
+    }
+
+    toggleSummaryType(type: SummaryType): void {
+        const next = new Set(this.selectedSummaryTypes);
+        if (next.has(type)) next.delete(type);
+        else next.add(type);
+        this.selectedSummaryTypes = next;
+    }
+
+    /** Summaries for the selected types, in the canonical display order. */
+    get visibleSummaries(): SummaryEntry[] {
+        return this.summaryTypes
+            .filter(type => this.selectedSummaryTypes.has(type))
+            .map(type => this.summaries.find(s => s.summary_type === type))
+            .filter((s): s is SummaryEntry => !!s);
+    }
+
+    /** True when every selected type already has a summary, so the action becomes "Regenerate". */
+    get allSelectedSummarized(): boolean {
+        return this.selectedSummaryTypes.size > 0 && this.visibleSummaries.length === this.selectedSummaryTypes.size;
+    }
+
+    summaryFailureMessage(failure: SummaryFailure): string {
+        return this.translate.instant('translatorAgent.summary.failedType', {
+            type: this.translate.instant(`translatorAgent.summary.types.${failure.summary_type}.name`),
+            message: failure.message,
+        });
+    }
+
+    async generateSummaries(): Promise<void> {
+        if (!this.doc || this.generatingSummary || this.selectedSummaryTypes.size === 0) return;
+        const regenerate = this.allSelectedSummarized;
+        const requested = this.summaryTypes.filter(type => this.selectedSummaryTypes.has(type));
+        this.generatingSummary = true;
+        this.summaryFailures = [];
+        try {
+            const result = await this.api.generateSummaries(this.doc.id, requested, regenerate);
+            const generated = new Set(result.summaries.map(s => s.summary_type));
+            this.summaries = [...this.summaries.filter(s => !generated.has(s.summary_type)), ...result.summaries];
+            this.summaryFailures = result.failed;
+            if (result.summaries.length) {
+                this.toastr.success(this.translate.instant('translatorAgent.toast.summaryGenerated'));
+            }
+        } catch (err) {
+            this.toastr.error(this.errorMessage(err, 'translatorAgent.toast.summaryFailed'));
+        } finally {
+            this.generatingSummary = false;
+        }
+    }
+
+    async deleteSummary(type: SummaryType): Promise<void> {
+        if (!this.doc) return;
+        try {
+            await this.api.deleteSummary(this.doc.id, type);
+            this.summaries = this.summaries.filter(s => s.summary_type !== type);
+        } catch (err) {
+            this.toastr.error(this.errorMessage(err, 'translatorAgent.toast.summaryDeleteFailed'));
+        }
+    }
+
+    async copySummary(entry: SummaryEntry): Promise<void> {
+        try {
+            await navigator.clipboard.writeText(entry.summary);
+            this.copiedSummaryType = entry.summary_type;
+            setTimeout(() => {
+                if (this.copiedSummaryType === entry.summary_type) this.copiedSummaryType = null;
+            }, 1500);
+        } catch {
+            this.toastr.error(this.translate.instant('translatorAgent.toast.copyFailed'));
         }
     }
 
@@ -201,6 +294,10 @@ export class DocumentDetailPage implements OnInit {
     }
     isPageTranslated(pageNum: number): boolean {
         return this.doc?.pages_translated.includes(pageNum) || false;
+    }
+    /** True when the page was already English, so the "translation" is the original text. */
+    isPageSkipped(pageNum: number): boolean {
+        return this.doc?.translated_pages.find(t => t.page_num === pageNum)?.skipped === true;
     }
 
     private errorMessage(err: unknown, fallbackKey: string): string {

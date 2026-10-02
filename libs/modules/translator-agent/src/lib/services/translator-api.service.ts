@@ -9,10 +9,14 @@ import {
     DocumentPageImage,
     DocumentSummary,
     FeedbackEntry,
+    GenerateSummariesResponse,
     LogFilters,
     PerformanceReport,
     QAExchange,
     SearchHistoryEntry,
+    SummaryEntry,
+    SummaryType,
+    SummaryTypeInfo,
     TelemetryLogEntry,
 } from '../models/translator.models';
 
@@ -93,6 +97,30 @@ export class TranslatorApiService extends TranslatorApiBase {
 
     listQA(documentId: string): Promise<QAExchange[]> {
         return this.get<QAExchange[]>(`${TranslatorApiPaths.documents}/${documentId}/qa`);
+    }
+
+    getSummaryTypes(): Promise<SummaryTypeInfo[]> {
+        return this.get<SummaryTypeInfo[]>(`${TranslatorApiPaths.documents}/summary-types`);
+    }
+
+    listSummaries(documentId: string): Promise<SummaryEntry[]> {
+        return this.get<SummaryEntry[]>(`${TranslatorApiPaths.documents}/${documentId}/summaries`);
+    }
+
+    /** Generates (or returns cached) summaries; `regenerate` forces a fresh model call. */
+    generateSummaries(
+        documentId: string,
+        summaryTypes: SummaryType[],
+        regenerate = false,
+    ): Promise<GenerateSummariesResponse> {
+        return this.post<GenerateSummariesResponse>(`${TranslatorApiPaths.documents}/${documentId}/summaries`, {
+            summary_types: summaryTypes,
+            regenerate,
+        });
+    }
+
+    deleteSummary(documentId: string, summaryType: SummaryType): Promise<void> {
+        return this.delete<void>(`${TranslatorApiPaths.documents}/${documentId}/summaries/${summaryType}`);
     }
 
     submitFeedback(rating: number, comment: string, documentId?: string): Promise<FeedbackEntry> {

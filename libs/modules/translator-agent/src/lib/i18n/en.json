@@ -34,7 +34,8 @@
         "callTypes": {
             "extraction": "Document Extraction",
             "translation": "Page Translation",
-            "qa": "Ask Document (Q&A)"
+            "qa": "Ask Document (Q&A)",
+            "summary": "Summary Generation"
         },
         "toolbar": {
             "eyebrow": "NX Translator",
@@ -122,7 +123,8 @@
             "compliance": "Approval & Attestation",
             "stamps": "Stamps & Signatures",
             "translation": "Translation",
-            "ask": "Ask Document"
+            "ask": "Ask Document",
+            "summary": "Summary"
         },
         "fields": {
             "issued_by_name": "Issued By",
@@ -194,7 +196,8 @@
             "thinking": "Thinking…",
             "askEmpty": "Click a suggestion above, or type your own question below.",
             "askPlaceholder": "Ask a question about this document…",
-            "send": "Send"
+            "send": "Send",
+            "pageSkippedEnglish": "This page is already in English, so it is shown as-is."
         },
         "verifySource": {
             "title": "Verify against source",
@@ -220,7 +223,51 @@
             "reviewRejected": "Document rejected",
             "reviewFailed": "Could not record the review decision.",
             "feedbackSubmitted": "Thanks for rating the agent!",
-            "feedbackFailed": "Could not submit feedback. Please try again."
+            "feedbackFailed": "Could not submit feedback. Please try again.",
+            "summaryGenerated": "Summary ready.",
+            "summaryFailed": "Could not generate the summary.",
+            "summaryDeleteFailed": "Could not delete the summary.",
+            "copyFailed": "Could not copy to the clipboard."
+        },
+        "summary": {
+            "selectTypes": "Choose the summary types",
+            "generate": "Generate summary",
+            "regenerate": "Regenerate",
+            "generating": "Generating…",
+            "empty": "No summary yet. Choose one or more types and generate.",
+            "cached": "Saved",
+            "stale": "Document changed since — regenerate",
+            "lines": "lines",
+            "copy": "Copy",
+            "copied": "Copied",
+            "delete": "Delete summary",
+            "failedType": "{{type}} could not be generated: {{message}}",
+            "types": {
+                "concise": {
+                    "name": "Concise",
+                    "description": "A concise 15-20 line overview of the entire document."
+                },
+                "numerical_analysis": {
+                    "name": "Numerical analysis",
+                    "description": "Highlights numbers, statistics, percentages and quantitative findings."
+                },
+                "detailed_concise": {
+                    "name": "Detailed concise",
+                    "description": "Only the most essential facts, stripped of background context."
+                },
+                "executive": {
+                    "name": "Executive",
+                    "description": "For decision makers: objectives, findings and recommended actions."
+                },
+                "key_points": {
+                    "name": "Key points",
+                    "description": "Bullet points of the most important takeaways."
+                },
+                "technical": {
+                    "name": "Technical",
+                    "description": "Methodologies, specifications and domain-specific terminology."
+                }
+            }
         }
     }
 }

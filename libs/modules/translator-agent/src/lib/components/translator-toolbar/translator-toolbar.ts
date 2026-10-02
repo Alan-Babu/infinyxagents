@@ -27,6 +27,7 @@ const CALL_TYPE_LABEL_KEYS: Record<string, string> = {
     extraction: 'translatorAgent.callTypes.extraction',
     translation: 'translatorAgent.callTypes.translation',
     qa: 'translatorAgent.callTypes.qa',
+    summary: 'translatorAgent.callTypes.summary',
 };
 
 /**
@@ -75,6 +76,7 @@ export class TranslatorToolbarComponent implements OnInit {
         { value: 'extraction', label: this.translate.instant('translatorAgent.callTypes.extraction') },
         { value: 'translation', label: this.translate.instant('translatorAgent.callTypes.translation') },
         { value: 'qa', label: this.translate.instant('translatorAgent.callTypes.qa') },
+        { value: 'summary', label: this.translate.instant('translatorAgent.callTypes.summary') },
     ];
     get callTypeLabels(): Record<string, string> {
         const out: Record<string, string> = {};

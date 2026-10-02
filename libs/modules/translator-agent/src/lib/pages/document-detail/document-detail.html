@@ -137,6 +137,17 @@
                     </button>
                     <button type="button"
                         class="cursor-pointer whitespace-nowrap rounded-md px-6 py-2.5 text-center text-sm transition-colors"
+                        [ngClass]="activeTab === 'summary' ? 'bg-primary-500 text-white font-bold' : 'text-gray-500 font-semibold'"
+                        (click)="activeTab = 'summary'">
+                        {{ "translatorAgent.tabs.summary" | translate }}
+                        @if (summaries.length) {
+                        <span class="ms-1.5 rounded-full px-2 py-0.5 text-xs"
+                            [ngClass]="activeTab === 'summary' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'">{{
+                            summaries.length }}</span>
+                        }
+                    </button>
+                    <button type="button"
+                        class="cursor-pointer whitespace-nowrap rounded-md px-6 py-2.5 text-center text-sm transition-colors"
                         [ngClass]="activeTab === 'ask' ? 'bg-primary-500 text-white font-bold' : 'text-gray-500 font-semibold'"
                         (click)="activeTab = 'ask'">
                         {{ "translatorAgent.tabs.ask" | translate }}
@@ -409,6 +420,10 @@
                         "translatorAgent.detail.translated" | translate }}</div>
                     <div class="h-full rounded-lg border border-gray-200 bg-white p-4">
                         @if (isPageTranslated(activePageTab)) {
+                        @if (isPageSkipped(activePageTab)) {
+                        <p class="mb-2 rounded-md bg-gray-50 px-2 py-1 text-xs text-gray-500">{{
+                            "translatorAgent.detail.pageSkippedEnglish" | translate }}</p>
+                        }
                         <p class="whitespace-pre-wrap text-sm text-gray-700">{{ translatedTextForPage(activePageTab) }}
                         </p>
                         } @else {
@@ -418,6 +433,85 @@
                     </div>
                 </div>
             </div>
+            }
+        </div>
+        }
+
+        <!-- Summary tab -->
+        @if (activeTab === 'summary') {
+        <div class="flex flex-col gap-4">
+            <div class="flex flex-col gap-1.5">
+                <span class="text-xs font-semibold text-gray-500">{{ "translatorAgent.summary.selectTypes" | translate
+                    }}</span>
+                <div class="flex flex-wrap gap-2">
+                    @for (type of summaryTypes; track type) {
+                    <button type="button" role="checkbox" [attr.aria-checked]="isSummaryTypeSelected(type)"
+                        class="cursor-pointer rounded-md border px-3 py-1.5 text-xs font-medium transition-colors"
+                        [class.bg-primary-500]="isSummaryTypeSelected(type)"
+                        [class.text-white]="isSummaryTypeSelected(type)"
+                        [class.border-primary-500]="isSummaryTypeSelected(type)"
+                        [class.border-gray-200]="!isSummaryTypeSelected(type)"
+                        [class.text-gray-600]="!isSummaryTypeSelected(type)"
+                        [title]="('translatorAgent.summary.types.' + type + '.description') | translate"
+                        (click)="toggleSummaryType(type)">
+                        {{ ('translatorAgent.summary.types.' + type + '.name') | translate }}
+                    </button>
+                    }
+                </div>
+            </div>
+
+            <div>
+                <button type="button" pButton [disabled]="generatingSummary || selectedSummaryTypes.size === 0"
+                    (click)="generateSummaries()">
+                    <i class="pi" [ngClass]="generatingSummary ? 'pi-spin pi-spinner' : 'pi-align-left'"></i>
+                    <span>{{ (generatingSummary ? 'translatorAgent.summary.generating' : (allSelectedSummarized ?
+                        'translatorAgent.summary.regenerate' : 'translatorAgent.summary.generate')) | translate
+                        }}</span>
+                </button>
+            </div>
+
+            @for (failure of summaryFailures; track failure.summary_type) {
+            <p class="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700" role="alert">{{
+                summaryFailureMessage(failure) }}</p>
+            }
+
+            @for (entry of visibleSummaries; track entry.id) {
+            <div class="flex flex-col gap-2 rounded-lg border border-gray-200 bg-white p-4">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-sm font-semibold text-gray-800">{{ ('translatorAgent.summary.types.' +
+                        entry.summary_type + '.name') | translate }}</span>
+                    <span class="text-xs text-gray-400">{{ entry.line_count }} {{ "translatorAgent.summary.lines" |
+                        translate }}</span>
+                    @if (entry.cached) {
+                    <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">{{
+                        "translatorAgent.summary.cached" | translate }}</span>
+                    }
+                    @if (entry.stale) {
+                    <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-700">{{
+                        "translatorAgent.summary.stale" | translate }}</span>
+                    }
+                    <span class="ms-auto flex gap-1">
+                        <button type="button"
+                            class="cursor-pointer rounded-md border border-gray-200 px-2 py-1 text-xs text-gray-600"
+                            (click)="copySummary(entry)">
+                            <i class="pi" [ngClass]="copiedSummaryType === entry.summary_type ? 'pi-check' : 'pi-copy'"></i>
+                            {{ (copiedSummaryType === entry.summary_type ? 'translatorAgent.summary.copied' :
+                            'translatorAgent.summary.copy') | translate }}
+                        </button>
+                        <button type="button"
+                            class="cursor-pointer rounded-md border border-gray-200 px-2 py-1 text-xs text-gray-600"
+                            [attr.aria-label]="'translatorAgent.summary.delete' | translate"
+                            (click)="deleteSummary(entry.summary_type)">
+                            <i class="pi pi-trash"></i>
+                        </button>
+                    </span>
+                </div>
+                <p class="whitespace-pre-wrap text-sm text-gray-700">{{ entry.summary }}</p>
+            </div>
+            } @empty {
+            @if (!generatingSummary) {
+            <p class="text-sm text-gray-500">{{ "translatorAgent.summary.empty" | translate }}</p>
+            }
             }
         </div>
         }
