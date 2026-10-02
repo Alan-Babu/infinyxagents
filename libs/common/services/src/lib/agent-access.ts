@@ -53,3 +53,50 @@ export function isAgentAdminWithScopes(scopes: readonly string[], tileId: string
     if (!slug) return false;
     return [PLATFORM_ADMIN_SCOPE, `${slug}:admin`].some(s => scopes.includes(s));
 }
+
+/** A department group as the Platform reports it for the signed-in user (`GET /agent-groups/me`). */
+export interface AgentGroupAccess {
+    slug: string;
+    name: string;
+    /** `admin` when the user administers the group's agents, otherwise `use`. */
+    access: 'use' | 'admin';
+    /** Catalogue slugs of the agents tagged into the group. */
+    agentSlugs: string[];
+}
+
+/** A department as shown on the agents landing page: the group plus the tiles it contains. */
+export interface AgentDepartment {
+    slug: string;
+    name: string;
+    access: 'use' | 'admin';
+    tileIds: string[];
+}
+
+const TILE_BY_AGENT_SLUG: Readonly<Record<string, string>> = Object.fromEntries(
+    Object.entries(AGENT_SLUG_BY_TILE).map(([tileId, slug]) => [slug, tileId]),
+);
+
+/**
+ * Maps the Platform's groups onto landing-page departments. Display only: which agents a user may
+ * open is decided by the token's scopes (`canOpenAgentWithScopes`), never by group membership here.
+ *
+ * - An agent slug with no tile in this UI (a backend-only or retired agent) is skipped.
+ * - With `canOpen`, tiles the user cannot open are dropped, and a department left with no tiles is
+ *   omitted, so a chip never leads to an empty page.
+ * - An agent in several groups simply appears under each of them.
+ */
+export function departmentsFromGroups(
+    groups: readonly AgentGroupAccess[],
+    canOpen: (tileId: string) => boolean = () => true,
+): AgentDepartment[] {
+    return groups
+        .map(group => ({
+            slug: group.slug,
+            name: group.name,
+            access: group.access,
+            tileIds: group.agentSlugs
+                .map(agentSlug => TILE_BY_AGENT_SLUG[agentSlug])
+                .filter((tileId): tileId is string => !!tileId && canOpen(tileId)),
+        }))
+        .filter(department => department.tileIds.length > 0);
+}

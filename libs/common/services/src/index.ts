@@ -9,5 +9,6 @@ export * from './lib/local-storage';
 export * from './lib/module-i18n-resolver';
 export * from './lib/services/common';
 export * from './lib/services/auth.service';
+export * from './lib/services/agent-groups.service';
 export * from './common-providers';
 export * from './lib/app-config';

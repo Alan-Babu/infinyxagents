@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NoData } from '@nfinyx/no-data';
-import { AuthService, CommonService, StorageService } from '@nfinyx/services';
+import { AgentDepartment, AuthService, CommonService, StorageService } from '@nfinyx/services';
 import { LocalStorage } from '@nfinyx/types';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -226,6 +226,11 @@ export class AgentsLanding {
     private readonly document = inject(DOCUMENT);
 
     @Input() tiles: AgentTile[] = [];
+    /**
+     * Department groups (HR, Finance, ...) the user can reach, with the tiles each contains. Optional:
+     * with none, the department chips are not shown and the page behaves as before.
+     */
+    @Input() departments: AgentDepartment[] = [];
     @ViewChild('contentScroll') private contentScroll?: ElementRef<HTMLElement>;
 
     search = '';
@@ -235,6 +240,8 @@ export class AgentsLanding {
     private readonly pinnedIds = signal<string[]>(this.storage.getItem(LocalStorage.PinnedAgents) ?? []);
     /** `all` or a `categoryKey` — the hero pill buttons' choice, which actually filters `categories`/`pinnedTiles` (unlike `selectedFilter`). */
     readonly categoryFilter = signal<string>('all');
+    /** `all` or a department slug — combines with `categoryFilter` (a tile must satisfy both). */
+    readonly departmentFilter = signal<string>('all');
 
     get userName(): string {
         return this.auth.user()?.displayName || '';
@@ -270,6 +277,7 @@ export class AgentsLanding {
         if (this.categoryFilter() !== 'all') {
             filtered = filtered.filter(t => t.categoryKey === this.categoryFilter());
         }
+        filtered = this.inSelectedDepartment(filtered);
         if (q) {
             filtered = filtered.filter(t => this.translate.instant(t.nameKey).toLowerCase().includes(q));
         }
@@ -297,6 +305,20 @@ export class AgentsLanding {
 
         const id = key === 'pinned' ? 'section-pinned' : `section-${key}`;
         this.document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    /** Department chip click — narrows the page to the agents tagged into that department group. */
+    filterByDepartment(slug: string): void {
+        this.departmentFilter.set(slug);
+    }
+
+    /** Keeps only tiles in the selected department; a department that has gone away resets to all. */
+    private inSelectedDepartment(tiles: AgentTile[]): AgentTile[] {
+        const slug = this.departmentFilter();
+        if (slug === 'all') return tiles;
+        const department = this.departments.find(d => d.slug === slug);
+        if (!department) return tiles;
+        return tiles.filter(tile => department.tileIds.includes(tile.id));
     }
 
     /** Hero pill click — actually filters `categories`/`pinnedTiles` down to the chosen category, no scrolling. */
@@ -340,6 +362,7 @@ export class AgentsLanding {
         if (this.categoryFilter() !== 'all') {
             filtered = filtered.filter(t => t.categoryKey === this.categoryFilter());
         }
+        filtered = this.inSelectedDepartment(filtered);
         if (q) {
             filtered = filtered.filter(t => this.translate.instant(t.nameKey).toLowerCase().includes(q));
         }

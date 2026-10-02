@@ -67,6 +67,25 @@
                     }
                 </div>
 
+                @if (departments.length > 0) {
+                <div class="mt-3 flex flex-wrap items-center gap-2">
+                    <span class="text-xs font-bold uppercase tracking-wide text-gray-400">{{ 'agentsLanding.departmentsLabel' | translate }}</span>
+                    <button type="button" pButton size="small" [outlined]="departmentFilter() !== 'all' ? true : null"
+                        [severity]="departmentFilter() === 'all' ? 'primary' : 'secondary'"
+                        class="cursor-pointer! rounded-lg!" (click)="filterByDepartment('all')">
+                        <span>{{ 'agentsLanding.allDepartments' | translate }}</span>
+                    </button>
+                    @for (department of departments; track department.slug) {
+                    <button type="button" pButton size="small" [outlined]="departmentFilter() !== department.slug ? true : null"
+                        [severity]="departmentFilter() === department.slug ? 'primary' : 'secondary'"
+                        class="cursor-pointer! rounded-lg!" (click)="filterByDepartment(department.slug)">
+                        <i class="pi pi-building me-1"></i>
+                        <span>{{ department.name }}</span>
+                    </button>
+                    }
+                </div>
+                }
+
             </div>
 
             @if (categories.length === 0 && pinnedTiles.length === 0) {

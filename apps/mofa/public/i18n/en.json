@@ -53,6 +53,8 @@
         "nxAiAdvisorDesc": "An upcoming advisory agent. Full capabilities are still in development.",
         "nxLegalAiDesc": "Reviews contracts and legal documents to summarize key clauses, flag potential risks, and support legal teams with research and drafting with respect to the law of the land.",
         "allAgents": "All agents",
+        "departmentsLabel": "Departments",
+        "allDepartments": "All departments",
         "categoriesLabel": "Categories",
         "quickAccess": "Quick Access",
         "pinned": "Pinned",
